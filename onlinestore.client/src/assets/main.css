@@ -1,0 +1,10 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: Roboto, Arial, Helvetica, sans-serif, system-ui;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #cbdbea;
+}

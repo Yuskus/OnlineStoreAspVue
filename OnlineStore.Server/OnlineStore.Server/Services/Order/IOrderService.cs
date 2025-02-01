@@ -4,9 +4,9 @@ namespace OnlineStore.Server.Services.Order
 {
     public interface IOrderService
     {
-        Task<IEnumerable<OrderResponse>> GetPageOfOrders(int pageNumber, int pageSize); //add count() to response
-        Task<IEnumerable<OrderResponse>> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize); //add count() to response
-        Task<IEnumerable<OrderResponse>> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize); //add count() to response
+        Task<OrderResponseList> GetPageOfOrders(int pageNumber, int pageSize);
+        Task<OrderResponseList> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize);
+        Task<OrderResponseList> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize);
         Task<OrderResponse?> GetOrderByNumber(int number);
         Task<Guid?> CreateOrder(OrderRequest order);
         Task<bool> UpdateOrder(Guid id, OrderRequest order);

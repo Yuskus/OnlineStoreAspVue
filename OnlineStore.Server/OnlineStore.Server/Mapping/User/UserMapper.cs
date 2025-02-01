@@ -51,6 +51,7 @@ namespace OnlineStore.Server.Mapping.User
         {
             return new()
             {
+                CustomerId = userEntity.CustomerId,
                 Username = userEntity.Username,
                 Role = (UserRole)userEntity.Role
             };

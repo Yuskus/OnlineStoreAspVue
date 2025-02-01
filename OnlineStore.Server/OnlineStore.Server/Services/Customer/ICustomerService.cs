@@ -4,7 +4,7 @@ namespace OnlineStore.Server.Services.Customer
 {
     public interface ICustomerService
     {
-        Task<IEnumerable<CustomerResponse>> GetPageOfCustomers(int pageNumber, int pageSize); // add count() to response
+        Task<CustomerResponseList> GetPageOfCustomers(int pageNumber, int pageSize); // add count() to response
         Task<CustomerResponse?> GetCustomerById(Guid id);
         Task<CustomerResponse?> GetCustomerByCode(string code);
         Task<Guid?> CreateCustomer(CustomerRequest customer);

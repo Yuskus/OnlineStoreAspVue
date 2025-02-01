@@ -71,13 +71,17 @@ namespace OnlineStore.Server.Repositories.User
             return true;
         }
 
-        public async Task<IEnumerable<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize)
+        public async Task<UserResponseList> GetPageOfUsersInfo(int pageNumber, int pageSize)
         {
-            List<UserResponse> result = await _context.Users.Skip((pageNumber - 1) * pageSize)
-                                                            .Take(pageSize)
-                                                            .Include(x => x.Customer)
-                                                            .Select(x => x.MapFromDb())
-                                                            .ToListAsync();
+            List<UserResponse> response = await _context.Users.Skip((pageNumber - 1) * pageSize)
+                                                              .Take(pageSize)
+                                                              .Include(x => x.Customer)
+                                                              .Select(x => x.MapFromDb())
+                                                              .ToListAsync();
+
+            int totalCount = await _context.Users.CountAsync();
+
+            UserResponseList result = new(response, totalCount);
 
             return result;
         }

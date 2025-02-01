@@ -47,7 +47,7 @@ namespace OnlineStore.Server.Services.User
             return false;
         }
 
-        public async Task<IEnumerable<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize)
+        public async Task<UserResponseList> GetPageOfUsersInfo(int pageNumber, int pageSize)
         {
             bool isValid = UserValidator.CheckPages(pageNumber, pageSize);
 
@@ -56,7 +56,7 @@ namespace OnlineStore.Server.Services.User
                 return await _userRepository.GetPageOfUsersInfo(pageNumber, pageSize);
             }
 
-            return [];
+            return new UserResponseList();
         }
     }
 }

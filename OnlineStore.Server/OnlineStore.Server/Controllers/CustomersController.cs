@@ -14,11 +14,11 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize(Roles = "Manager")]
         [HttpGet(template: "getpage")]
-        public async Task<ActionResult<IEnumerable<CustomerResponse>>> GetPageOfCustomers([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<CustomerResponseList>> GetPageOfCustomers([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                IEnumerable<CustomerResponse> result = await _customerService.GetPageOfCustomers(pageNumber, pageSize);
+                CustomerResponseList result = await _customerService.GetPageOfCustomers(pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }

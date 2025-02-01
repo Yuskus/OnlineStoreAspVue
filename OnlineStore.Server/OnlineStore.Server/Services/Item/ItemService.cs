@@ -76,7 +76,7 @@ namespace OnlineStore.Server.Services.Item
             return await _itemRepository.GetItemByName(name);
         }
 
-        public async Task<IEnumerable<ItemResponse>> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize)
+        public async Task<ItemResponseList> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize)
         {
             bool isValid = ItemValidator.CheckPages(pageNumber, pageSize);
 
@@ -85,10 +85,10 @@ namespace OnlineStore.Server.Services.Item
                 return await _itemRepository.GetPageOfItemsByCategory(category, pageNumber, pageSize);
             }
 
-            return [];
+            return new ItemResponseList();
         }
 
-        public async Task<IEnumerable<ItemResponse>> GetPageOfItems(int pageNumber, int pageSize)
+        public async Task<ItemResponseList> GetPageOfItems(int pageNumber, int pageSize)
         {
             bool isValid = ItemValidator.CheckPages(pageNumber, pageSize);
 
@@ -97,7 +97,7 @@ namespace OnlineStore.Server.Services.Item
                 return await _itemRepository.GetPageOfItems(pageNumber, pageSize);
             }
 
-            return [];
+            return new ItemResponseList();
         }
     }
 }

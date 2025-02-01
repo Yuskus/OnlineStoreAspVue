@@ -4,7 +4,7 @@ namespace OnlineStore.Server.Repositories.Customer
 {
     public interface ICustomerRepository
     {
-        Task<IEnumerable<CustomerResponse>> GetPageOfCustomers(int pageNumber, int pageSize); // add count() to response
+        Task<CustomerResponseList> GetPageOfCustomers(int pageNumber, int pageSize);
         Task<CustomerResponse?> GetCustomerById(Guid id);
         Task<CustomerResponse?> GetCustomerByCode(string code);
         Task<Guid?> CreateCustomer(CustomerRequest customer);

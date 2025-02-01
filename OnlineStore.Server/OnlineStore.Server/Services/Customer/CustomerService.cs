@@ -73,7 +73,7 @@ namespace OnlineStore.Server.Services.Customer
             return null;
         }
 
-        public async Task<IEnumerable<CustomerResponse>> GetPageOfCustomers(int pageNumber, int pageSize)
+        public async Task<CustomerResponseList> GetPageOfCustomers(int pageNumber, int pageSize)
         {
             bool isValid = CustomerValidator.CheckPages(pageNumber, pageSize);
 
@@ -82,7 +82,7 @@ namespace OnlineStore.Server.Services.Customer
                 return await _customerRepository.GetPageOfCustomers(pageNumber, pageSize);
             }
 
-            return [];
+            return new CustomerResponseList();
         }
     }
 }

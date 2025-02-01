@@ -7,6 +7,6 @@ namespace OnlineStore.Server.Services.User
         Task<LoginResponse?> Authenticate(LoginRequest loginRequest);
         Task<bool> UpdateUser(UserRequest userRequest);
         Task<bool> DeleteUser(string name);
-        Task<IEnumerable<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize); // add count() to response
+        Task<UserResponseList> GetPageOfUsersInfo(int pageNumber, int pageSize);
     }
 }

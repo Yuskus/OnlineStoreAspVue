@@ -10,26 +10,41 @@
         currentPage: 1,
         totalPages: 1,
         pageSize: 24,
+        totalCount: 0,
         myId: null,
+        role: null,
+        ordersUrl: '',
         records: []
       }
     },
     methods: {
-      async getOrders() {
-        this.myId = '';
-        // написать запрос получения GUID кастомера
+      getMyData() {
+        this.myId = localStorage.getItem('guid');
+        this.role = localStorage.getItem('role');
         
-        let url = locatStorage.getItem('role') === 'Manager' ? 'http://localhost:5000/api/Orders/getall' : `http://localhost:5000/api/Orders/getbyid/${this.myId}`;
-        
+        this.makeUrl();
+      },
+      makeUrl() {
+        if (this.role === '1') {
+          this.ordersUrl = `http://localhost:5000/api/Orders/getpage?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`;
+        } else {
+          this.ordersUrl = `http://localhost:5000/api/Orders/getbycustomer?id=${this.myId}&pageNumber=${this.currentPage}&pageSize=${this.pageSize}`;
+        }
+      },
+      async getOrders(number = 1) {
+        this.currentPage = number;
+        this.makeUrl();
         try {
-          const response = await axios.get(url, {
+          const response = await axios.get(this.ordersUrl, {
             headers: {
               'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }
           });
           
           if (response.status === 200 && response.data) {
-            this.records = response.data;
+            this.records = response.data.orderResponses;
+            this.totalCount = response.data.totalCount;
+            this.totalPages = Math.ceil(this.totalCount / this.pageSize);
           } else {
             alert('Проблемы с сервером!');
             console.log("Статус ошибки: " + response.status);
@@ -41,6 +56,7 @@
       }
     },
     mounted() {
+      this.getMyData();
       this.getOrders();
     }
   }
@@ -52,23 +68,23 @@
     <h1 class="line">Заказы</h1>
 
     <div class="table">
-      <div class="row colored">
-        <div class="cell">ID Заказа</div>
-        <div class="cell">ID Заказчика</div>
-        <div class="cell">Дата от</div>
-        <div class="cell">Дата до</div>
-        <div class="cell">Номер</div>
-        <div class="cell">Статус</div>
-        <div class="cell">Опции</div>
+      <div class="row">
+        <div class="cell colored">ID Заказа</div>
+        <div class="cell colored">ID Заказчика</div>
+        <div class="cell colored">Дата от</div>
+        <div class="cell colored">Дата до</div>
+        <div class="cell colored">Номер</div>
+        <div class="cell colored">Статус</div>
+        <div class="cell colored">Опции</div>
       </div>
       <div class="row" v-for="record in records" :key="record.id">
-        <div class="cell">{{ record.id }}</div>
-        <div class="cell">{{ record.customerId }}</div>
-        <div class="cell">{{ record.orderDate }}</div>
-        <div class="cell">{{ record.shipmentDate }}</div>
-        <div class="cell">{{ record.orderNumber }}</div>
-        <div class="cell">{{ record.orderStatus }}</div>
-        <div class="cell"><a>Редактирование</a></div>
+        <div class="cell base">{{ record.id }}</div>
+        <div class="cell base">{{ record.customerId }}</div>
+        <div class="cell base">{{ record.orderDate }}</div>
+        <div class="cell base">{{ record.shipmentDate }}</div>
+        <div class="cell base">{{ record.orderNumber }}</div>
+        <div class="cell base">{{ record.orderStatus }}</div>
+        <div class="cell base"><a>Редактирование</a></div>
       </div>
     </div>
 
@@ -103,7 +119,6 @@
       text-align: left;
       font-size: 18px;
       line-height: 28px;
-      background-color: white;
     }
 
     .colored {

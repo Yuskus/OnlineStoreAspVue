@@ -8,6 +8,6 @@ namespace OnlineStore.Server.Repositories.User
         Task<bool> RegisterUser(RegisterRequest registerRequest);
         Task<bool> UpdateUser(UserRequest userRequest);
         Task<bool> DeleteUser(string name);
-        Task<IEnumerable<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize); // add count() to response
+        Task<UserResponseList> GetPageOfUsersInfo(int pageNumber, int pageSize);
     }
 }

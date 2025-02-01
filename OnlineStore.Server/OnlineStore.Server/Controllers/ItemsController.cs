@@ -14,11 +14,11 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize]
         [HttpGet(template: "getpage")]
-        public async Task<ActionResult<IEnumerable<ItemResponse>>> GetPageOfItems([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<ItemResponseList>> GetPageOfItems([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                IEnumerable<ItemResponse> result = await _itemService.GetPageOfItems(pageNumber, pageSize);
+                ItemResponseList result = await _itemService.GetPageOfItems(pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -82,11 +82,11 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize]
         [HttpGet(template: "category/{category}")]
-        public async Task<ActionResult<IEnumerable<ItemResponse>>> GetPageOfItemsByCategory(string category, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<ItemResponseList>> GetPageOfItemsByCategory(string category, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                IEnumerable<ItemResponse> result = await _itemService.GetPageOfItemsByCategory(category, pageNumber, pageSize);
+                ItemResponseList result = await _itemService.GetPageOfItemsByCategory(category, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }

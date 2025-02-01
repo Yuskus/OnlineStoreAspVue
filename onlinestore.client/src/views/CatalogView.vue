@@ -10,15 +10,20 @@
         items: [],
         currentPage: 1,
         totalPages: 1,
-        pageSize: 12
+        pageSize: 12,
+        url: ''
       }
     },
     methods: {
+      getUrl(newUrl) {
+        this.url = newUrl;
+      },
       async getItems(number = 1) {
         this.currentPage = number;
-
+        console.log(localStorage.getItem('jwt'));
+        this.getUrl(`http://localhost:5000/api/Items/getpage?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`);
         try {
-          const response = await axios.get(`http://localhost:5000/api/Items/getpage?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`, {
+          const response = await axios.get(this.url, {
             headers: {
               'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }
@@ -46,7 +51,7 @@
   <div class="container">
 
     <div class="filters">
-      <div class="button">Фильтр 1</div>
+      <div class="button">Все товары</div>
       <div class="button">Фильтр 2</div>
       <div class="button">Фильтр 3</div>
       <div class="button">Фильтр 4</div>

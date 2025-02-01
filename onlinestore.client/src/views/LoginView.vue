@@ -18,13 +18,16 @@
           });
           if (response.status === 200 && response.data && response.data.token) {
             localStorage.setItem('jwt', response.data.token);
+            localStorage.setItem('username', response.data.username);
+            localStorage.setItem('guid', response.data.customerId);
             localStorage.setItem('role', response.data.role);
-            console.log("user role: " + response.data.role);
             this.$router.push('/');
           } else {
+            localStorage.clear();
             alert('Неверный логин или пароль!');
           }
         } catch (error) {
+          localStorage.clear();
           console.error('Ошибка при аутентификации (Login): ', error);
           alert('Непредвиденная ошибка!');
         }

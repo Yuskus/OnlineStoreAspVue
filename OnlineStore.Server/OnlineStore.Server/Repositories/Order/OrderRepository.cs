@@ -61,33 +61,45 @@ namespace OnlineStore.Server.Repositories.Order
             return result;
         }
 
-        public async Task<IEnumerable<OrderResponse>> GetPageOfOrders(int pageNumber, int pageSize)
+        public async Task<OrderResponseList> GetPageOfOrders(int pageNumber, int pageSize)
         {
-            List<OrderResponse> result = await _context.Orders.Skip((pageNumber - 1) * pageSize)
-                                                              .Take(pageSize)
-                                                              .Select(x => x.MapFromDb()).ToListAsync();
+            List<OrderResponse> response = await _context.Orders.Skip((pageNumber - 1) * pageSize)
+                                                                .Take(pageSize)
+                                                                .Select(x => x.MapFromDb()).ToListAsync();
 
-            return result ?? [];
+            int totalCount = await _context.Orders.CountAsync();
+
+            OrderResponseList result = new(response, totalCount);
+
+            return result;
         }
 
-        public async Task<IEnumerable<OrderResponse>> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
+        public async Task<OrderResponseList> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
         {
-            List<OrderResponse> result = await _context.Orders.Where(x => x.CustomerId == id)
-                                                              .Skip((pageNumber - 1) * pageSize)
-                                                              .Take(pageSize)
-                                                              .Select(x => x.MapFromDb()).ToListAsync();
+            List<OrderResponse> response = await _context.Orders.Where(x => x.CustomerId == id)
+                                                                .Skip((pageNumber - 1) * pageSize)
+                                                                .Take(pageSize)
+                                                                .Select(x => x.MapFromDb()).ToListAsync();
 
-            return result ?? [];
+            int totalCount = await _context.Orders.CountAsync(x => x.CustomerId == id);
+
+            OrderResponseList result = new(response, totalCount);
+
+            return result;
         }
 
-        public async Task<IEnumerable<OrderResponse>> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
+        public async Task<OrderResponseList> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
         {
-            List<OrderResponse> result = await _context.Orders.Where(x => x.OrderStatus == status)
-                                                              .Skip((pageNumber - 1) * pageSize)
-                                                              .Take(pageSize)
-                                                              .Select(x => x.MapFromDb()).ToListAsync();
+            List<OrderResponse> response = await _context.Orders.Where(x => x.OrderStatus == status)
+                                                                .Skip((pageNumber - 1) * pageSize)
+                                                                .Take(pageSize)
+                                                                .Select(x => x.MapFromDb()).ToListAsync();
 
-            return result ?? [];
+            int totalCount = await _context.Orders.CountAsync(x => x.OrderStatus == status);
+
+            OrderResponseList result = new(response, totalCount);
+
+            return result;
         }
     }
 }

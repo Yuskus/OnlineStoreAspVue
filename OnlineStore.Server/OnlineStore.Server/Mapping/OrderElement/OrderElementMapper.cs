@@ -1,4 +1,5 @@
 ﻿using OnlineStore.Server.DTO.OrderElement;
+using OnlineStore.Server.Mapping.Item;
 using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Mapping.OrderElement
@@ -24,6 +25,7 @@ namespace OnlineStore.Server.Mapping.OrderElement
                 Id = orderElement.Id,
                 OrderId = orderElement.OrderId,
                 ItemId = orderElement.ItemId,
+                ItemResponse = orderElement.Item?.MapFromDb(),
                 ItemsCount = orderElement.ItemsCount,
                 ItemPrice = orderElement.ItemPrice
             };

@@ -10,21 +10,24 @@
         currentPage: 1,
         totalPages: 1,
         pageSize: 24,
+        totalCount: 0,
         users: []
       }
     },
     methods: {
-      async getUsers() {
-        // проверить имена переменных в json, поправить
+      async getUsers(number = 1) {
+        this.currentPage = number;
+        
         try {
-          const response = await axios.get(`http://localhost:5000/api/Users/getall`, { //[FromQuery], [FromQuery]
+          const response = await axios.get(`http://localhost:5000/api/Users/getall?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`, {
             headers: {
               'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }
           });
-          
           if (response.status === 200 && response.data) {
-            this.records = response.data;
+            this.users = response.data.userResponses;
+            this.totalCount = response.data.totalCount;
+            this.totalPages = Math.ceil(this.totalCount / this.pageSize);
           } else {
             alert('Проблемы с сервером!');
             console.log("Статус ошибки: " + response.status);
@@ -34,6 +37,9 @@
           alert('Проблемы с сервером!');
         }
       }
+    },
+    mounted() {
+      this.getUsers();
     }
   }
 </script>
@@ -42,12 +48,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <div class="container">
     <h1 class="line">Пользователи</h1>
-
+    
     <div class="catalog">
       <div class="user" v-for="(user, index) in users" :key="index">
         <div class="user-desc">
           <label>ID Заказчика:</label>
-          <div>{{ user.id }}</div>
+          <div>{{ user.customerId }}</div>
         </div>
         <div class="user-desc">
           <label>Никнейм:</label>
@@ -59,23 +65,23 @@
         </div>
         <div class="user-desc">
           <label>Полное имя:</label>
-          <div>{{ user.name }}</div>
+          <div>{{ user.customer.name }}</div>
         </div>
         <div class="user-desc">
           <label>Код заказчика:</label>
-          <div>{{ user.code }}</div>
+          <div>{{ user.customer.code }}</div>
         </div>
         <div class="user-desc">
           <label>Адрес:</label>
-          <div>{{ user.address }}</div>
+          <div>{{ user.customer.address }}</div>
         </div>
         <div class="user-desc">
           <label>Персональная скидка:</label>
-          <div>{{ user.discount }}</div>
+          <div>{{ user.customer.discount }}</div>
         </div>
         <div class="user-desc">
           <label>Опции:</label>
-          <div>{{ Редактирование }}</div>
+          <div>Редактирование</div>
         </div>
         </div>
       </div>

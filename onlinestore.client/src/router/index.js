@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { jwtDecode } from 'jwt-decode';
 
 //layouts
 import OnlineStore from '../layouts/OnlineStore.vue'
@@ -74,11 +75,32 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('jwt') !== null;
+  let token = localStorage.getItem('jwt');
+  let isAuthenticated = token !== null;
+
+  if (isAuthenticated) {
+    try {
+      let decodedToken = jwtDecode(token);
+      let expirationTime = decodedToken.exp;
+      let currentTime = Math.floor(Date.now() / 1000);
+  
+      if (expirationTime < currentTime) {
+        console.log("Токен истек!");
+        localStorage.removeItem('jwt');
+        next('/auth');
+      }
+    } catch (error) {
+      console.error("Ошибка декодирования токена: ", error);
+      localStorage.removeItem('jwt');
+      next('/auth');
+      return;
+    }
+  }
+
   if (!isAuthenticated && to.path !== '/auth' && to.path !== '/auth/new') {
     next('/auth');
   } else {
-    next(); // Продолжаем навигацию
+    next();
   }
 });
 

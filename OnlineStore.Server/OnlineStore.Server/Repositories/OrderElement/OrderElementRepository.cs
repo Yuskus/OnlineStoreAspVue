@@ -48,13 +48,21 @@ namespace OnlineStore.Server.Repositories.OrderElement
 
         public async Task<IEnumerable<OrderElementResponse>> GetBasketByCustomerId(Guid id)
         {
-            Entity.Customer? customer = await _context.Customers.FirstOrDefaultAsync(x => x.Id == id);
+            // все товары добавляются в последний заказ со статусом "new", он служит корзиной.
+            // при изменении статуса создаётся новая корзина
+            // здесь условие поиска последнего заказа со статусом "новый" (корзины) конкретного заказчика
+            Func<Entity.Order, bool> conditionOfSearchingBasket = x => x.CustomerId == id && x.OrderStatus != null && x.OrderStatus.ToLower() == "new";
 
-            Entity.Order? order = customer?.Orders.LastOrDefault();
+            Entity.Order? order = await _context.Orders.LastOrDefaultAsync(x => conditionOfSearchingBasket(x));
+            
+            if (order is null) return [];
 
-            IEnumerable<OrderElementResponse>? result = order?.OrderElements.Select(x => x.MapFromDb());
+            IEnumerable<OrderElementResponse> result = await _context.OrderElements.Where(x => x.OrderId == order.Id)
+                                                                                   .Include(x => x.Item)
+                                                                                   .Select(x => x.MapFromDb())
+                                                                                   .ToListAsync();
 
-            return result ?? [];
+            return result;
         }
 
         public async Task<IEnumerable<OrderElementResponse>> GetOrderElementsByOrderId(Guid id)

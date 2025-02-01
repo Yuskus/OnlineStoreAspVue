@@ -4,11 +4,11 @@ namespace OnlineStore.Server.Services.Item
 {
     public interface IItemService
     {
-        Task<IEnumerable<ItemResponse>> GetPageOfItems(int pageNumber, int pageSize); //add count() to response
+        Task<ItemResponseList> GetPageOfItems(int pageNumber, int pageSize);
         Task<ItemResponse?> GetItemById(Guid id);
         Task<ItemResponse?> GetItemByCode(string code);
         Task<ItemResponse?> GetItemByName(string name);
-        Task<IEnumerable<ItemResponse>> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize); //add count() to response
+        Task<ItemResponseList> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize);
         Task<Guid?> CreateItem(ItemRequest item);
         Task<bool> UpdateItem(Guid id, ItemRequest item);
         Task<bool> DeleteItem(Guid id);

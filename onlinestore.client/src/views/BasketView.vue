@@ -10,7 +10,9 @@
       }
     },
     methods: {
-      // написать запрос получения GUID кастомера (myId)
+      getMyData() {
+        this.myId = localStorage.getItem('guid');
+      },
       // дополнить информацией о каждом товаре, проверить имена переменных в template
       async getBasket() {
         try {
@@ -33,7 +35,7 @@
       }
     },
     mounted() {
-      this.getBasket();
+      //this.getBasket();
     }
   }
 </script>

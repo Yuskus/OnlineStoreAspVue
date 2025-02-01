@@ -81,21 +81,29 @@ namespace OnlineStore.Server.Repositories.Item
             return result;
         }
 
-        public async Task<IEnumerable<ItemResponse>> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize)
+        public async Task<ItemResponseList> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize)
         {
-            List<ItemResponse> result = await _context.Items.Where(x => x.Category != null && x.Category.ToLower() == category.ToLower())
+            List<ItemResponse> response = await _context.Items.Where(x => x.Category != null && x.Category.ToLower() == category.ToLower())
                                                             .Skip((pageNumber - 1) * pageSize)
                                                             .Take(pageSize)
                                                             .Select(x => x.MapFromDb()).ToListAsync();
 
+            int totalCount = await _context.Items.CountAsync(x => x.Category != null && x.Category.ToLower() == category.ToLower());
+
+            ItemResponseList result = new(response, totalCount);
+
             return result;
         }
 
-        public async Task<IEnumerable<ItemResponse>> GetPageOfItems(int pageNumber, int pageSize)
+        public async Task<ItemResponseList> GetPageOfItems(int pageNumber, int pageSize)
         {
-            List<ItemResponse> result = await _context.Items.Skip((pageNumber - 1) * pageSize)
+            List<ItemResponse> response = await _context.Items.Skip((pageNumber - 1) * pageSize)
                                                             .Take(pageSize)
                                                             .Select(x => x.MapFromDb()).ToListAsync();
+
+            int totalCount = await _context.Items.CountAsync();
+
+            ItemResponseList result = new(response, totalCount);
 
             return result;
         }

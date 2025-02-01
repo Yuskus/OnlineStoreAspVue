@@ -50,7 +50,7 @@ namespace OnlineStore.Server.Services.Order
             return await _orderRepository.GetOrderByNumber(number);
         }
 
-        public async Task<IEnumerable<OrderResponse>> GetPageOfOrders(int pageNumber, int pageSize)
+        public async Task<OrderResponseList> GetPageOfOrders(int pageNumber, int pageSize)
         {
             bool isValid = OrderValidator.CheckPages(pageNumber, pageSize);
 
@@ -59,10 +59,10 @@ namespace OnlineStore.Server.Services.Order
                 return await _orderRepository.GetPageOfOrders(pageNumber, pageSize);
             }
 
-            return [];
+            return new OrderResponseList();
         }
 
-        public async Task<IEnumerable<OrderResponse>> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
+        public async Task<OrderResponseList> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
         {
             bool isValid = OrderValidator.CheckPages(pageNumber, pageSize)
                         && OrderValidator.CheckGuid(id);
@@ -72,10 +72,10 @@ namespace OnlineStore.Server.Services.Order
                 return await _orderRepository.GetPageOfOrdersByCustomerId(id, pageNumber, pageSize);
             }
             
-            return [];
+            return new OrderResponseList();
         }
 
-        public async Task<IEnumerable<OrderResponse>> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
+        public async Task<OrderResponseList> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
         {
             bool isValid = OrderValidator.CheckPages(pageNumber, pageSize);
 
@@ -84,7 +84,7 @@ namespace OnlineStore.Server.Services.Order
                 return await _orderRepository.GetPageOfOrdersByStatus(status, pageNumber, pageSize);
             }
 
-            return [];
+            return new OrderResponseList();
         }
 
         

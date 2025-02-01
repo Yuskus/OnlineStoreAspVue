@@ -28,5 +28,10 @@
         {
             return pageNumber > 0 && pageSize > 0 && pageSize <= 50;
         }
+
+        public static bool CheckStatus(string status)
+        {
+            return status == "completed" || status == "in progress" || status == "new";
+        }
     }
 }

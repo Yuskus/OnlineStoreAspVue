@@ -83,7 +83,7 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 bool result = await _userService.UpdateUser(userRequest);
-                if (result) return Ok();
+                if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)
@@ -100,7 +100,7 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 bool result = await _userService.DeleteUser(name);
-                if (result) return Ok();
+                if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)

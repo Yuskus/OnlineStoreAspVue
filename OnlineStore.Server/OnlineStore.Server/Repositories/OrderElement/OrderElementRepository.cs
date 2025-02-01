@@ -51,9 +51,9 @@ namespace OnlineStore.Server.Repositories.OrderElement
             // все товары добавляются в последний заказ со статусом "new", он служит корзиной.
             // при изменении статуса создаётся новая корзина
             // здесь условие поиска последнего заказа со статусом "новый" (корзины) конкретного заказчика
-            Func<Entity.Order, bool> conditionOfSearchingBasket = x => x.CustomerId == id && x.OrderStatus != null && x.OrderStatus.ToLower() == "new";
-
-            Entity.Order? order = await _context.Orders.LastOrDefaultAsync(x => conditionOfSearchingBasket(x));
+            Entity.Order? order = await _context.Orders.Where(x => x.CustomerId == id && x.OrderStatus != null && x.OrderStatus.ToLower() == "new")
+                                                       .OrderByDescending(x => x.OrderDate)
+                                                       .FirstOrDefaultAsync();
             
             if (order is null) return [];
 

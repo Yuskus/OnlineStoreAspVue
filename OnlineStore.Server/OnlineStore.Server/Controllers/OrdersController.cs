@@ -104,7 +104,7 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 bool result = await _orderService.UpdateOrder(id, order);
-                if (result) return Ok();
+                if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)
@@ -121,7 +121,7 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 bool result = await _orderService.DeleteOrder(id);
-                if (result) return Ok();
+                if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)

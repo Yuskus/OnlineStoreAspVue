@@ -13,7 +13,6 @@
       getMyData() {
         this.myId = localStorage.getItem('guid');
       },
-      // дополнить информацией о каждом товаре, проверить имена переменных в template
       async getBasket() {
         try {
           const response = await axios.get(`http://localhost:5000/api/OrderElements/getbasket/${this.myId}`, {
@@ -35,7 +34,8 @@
       }
     },
     mounted() {
-      //this.getBasket();
+      this.getMyData();
+      this.getBasket();
     }
   }
 </script>

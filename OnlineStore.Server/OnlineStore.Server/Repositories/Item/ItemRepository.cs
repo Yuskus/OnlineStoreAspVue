@@ -2,6 +2,7 @@
 using OnlineStore.Server.Database.Context;
 using OnlineStore.Server.DTO.Item;
 using OnlineStore.Server.Mapping.Item;
+using System.Collections.Immutable;
 using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Repositories.Item
@@ -84,9 +85,9 @@ namespace OnlineStore.Server.Repositories.Item
         public async Task<ItemResponseList> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize)
         {
             List<ItemResponse> response = await _context.Items.Where(x => x.Category != null && x.Category.ToLower() == category.ToLower())
-                                                            .Skip((pageNumber - 1) * pageSize)
-                                                            .Take(pageSize)
-                                                            .Select(x => x.MapFromDb()).ToListAsync();
+                                                              .Skip((pageNumber - 1) * pageSize)
+                                                              .Take(pageSize)
+                                                              .Select(x => x.MapFromDb()).ToListAsync();
 
             int totalCount = await _context.Items.CountAsync(x => x.Category != null && x.Category.ToLower() == category.ToLower());
 
@@ -98,14 +99,19 @@ namespace OnlineStore.Server.Repositories.Item
         public async Task<ItemResponseList> GetPageOfItems(int pageNumber, int pageSize)
         {
             List<ItemResponse> response = await _context.Items.Skip((pageNumber - 1) * pageSize)
-                                                            .Take(pageSize)
-                                                            .Select(x => x.MapFromDb()).ToListAsync();
+                                                              .Take(pageSize)
+                                                              .Select(x => x.MapFromDb()).ToListAsync();
 
             int totalCount = await _context.Items.CountAsync();
 
             ItemResponseList result = new(response, totalCount);
 
             return result;
+        }
+
+        public ImmutableSortedSet<string> GetAllCategories()
+        {
+            return [.. _context.Items.Select(x => x.Category ?? "") ];
         }
     }
 }

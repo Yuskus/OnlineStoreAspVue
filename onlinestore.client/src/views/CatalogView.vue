@@ -10,52 +10,78 @@
         items: [],
         currentPage: 1,
         totalPages: 1,
+        totalCount: 0,
         pageSize: 12,
-        url: ''
+        categories: [],
+        selectedCategory: ''
       }
     },
     methods: {
-      getUrl(newUrl) {
-        this.url = newUrl;
-      },
-      async getItems(number = 1) {
-        this.currentPage = number;
-        console.log(localStorage.getItem('jwt'));
-        this.getUrl(`http://localhost:5000/api/Items/getpage?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`);
+      async urlRequestGET(url) {
         try {
-          const response = await axios.get(this.url, {
+          const response = await axios.get(url, {
             headers: {
               'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }
           });
           
           if (response.status === 200 && response.data) {
-            this.items = response.data;
+            return response;
           } else {
             alert('Проблемы с сервером!');
-            console.log("Статус ошибки: " + response.status);
+            console.log(response.data);
+            console.log("Статус ошибки: " + response.status + " 32");
           }
+          return null;
         } catch (error) {
           console.error('Ошибка при получении данных (Catalog): ', error);
           alert('Проблемы с сервером!');
         }
+        return null;
+      },
+      async getByCategory(category, number = 1) {
+        console.log("getByCategory " + category);
+        this.currentPage = number;
+        const response = await this.urlRequestGET(`http://localhost:5000/api/Items/category/${category}?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`);
+        if (response !== null) {
+          this.items = response.data.itemResponses;
+          this.totalCount = response.data.totalCount;
+          this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+        }
+      },
+      async getCategories() {
+        console.log("getCategories");
+        const response = await this.urlRequestGET('http://localhost:5000/api/Items/getcategories');
+        if (response !== null) {
+          this.categories = response.data;
+        }
+      },
+      async getItems(number = 1) {
+        console.log("getItems "+number);
+        this.currentPage = number;
+        const response = await this.urlRequestGET(`http://localhost:5000/api/Items/getpage?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`);
+        if (response.status === 200 && response.data) {
+          this.items = response.data.itemResponses;
+          this.totalCount = response.data.totalCount;
+          this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+        }
       }
     },
     mounted() {
+      console.log("mounted Category");
+      this.getCategories();
       this.getItems();
     }
   }
 </script>
 
 <template>
-  <div class="container">
-
-    <div class="filters">
-      <div class="button">Все товары</div>
-      <div class="button">Фильтр 2</div>
-      <div class="button">Фильтр 3</div>
-      <div class="button">Фильтр 4</div>
+  <div class="filters">
+      <div class="button" @click="getItems()">Все категории</div>
+      <div class="button" v-for="(category, index) in categories" @click="getByCategory(category)" :key="index">{{ category }}</div>
     </div>
+
+  <div class="container">
 
     <div class="catalog">
       <div class="item" v-for="(item, index) in items" :key="index">
@@ -81,7 +107,8 @@
 
   .filters {
     display: block;
-    justify-content: space-around;
+    max-width: 70vw;
+    margin: 0 auto;
     padding: 10px;
     align-items: center;
   }

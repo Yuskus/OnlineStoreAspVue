@@ -87,7 +87,7 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 bool result = await _customerService.UpdateCustomer(id, customer);
-                if (result) return Ok();
+                if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)
@@ -104,7 +104,7 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 bool result = await _customerService.DeleteCustomer(id);
-                if (result) return Ok();
+                if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)

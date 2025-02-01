@@ -1,6 +1,7 @@
 ﻿using OnlineStore.Server.DTO.Item;
 using OnlineStore.Server.Repositories.Item;
 using OnlineStore.Server.Validation.Item;
+using System.Collections.Immutable;
 
 namespace OnlineStore.Server.Services.Item
 {
@@ -98,6 +99,11 @@ namespace OnlineStore.Server.Services.Item
             }
 
             return new ItemResponseList();
+        }
+
+        public ImmutableSortedSet<string> GetAllCategories()
+        {
+            return _itemRepository.GetAllCategories();
         }
     }
 }

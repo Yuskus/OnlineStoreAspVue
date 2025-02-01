@@ -70,7 +70,7 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 bool result = await _orderElementService.UpdateOrderElement(id, orderElement);
-                if (result) return Ok();
+                if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)
@@ -87,7 +87,7 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 bool result = await _orderElementService.DeleteOrderElement(id);
-                if (result) return Ok();
+                if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)

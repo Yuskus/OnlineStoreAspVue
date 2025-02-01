@@ -88,6 +88,7 @@ router.beforeEach((to, from, next) => {
         console.log("Токен истек!");
         localStorage.removeItem('jwt');
         next('/auth');
+        return;
       }
     } catch (error) {
       console.error("Ошибка декодирования токена: ", error);

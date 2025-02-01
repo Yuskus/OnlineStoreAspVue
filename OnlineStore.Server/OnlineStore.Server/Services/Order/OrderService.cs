@@ -77,7 +77,8 @@ namespace OnlineStore.Server.Services.Order
 
         public async Task<OrderResponseList> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
         {
-            bool isValid = OrderValidator.CheckPages(pageNumber, pageSize);
+            bool isValid = OrderValidator.CheckStatus(status)
+                        && OrderValidator.CheckPages(pageNumber, pageSize);
 
             if (isValid)
             {

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Server.DTO.Item;
 using OnlineStore.Server.Services.Item;
+using System.Collections.Immutable;
 
 namespace OnlineStore.Server.Controllers
 {
@@ -121,7 +122,7 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 bool result = await _itemService.UpdateItem(id, item);
-                if (result) return Ok();
+                if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)
@@ -138,12 +139,29 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 bool result = await _itemService.DeleteItem(id);
-                if (result) return Ok();
+                if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при запросе DeleteItem.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpGet(template: "getcategories")]
+        public ActionResult<ImmutableSortedSet<string>> GetAllCategories()
+        {
+            try
+            {
+                ImmutableSortedSet<string> result = _itemService.GetAllCategories();
+                if (result is null) return BadRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе GetAllCategories.");
                 return StatusCode(500);
             }
         }

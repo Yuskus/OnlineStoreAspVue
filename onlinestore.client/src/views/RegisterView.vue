@@ -5,10 +5,6 @@
     name: "Register",
     data() {
       return {
-        login: {
-          username: "",
-          password: ""
-        },
         customer: {
           name: "",
           code: "",
@@ -21,16 +17,24 @@
     methods: {
       async register() {
         try {
+          console.log(this.customer.name);
+          console.log(this.customer.code);
+          console.log(this.customer.address);
+          console.log(this.customer.username);
+          console.log(this.customer.password);
           const response = await axios.post(`http://localhost:5000/api/Users/register`, { 
             customerRequest: {
               name: this.customer.name,
               code: this.customer.code,
-              address: this.customer.address
+              address: this.customer.address,
+              discount: 0
             },
             username: this.customer.username,
-            password: this.customer.password
+            password: this.customer.password,
+            role: 0
           });
-          if (response.status === 200 && response.data && response.data === true) {
+          if (response.status === 200 && response.data) {
+            console.log(response.data);
             this.$router.push('/auth');
           } else {
             alert('Ошибка регистрации. Попробуйте снова.');
@@ -51,18 +55,18 @@
       <label class="to-center">Registration Form</label>
 
       <label>Enter Username:</label>
-      <input type="text" placeholder="Username" required />
+      <input type="text" v-model="customer.username" placeholder="Username" required />
 
       <label>Enter Password:</label>
-      <input type="password" placeholder="Password" required />
+      <input type="password" v-model="customer.password" placeholder="Password" required />
 
       <label>Enter Customer Name:</label>
-      <input type="text" placeholder="Customer Name" required />
+      <input type="text" v-model="customer.name" placeholder="Customer Name" required />
 
       <label>Enter Customer Code:</label>
-      <input type="text" placeholder="Customer Code" required />
+      <input type="text" v-model="customer.code" placeholder="Customer Code" required />
       <label>Enter Customer Address:</label>
-      <input type="text" placeholder="Customer Address" />
+      <input type="text" v-model="customer.address" placeholder="Customer Address" />
     </div>
     <div class="btns">
       <button @click="register()" class="accent">Зарегистрироваться</button>

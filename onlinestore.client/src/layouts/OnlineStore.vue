@@ -3,25 +3,41 @@
     name: "OnlineStore",
     data() {
       return {
+        roles: {
+          null: 'Unauthorize',
+          0: 'User',
+          1: 'Manager'
+        },
         sitename: 'Online Shop',
+        myId: null,
         username: '',
-        role: ''
+        role: '',
+        fullPath: ''
       }
     },
     methods: {
+      getMyData() {
+        this.myId = localStorage.getItem('guid');
+        this.username = localStorage.getItem('username');
+        this.role = this.roles[localStorage.getItem('role')];
+      },
       getUserInfo() {
-        // написать получение юзера
-        // как получить себя?
-        // нужен будет GUID, name, role
-
-        // завершить баскет, ордерс юзерс (запросы)
-        // поправить апи (постранички)
+        // завершить баскет (запрос)
         // доделать стили
         // сделать модалки для редактирования и показывать опции, которые доступны по роли (редактирование или просмотр)
       },
       logout() {
         localStorage.removeItem('jwt');
+      },
+      refreshPage() {
+        this.fullPath = this.$route.fullPath;
+        if (this.fullPath.endsWith('/') || this.fullPath.endsWith('/catalog')) {
+          window.location.reload();
+        }
       }
+    },
+    mounted() {
+      this.getMyData();
     }
   }
 </script>
@@ -39,15 +55,15 @@
         <a href="/auth" @click="logout()" class="button"><p>Выход</p></a>
       </div>
     </div>
-    <div class="menu" v-if="role == 'Менеджер'">
-      <div><router-link class="link" to="/">Главная</router-link></div>
+    <div class="menu" v-if="role == '1'">
+      <div><router-link @click="refreshPage()" class="link" to="/">Главная</router-link></div>
       <div><router-link class="link" to="/catalog">Каталог</router-link></div>
       <div><router-link class="link" to="/orders">Заказы</router-link></div>
       <div><router-link class="link" to="/users">Пользователи</router-link></div>
       <div><router-link class="link" to="/about">О компании</router-link></div>
     </div>
     <div class="menu" v-else>
-      <div><router-link class="link" to="/">Главная</router-link></div>
+      <div><router-link @click="refreshPage('hui')" class="link" to="/">Главная</router-link></div>
       <div><router-link class="link" to="/catalog">Каталог</router-link></div>
       <div><router-link class="link" to="/basket">Корзина</router-link></div>
       <div><router-link class="link" to="/orders">Заказы</router-link></div>

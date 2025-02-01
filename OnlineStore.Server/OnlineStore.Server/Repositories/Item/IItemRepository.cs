@@ -1,4 +1,5 @@
 ﻿using OnlineStore.Server.DTO.Item;
+using System.Collections.Immutable;
 
 namespace OnlineStore.Server.Repositories.Item
 {
@@ -12,5 +13,6 @@ namespace OnlineStore.Server.Repositories.Item
         Task<Guid?> CreateItem(ItemRequest item);
         Task<bool> UpdateItem(Guid id, ItemRequest item);
         Task<bool> DeleteItem(Guid id);
+        ImmutableSortedSet<string> GetAllCategories();
     }
 }

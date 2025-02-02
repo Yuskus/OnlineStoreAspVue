@@ -9,13 +9,13 @@ export default {
     },
     data() {
         return {
-            localItem: { ...this.item }
+            localItem: { ...this.item },
+            idOfItem: null
         }
     },
     methods: {
-        async applyChanges() {
+        async addItem() {
             try {
-                // изменить url на update, delete, метод put post? add оставить 
                 const response = await axios.post(`http://localhost:5000/api/items/add`, this.localItem, {
                     headers: {
                         'authorization': `Bearer ${localStorage.getItem('jwt')}`
@@ -23,14 +23,56 @@ export default {
                 });
           
                 if (response.status === 200 && response.data) {
-                    // result
+                    console.log("Добавлено");
                 } else {
                     alert('Проблемы с сервером!');
                     console.log("Статус ошибки: " + response.status);
                 }
                 this.cancelDialog();
             } catch (error) {
-                console.error('Ошибка при получении данных (Orders): ', error);
+                console.error('Ошибка при получении данных (ItemEdit): ', error);
+                alert('Проблемы с сервером!');
+                this.cancelDialog();
+            }
+        },
+        async applyChanges() {
+            try {
+                const response = await axios.put(`http://localhost:5000/api/items/update/${this.localItem.id}`, {
+                    headers: {
+                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
+                    }
+                });
+          
+                if (response.status === 200 && response.data) {
+                    console.log("Обновлено");
+                } else {
+                    alert('Проблемы с сервером!');
+                    console.log("Статус ошибки: " + response.status);
+                }
+                this.cancelDialog();
+            } catch (error) {
+                console.error('Ошибка при получении данных (ItemEdit): ', error);
+                alert('Проблемы с сервером!');
+                this.cancelDialog();
+            }
+        },
+        async deleteItem() {
+            try {
+                const response = await axios.delete(`http://localhost:5000/api/items/delete/${this.localItem.id}`, {
+                    headers: {
+                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
+                    }
+                });
+          
+                if (response.status === 200 && response.data) {
+                    console.log("Удалено");
+                } else {
+                    alert('Проблемы с сервером!');
+                    console.log("Статус ошибки: " + response.status);
+                }
+                this.cancelDialog();
+            } catch (error) {
+                console.error('Ошибка при получении данных (ItemEdit): ', error);
                 alert('Проблемы с сервером!');
                 this.cancelDialog();
             }
@@ -65,6 +107,7 @@ export default {
 
         <div class="buttons">
             <button @click="applyChanges()">Изменить</button>
+            <button @click="deleteItem()">Удалить</button>
             <button @click="cancelDialog()">Отмена</button>
         </div>
     </div>

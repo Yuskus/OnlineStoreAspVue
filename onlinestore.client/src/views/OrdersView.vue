@@ -1,10 +1,11 @@
 <script>
   import Pagination from '../components/PaginationComponent.vue'
+  import OrderEditWindow from '@/components/OrderEditWindow.vue';
   import axios from 'axios';
 
   export default {
     name: 'Orders',
-    components: { Pagination },
+    components: { Pagination, OrderEditWindow },
     data() {
       return {
         currentPage: 1,
@@ -14,7 +15,9 @@
         myId: null,
         role: null,
         ordersUrl: '',
-        records: []
+        records: [],
+        selectedOrder: null,
+        isOpenDialog: false
       }
     },
     methods: {
@@ -53,6 +56,13 @@
           console.error('Ошибка при получении данных (Orders): ', error);
           alert('Проблемы с сервером!');
         }
+      },
+      async clickOnItem(index) {
+        this.selectedOrder = this.records[index];
+        this.clickWindowRedactor(true);
+      },
+      clickWindowRedactor(state) {
+        this.isOpenDialog = state;
       }
     },
     mounted() {
@@ -64,6 +74,7 @@
 
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+  <OrderEditWindow v-if="role === '1' && isOpenDialog === true" @close-dialog="clickWindowRedactor" :item="selectedOrder" />
   <div class="container">
     <h1 class="line">Заказы</h1>
 

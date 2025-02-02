@@ -1,13 +1,17 @@
 <script>
   import axios from 'axios';
+  import OrderElementEditWindow from '../components/OrderElementEditWindow.vue'
 
   export default {
     name: 'Basket',
+    components: { OrderElementEditWindow },
     data() {
       return {
         myId: null,
         basketOrder: null,
-        basket: []
+        basket: [],
+        isOpenDialog: false,
+        selectedItem: null
       }
     },
     methods: {
@@ -77,15 +81,37 @@
           console.log(result);
         }
       },
-      refreshBasket() {
-        this.getBasketNumber()
-        this.getBasketElements();
+      async refreshBasket() {
+        await this.getBasketNumber()
+        await this.getBasketElements();
       },
       async placeAnOrder() {
-        // запрос на изменение статуса товара
-        // PUT ?
-        // потом обновление корзины, проверка, что там ничего нет 
-        // и что оно появилось во вкладке "заказы"
+        try {
+          const response = await axios.patch(`http://localhost:5000/api/orders/placeanorder/${this.basketOrder.Id}`, {
+            headers: {
+              'authorization': `Bearer ${localStorage.getItem('jwt')}`
+            }
+          });
+          
+          if (response.status === 200 && response.data) {
+            await this.refreshBasket();
+          } else {
+            alert('Проблемы с сервером!');
+            console.log("Статус ошибки: " + response.status);
+          }
+          return null;
+        } catch (error) {
+          console.error('Ошибка при удалении данных (Basket): ', error);
+          alert('Проблемы с сервером!');
+        }
+        return null;
+      },
+      clickOnItem(index) {
+        this.selectedItem = this.basket[index];
+        this.clickWindowRedactor(true);
+      },
+      clickWindowRedactor(state) {
+        this.isOpenDialog = state;
       }
     },
     mounted() {
@@ -97,6 +123,8 @@
 
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+  <OrderElementEditWindow v-if="isOpenDialog === true" @close-dialog="clickWindowRedactor" :item="selectedItem" />
+  
   <div class="container">
     <h1 class="line">Корзина</h1>
 
@@ -109,7 +137,7 @@
         <div class="cell">Цена</div>
         <div class="cell">Опции</div>
       </div>
-      <div class="row" v-for="(item, index) in basket" :key="index">
+      <div class="row" v-for="(item, index) in basket" :key="index" @click="clickOnItem(index)" >
         <div class="cell">Image</div>
         <div class="cell">{{ item.id }}</div>
         <div class="cell">{{ item.name }}</div>

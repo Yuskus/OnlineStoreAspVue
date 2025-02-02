@@ -21,11 +21,6 @@
         this.username = localStorage.getItem('username');
         this.role = this.roles[localStorage.getItem('role')];
       },
-      getUserInfo() {
-        // завершить баскет (запрос)
-        // доделать стили
-        // сделать модалки для редактирования и показывать опции, которые доступны по роли (редактирование или просмотр)
-      },
       logout() {
         localStorage.removeItem('jwt');
       },

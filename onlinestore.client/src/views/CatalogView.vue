@@ -1,11 +1,11 @@
 <script>
-  import ItemEditWindow from '@/components/ItemEditWindow.vue';
+  import ItemEditWindow from '../components/ItemEditWindow.vue';
   import Pagination from '../components/PaginationComponent.vue';
   import axios from 'axios';
 
   export default {
     name: 'Catalog',
-    components: { Pagination },
+    components: { Pagination, ItemEditWindow },
     data() {
       return {
         role: '',
@@ -120,7 +120,7 @@
 </script>
 
 <template>
-  <ItemEditWindow v-if="role === '1' && isOpenDialog === true" @close-dialog="closeRedactor" :item="selectedItem" />
+  <ItemEditWindow v-if="role === '1' && isOpenDialog === true" @close-dialog="clickWindowRedactor" :item="selectedItem" />
 
   <div class="filters">
       <div class="button" @click="getItems()">Все категории</div>

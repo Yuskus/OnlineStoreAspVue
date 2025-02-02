@@ -13,17 +13,37 @@ export default {
         }
     },
     methods: {
-        async applyChanges() {
+        async deleteItem() {
             try {
-                // to leave only update and delete http requests
-                const response = await axios.post(`http://localhost:5000/api/orders/add`, this.localOrder, {
+                const response = await axios.delete(`http://localhost:5000/api/orders/delete/${this.localOrder.id}`, {
                     headers: {
                         'authorization': `Bearer ${localStorage.getItem('jwt')}`
                     }
                 });
           
                 if (response.status === 200 && response.data) {
-                    // result
+                    console.log("Удалено");
+                } else {
+                    alert('Проблемы с сервером!');
+                    console.log("Статус ошибки: " + response.status);
+                }
+                this.cancelDialog();
+            } catch (error) {
+                console.error('Ошибка при получении данных (Orders): ', error);
+                alert('Проблемы с сервером!');
+                this.cancelDialog();
+            }
+        },
+        async applyChanges() {
+            try {
+                const response = await axios.put(`http://localhost:5000/api/orders/update/${this.localOrder.id}`, {
+                    headers: {
+                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
+                    }
+                });
+          
+                if (response.status === 200 && response.data) {
+                    console.log("Обновлено");
                 } else {
                     alert('Проблемы с сервером!');
                     console.log("Статус ошибки: " + response.status);
@@ -43,6 +63,7 @@ export default {
 </script>
 
 <template>
+    <!--изменить лейблы и инпуты-->
     <div class="dialog-over">
         <div class="dialog">
             <h2>Редактировать товар</h2>
@@ -64,6 +85,7 @@ export default {
             </div>
     
             <div class="buttons">
+                <button @click="deleteItem()">Удалить</button>
                 <button @click="applyChanges()">Изменить</button>
                 <button @click="cancelDialog()">Отмена</button>
             </div>
@@ -71,4 +93,6 @@ export default {
     </div>
     </template>
 
-<style scoped></style>
+<style scoped>
+/*написать стили*/
+</style>

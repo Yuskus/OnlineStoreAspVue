@@ -6,6 +6,7 @@
     data() {
       return {
         myId: null,
+        basketOrder: null,
         basket: []
       }
     },
@@ -13,29 +14,74 @@
       getMyData() {
         this.myId = localStorage.getItem('guid');
       },
-      async getBasket() {
+      async urlRequestGET(url) {
         try {
-          const response = await axios.get(`http://localhost:5000/api/OrderElements/getbasket/${this.myId}`, {
+          const response = await axios.get(url, {
             headers: {
               'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }
           });
           
           if (response.status === 200 && response.data) {
-            this.basket = response.data;
+            return response;
           } else {
             alert('Проблемы с сервером!');
+            console.log(response.data);
             console.log("Статус ошибки: " + response.status);
           }
+          return null;
         } catch (error) {
           console.error('Ошибка при получении данных (Basket): ', error);
           alert('Проблемы с сервером!');
+        }
+        return null;
+      },
+      async urlRequestDELETE(url) {
+        try {
+          const response = await axios.delete(url, {
+            headers: {
+              'authorization': `Bearer ${localStorage.getItem('jwt')}`
+            }
+          });
+          
+          if (response.status === 200 && response.data) {
+            return response;
+          } else {
+            alert('Проблемы с сервером!');
+            console.log(response.data);
+            console.log("Статус ошибки: " + response.status);
+          }
+          return null;
+        } catch (error) {
+          console.error('Ошибка при удалении данных (Basket): ', error);
+          alert('Проблемы с сервером!');
+        }
+        return null;
+      },
+      async getBasketNumber() {
+        const response = await this.urlRequestGET(`http://localhost:5000/api/Orders/getbasket/${this.myId}`);
+        if (response !== null) {
+          this.basketOrder = response.data;
+        }
+      },
+      async getBasketElements() {
+        const response = await this.urlRequestGET(`http://localhost:5000/api/OrderElements/getbyid/${this.basketOrder.id}`);
+        if (response !== null) {
+          this.basket = response.data;
+        }
+      },
+      async clearBasket() {
+        const response = await this.urlRequestDELETE(`http://localhost:5000/api/Orders/delete/${this.basketOrder.id}`);
+        if (response !== null) {
+          let result = response.data;
+          console.log(result);
         }
       }
     },
     mounted() {
       this.getMyData();
-      this.getBasket();
+      this.getBasketNumber()
+      this.getBasketElements();
     }
   }
 </script>

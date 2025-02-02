@@ -62,17 +62,5 @@ namespace OnlineStore.Server.Services.OrderElement
 
             return [];
         }
-
-        public async Task<IEnumerable<OrderElementResponse>> GetBasketByCustomerId(Guid id)
-        {
-            bool isValid = OrderElementValidator.CheckGuid(id);
-
-            if (isValid)
-            {
-                return await _orderElementRepository.GetBasketByCustomerId(id);
-            }
-
-            return [];
-        }
     }
 }

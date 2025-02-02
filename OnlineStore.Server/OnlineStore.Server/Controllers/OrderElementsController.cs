@@ -30,23 +30,6 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize]
-        [HttpGet(template: "getbasket/{id}")]
-        public async Task<ActionResult<IEnumerable<OrderElementResponse>>> GetBasketByCustomerId(Guid id)
-        {
-            try
-            {
-                IEnumerable<OrderElementResponse> result = await _orderElementService.GetBasketByCustomerId(id);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetBasketByCustomerId.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize]
         [HttpPost(template: "add")]
         public async Task<ActionResult<Guid>> CreateOrderElement([FromBody] OrderElementRequest orderElement)
         {

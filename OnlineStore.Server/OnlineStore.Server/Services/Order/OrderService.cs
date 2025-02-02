@@ -1,5 +1,6 @@
 ﻿using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.Repositories.Order;
+using OnlineStore.Server.Validation.Customer;
 using OnlineStore.Server.Validation.Order;
 
 namespace OnlineStore.Server.Services.Order
@@ -65,7 +66,7 @@ namespace OnlineStore.Server.Services.Order
         public async Task<OrderResponseList> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
         {
             bool isValid = OrderValidator.CheckPages(pageNumber, pageSize)
-                        && OrderValidator.CheckGuid(id);
+                        && CustomerValidator.CheckGuid(id);
 
             if (isValid)
             {
@@ -88,6 +89,16 @@ namespace OnlineStore.Server.Services.Order
             return new OrderResponseList();
         }
 
-        
+        public async Task<OrderResponse?> GetBasketOrder(Guid customerId)
+        {
+            bool isValid = CustomerValidator.CheckGuid(customerId);
+
+            if (isValid)
+            {
+                return await _orderRepository.GetBasketOrder(customerId);
+            }
+
+            return null;
+        }
     }
 }

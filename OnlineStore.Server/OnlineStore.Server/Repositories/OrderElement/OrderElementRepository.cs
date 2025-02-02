@@ -46,32 +46,14 @@ namespace OnlineStore.Server.Repositories.OrderElement
             return true;
         }
 
-        public async Task<IEnumerable<OrderElementResponse>> GetBasketByCustomerId(Guid id)
-        {
-            // все товары добавляются в последний заказ со статусом "new", он служит корзиной.
-            // при изменении статуса создаётся новая корзина
-            // здесь условие поиска последнего заказа со статусом "новый" (корзины) конкретного заказчика
-            Entity.Order? order = await _context.Orders.Where(x => x.CustomerId == id && x.OrderStatus != null && x.OrderStatus.ToLower() == "new")
-                                                       .OrderByDescending(x => x.OrderDate)
-                                                       .FirstOrDefaultAsync();
-            
-            if (order is null) return [];
-
-            IEnumerable<OrderElementResponse> result = await _context.OrderElements.Where(x => x.OrderId == order.Id)
-                                                                                   .Include(x => x.Item)
-                                                                                   .Select(x => x.MapFromDb())
-                                                                                   .ToListAsync();
-
-            return result;
-        }
-
         public async Task<IEnumerable<OrderElementResponse>> GetOrderElementsByOrderId(Guid id)
         {
-            Entity.Order? order = await _context.Orders.FirstOrDefaultAsync(x => x.Id == id);
+            List<OrderElementResponse> result = await _context.OrderElements.Where(x => x.OrderId == id)
+                                                                            .Include(x => x.Item)
+                                                                            .Select(x => x.MapFromDb())
+                                                                            .ToListAsync();
 
-            List<OrderElementResponse>? res = order?.OrderElements.Select(x => x.MapFromDb()).ToList();
-
-            return res ?? [];
+            return result ?? [];
         }
     }
 }

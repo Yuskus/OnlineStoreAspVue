@@ -63,6 +63,23 @@ namespace OnlineStore.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
+        [HttpGet(template: "getbasket/{customerId}")]
+        public async Task<ActionResult<OrderResponse?>> GetBasketOrder(Guid customerId)
+        {
+            try
+            {
+                OrderResponse? result = await _orderService.GetBasketOrder(customerId);
+                if (result is null) return BadRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе GetBasketOrder.");
+                return StatusCode(500);
+            }
+        }
+
         [Authorize]
         [HttpGet(template: "getbystatus/{status}")]
         public async Task<ActionResult<OrderResponseList>> GetPageOfOrdersByStatus(string status, [FromQuery] int pageNumber, [FromQuery] int pageSize)
@@ -97,7 +114,7 @@ namespace OnlineStore.Server.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Manager")]
         [HttpPut(template: "update/{id}")]
         public async Task<ActionResult> UpdateOrder(Guid id, [FromBody] OrderRequest order)
         {
@@ -116,7 +133,7 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize]
         [HttpDelete(template: "delete/{id}")]
-        public async Task<ActionResult> DeleteOrder(Guid id)
+        public async Task<ActionResult<bool>> DeleteOrder(Guid id)
         {
             try
             {

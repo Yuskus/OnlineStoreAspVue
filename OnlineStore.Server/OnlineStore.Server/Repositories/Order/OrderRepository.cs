@@ -101,5 +101,15 @@ namespace OnlineStore.Server.Repositories.Order
 
             return result;
         }
+
+        public async Task<OrderResponse?> GetBasketOrder(Guid customerId)
+        {
+            Entity.Order? order = await _context.Orders.Where(x => x.CustomerId == customerId && x.OrderStatus != null && x.OrderStatus.ToLower() == "new")
+                                                       .SingleOrDefaultAsync();
+
+            OrderResponse? orderResponse = order?.MapFromDb();
+
+            return orderResponse;
+        }
     }
 }

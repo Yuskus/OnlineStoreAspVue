@@ -43,10 +43,10 @@ namespace OnlineStore.Server.Services.User.RegistrationService
                         && CustomerValidator.CheckDiscount(registerRequest.CustomerRequest.Discount);
 
             // создание заказчика, добавление в базу
-            Guid? CustomerId = await _customerRepository.CreateCustomer(registerRequest.CustomerRequest);
+            registerRequest.CustomerId = await _customerRepository.CreateCustomer(registerRequest.CustomerRequest);
 
             // проверка guid-а заказчика
-            isValid &= CustomerValidator.CheckGuid(CustomerId);
+            isValid &= CustomerValidator.CheckGuid(registerRequest.CustomerId);
 
             // выход (и отмена транзакции в вызывающем коде), если данные не валидны
             if (!isValid) return false;
@@ -54,7 +54,7 @@ namespace OnlineStore.Server.Services.User.RegistrationService
             // проверка данных юзера
             isValid &= UserValidator.CheckUsername(registerRequest.Username)
                     && UserValidator.CheckPassword(registerRequest.Password)
-                    && UserValidator.CheckGuid(CustomerId, registerRequest.Role);
+                    && UserValidator.CheckGuid(registerRequest.CustomerId, registerRequest.Role);
 
             // добавление, если данные юзера валидны, и возврат результата добавления
             if (isValid)

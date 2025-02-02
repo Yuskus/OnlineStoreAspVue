@@ -39,7 +39,7 @@ namespace OnlineStore.Server.Mapping.User
         {
             return new()
             {
-                CustomerId = Guid.NewGuid(),
+                CustomerId = registerRequest.CustomerId ?? Guid.NewGuid(),
                 Username = registerRequest.Username,
                 Password = hash,
                 Salt = salt,

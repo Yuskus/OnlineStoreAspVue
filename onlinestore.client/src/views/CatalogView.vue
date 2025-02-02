@@ -1,4 +1,5 @@
 <script>
+  import ItemEditWindow from '@/components/ItemEditWindow.vue';
   import Pagination from '../components/PaginationComponent.vue';
   import axios from 'axios';
 
@@ -7,13 +8,16 @@
     components: { Pagination },
     data() {
       return {
+        role: '',
         items: [],
         currentPage: 1,
         totalPages: 1,
         totalCount: 0,
         pageSize: 12,
         categories: [],
-        selectedCategory: ''
+        selectedCategory: '',
+        selectedItem: null,
+        isOpenDialog: false
       }
     },
     methods: {
@@ -31,6 +35,28 @@
             alert('Проблемы с сервером!');
             console.log(response.data);
             console.log("Статус ошибки: " + response.status + " 32");
+          }
+          return null;
+        } catch (error) {
+          console.error('Ошибка при получении данных (Catalog): ', error);
+          alert('Проблемы с сервером!');
+        }
+        return null;
+      },
+      async urlRequestPOST(url, body) {
+        try {
+          const response = await axios.post(url, body, {
+            headers: {
+              'authorization': `Bearer ${localStorage.getItem('jwt')}`
+            }
+          });
+          
+          if (response.status === 200 && response.data) {
+            return response;
+          } else {
+            alert('Проблемы с сервером!');
+            console.log(response.data);
+            console.log("Статус ошибки: " + response.status);
           }
           return null;
         } catch (error) {
@@ -60,15 +86,33 @@
         console.log("getItems "+number);
         this.currentPage = number;
         const response = await this.urlRequestGET(`http://localhost:5000/api/Items/getpage?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`);
-        if (response.status === 200 && response.data) {
+        if (response !== null) {
           this.items = response.data.itemResponses;
           this.totalCount = response.data.totalCount;
           this.totalPages = Math.ceil(this.totalCount / this.pageSize);
         }
+      },
+      async clickOnItem(index) {
+        if (this.role === '1') {
+          this.selectedItem = this.items[index];
+          this.clickWindowRedactor(true);
+        } else {
+          await this.addInBasket(this.items[index]);
+        }
+      },
+      async addInBasket(body) {
+        const response = await this.urlRequestPOST(`http://localhost:5000/api/OrderelEments/add`, body);
+        if (response !== null) {
+          let guid = response.data;
+          console.log(guid);
+        }
+      },
+      clickWindowRedactor(state) {
+        this.isOpenDialog = state;
       }
     },
     mounted() {
-      console.log("mounted Category");
+      this.role = localStorage.getItem('role');
       this.getCategories();
       this.getItems();
     }
@@ -76,6 +120,8 @@
 </script>
 
 <template>
+  <ItemEditWindow v-if="role === '1' && isOpenDialog === true" @close-dialog="closeRedactor" :item="selectedItem" />
+
   <div class="filters">
       <div class="button" @click="getItems()">Все категории</div>
       <div class="button" v-for="(category, index) in categories" @click="getByCategory(category)" :key="index">{{ category }}</div>
@@ -84,7 +130,7 @@
   <div class="container">
 
     <div class="catalog">
-      <div class="item" v-for="(item, index) in items" :key="index">
+      <div class="item" v-for="(item, index) in items" :key="index" @click="clickOnItem(index)" >
         <div><img src="../assets/item.jpg" /></div>
         <div class="item-desc">{{ item.name }}</div>
         <div class="item-desc">{{ item.category }}</div>

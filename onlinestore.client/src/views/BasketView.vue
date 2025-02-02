@@ -76,12 +76,21 @@
           let result = response.data;
           console.log(result);
         }
+      },
+      refreshBasket() {
+        this.getBasketNumber()
+        this.getBasketElements();
+      },
+      async placeAnOrder() {
+        // запрос на изменение статуса товара
+        // PUT ?
+        // потом обновление корзины, проверка, что там ничего нет 
+        // и что оно появилось во вкладке "заказы"
       }
     },
     mounted() {
       this.getMyData();
-      this.getBasketNumber()
-      this.getBasketElements();
+      this.refreshBasket();
     }
   }
 </script>
@@ -91,7 +100,7 @@
   <div class="container">
     <h1 class="line">Корзина</h1>
 
-    <div class="table">
+    <div v-if="basket.length > 0" class="table">
       <div class="row colored">
         <div class="cell">Миниатюра</div>
         <div class="cell">Название</div>
@@ -109,10 +118,13 @@
         <div class="cell">{{ item.code }}</div>
       </div>
     </div>
+    <div v-else> <!---какой класс и стиль?-->
+      <h2>В корзине пусто.</h2>
+    </div>
 
     <div class="options">
-      <button><p>Очистить корзину</p></button>
-      <button><p>Актуализация цен</p></button>
+      <button @click="clearBasket()" ><p>Очистить корзину</p></button>
+      <button @click="refreshBasket()" ><p>Актуализация цен</p></button>
       <button><p>Оформить заказ</p></button>
     </div>
 
@@ -153,7 +165,7 @@
     background-color: rgba(163, 194, 232, 1);
   }
 
-  h1, h3, p, .cell {
+  h1, h2, h3, p, .cell {
     font-family: "Sofia Sans", serif;
     font-optical-sizing: auto;
     font-weight: 500;
@@ -164,6 +176,12 @@
   h1 {
     font-size: 26px;
     line-height: 36px;
+    padding: 20px 10px;
+  }
+
+  h2 {
+    font-size: 24px;
+    line-height: 32px;
     padding: 20px 10px;
   }
 

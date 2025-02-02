@@ -67,25 +67,28 @@
   <div class="container">
     <h1 class="line">Заказы</h1>
 
-    <div class="table">
+    <div v-if="records.length > 0" class="table">
       <div class="row">
-        <div class="cell colored">ID Заказа</div>
-        <div class="cell colored">ID Заказчика</div>
-        <div class="cell colored">Дата от</div>
-        <div class="cell colored">Дата до</div>
+        <div class="cell colored">Заказ</div>
+        <div class="cell colored">Заказчик</div>
+        <div class="cell colored">Дата заказа</div>
+        <div class="cell colored">Дата доставки</div>
         <div class="cell colored">Номер</div>
         <div class="cell colored">Статус</div>
         <div class="cell colored">Опции</div>
       </div>
       <div class="row" v-for="record in records" :key="record.id">
         <div class="cell base">{{ record.id }}</div>
-        <div class="cell base">{{ record.customerId }}</div>
+        <div class="cell base">{{ record.customerName }} [ <style color="#9199a2">{{ record.customerId }}</style> ]</div>
         <div class="cell base">{{ record.orderDate }}</div>
         <div class="cell base">{{ record.shipmentDate }}</div>
         <div class="cell base">{{ record.orderNumber }}</div>
         <div class="cell base">{{ record.orderStatus }}</div>
         <div class="cell base"><a>Редактирование</a></div>
       </div>
+    </div>
+    <div v-else> <!---какой класс и стиль?-->
+      <h2>Заказов нет.</h2>
     </div>
 
     <Pagination @page-changed="getOrders" :current="currentPage" :totalPages="totalPages" />
@@ -130,7 +133,7 @@
       background-color: white;
     }
 
-    a, h1, h3, p, .cell {
+    a, h1, h2, h3, p, .cell {
       font-family: "Sofia Sans", serif;
       font-optical-sizing: auto;
       font-weight: 500;
@@ -141,6 +144,12 @@
     h1 {
       font-size: 26px;
       line-height: 36px;
+      padding: 20px 10px;
+    }
+
+    h2 {
+      font-size: 24px;
+      line-height: 32px;
       padding: 20px 10px;
     }
 

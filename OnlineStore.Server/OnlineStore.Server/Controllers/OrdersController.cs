@@ -114,9 +114,24 @@ namespace OnlineStore.Server.Controllers
             }
         }
 
+        public async Task<ActionResult<bool>> PlaceAnOrder(Guid orderId)
+        {
+            try
+            {
+                bool result = await _orderService.PlaceAnOrder(orderId);
+                if (result) return Ok(result);
+                return BadRequest();
+            } 
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе PlaceAnOrder.");
+                return StatusCode(500);
+            }
+        }
+
         [Authorize(Roles = "Manager")]
         [HttpPut(template: "update/{id}")]
-        public async Task<ActionResult> UpdateOrder(Guid id, [FromBody] OrderRequest order)
+        public async Task<ActionResult<bool>> UpdateOrder(Guid id, [FromBody] OrderRequest order)
         {
             try
             {

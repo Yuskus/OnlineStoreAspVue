@@ -38,6 +38,18 @@ namespace OnlineStore.Server.Repositories.Order
             return true;
         }
 
+        public async Task<bool> PlaceAnOrder(Guid orderId)
+        {
+            Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
+
+            if (orderEntity is null) return false;
+
+            orderEntity.OrderStatus = "in progress";
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<bool> DeleteOrder(Guid id)
         {
             Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.Id == id);
@@ -52,7 +64,8 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<OrderResponse?> GetOrderByNumber(int number)
         {
-            Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.OrderNumber == number);
+            Entity.Order? orderEntity = await _context.Orders.Include(x => x.Customer)
+                                                             .FirstOrDefaultAsync(x => x.OrderNumber == number);
 
             if (orderEntity is null) return null;
 
@@ -105,6 +118,7 @@ namespace OnlineStore.Server.Repositories.Order
         public async Task<OrderResponse?> GetBasketOrder(Guid customerId)
         {
             Entity.Order? order = await _context.Orders.Where(x => x.CustomerId == customerId && x.OrderStatus != null && x.OrderStatus.ToLower() == "new")
+                                                       .Include(x => x.Customer)
                                                        .SingleOrDefaultAsync();
 
             OrderResponse? orderResponse = order?.MapFromDb();

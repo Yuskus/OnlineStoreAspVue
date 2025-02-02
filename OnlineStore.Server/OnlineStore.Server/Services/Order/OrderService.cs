@@ -51,6 +51,18 @@ namespace OnlineStore.Server.Services.Order
             return await _orderRepository.GetOrderByNumber(number);
         }
 
+        public async Task<bool> PlaceAnOrder(Guid orderId)
+        {
+            bool isValid = OrderValidator.CheckGuid(orderId);
+
+            if (isValid)
+            {
+                return await _orderRepository.PlaceAnOrder(orderId);
+            }
+
+            return false;
+        }
+
         public async Task<OrderResponseList> GetPageOfOrders(int pageNumber, int pageSize)
         {
             bool isValid = OrderValidator.CheckPages(pageNumber, pageSize);

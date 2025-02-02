@@ -9,6 +9,7 @@ namespace OnlineStore.Server.Services.Order
         Task<OrderResponseList> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize);
         Task<OrderResponse?> GetOrderByNumber(int number);
         Task<OrderResponse?> GetBasketOrder(Guid customerId);
+        Task<bool> PlaceAnOrder(Guid orderId);
         Task<Guid?> CreateOrder(OrderRequest order);
         Task<bool> UpdateOrder(Guid id, OrderRequest order);
         Task<bool> DeleteOrder(Guid id);

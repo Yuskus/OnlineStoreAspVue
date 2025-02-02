@@ -4,6 +4,7 @@
     {
         public Guid Id { get; set; }
         public Guid CustomerId { get; set; }
+        public string? CustomerName { get; set; }
         public DateOnly OrderDate { get; set; }
         public DateOnly? ShipmentDate { get; set; }
         public int? OrderNumber { get; set; }

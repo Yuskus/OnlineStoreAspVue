@@ -145,7 +145,7 @@
           orderId: this.basketOrder.id,
           itemId: item.id,
           itemsCount: 1,
-          itemPrice: item.price // минус персональная скидка (потом дописать)
+          itemPrice: item.price
         }
         const response = await this.urlRequestPOST(`http://localhost:5000/api/OrderElements/add`, body);
         if (response !== null) {
@@ -153,15 +153,21 @@
           console.log(guid);
         }
       },
+      refreshDataOnPage() {
+        this.getCategories();
+        this.getItems();
+        this.getBasketNumber();
+      },
       clickWindowRedactor(state) {
         this.isOpenDialog = state;
+        if (!state) {
+          this.refreshDataOnPage();
+        }
       }
     },
     mounted() {
       this.getMyData();
-      this.getCategories();
-      this.getItems();
-      this.getBasketNumber();
+      this.refreshDataOnPage();
     }
   }
 </script>

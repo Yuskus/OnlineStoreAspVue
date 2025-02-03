@@ -13,55 +13,6 @@ export default {
         }
     },
     methods: {
-        async addUser() {
-            if (this.localUser.customerId === null) {
-                await this.addManager();
-            } else {
-                await this.addCustomer();
-            }
-        },
-        async addCustomer() {
-            try {
-                const response = await axios.post(`http://localhost:5000/api/users/register`, this.localUser, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response.status === 200 && response.data) {
-                    console.log("Добавлено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
-                }
-                this.cancelDialog();
-            } catch (error) {
-                console.error('Ошибка при получении данных (UserEdit): ', error);
-                alert('Проблемы с сервером!');
-                this.cancelDialog();
-            }
-        },
-        async addManager() {
-            try {
-                const response = await axios.post(`http://localhost:5000/api/users/addmanager`, this.localUser, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response.status === 200 && response.data) {
-                    console.log("Добавлено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
-                }
-                this.cancelDialog();
-            } catch (error) {
-                console.error('Ошибка при получении данных (UserEdit): ', error);
-                alert('Проблемы с сервером!');
-                this.cancelDialog();
-            }
-        },
         async deleteUser() {
             let url;
             if (this.user.customer.id !== null) {
@@ -91,6 +42,20 @@ export default {
         },
         async applyChanges() {
             try {
+                let a = {
+                    customerId: this.localUser.customerId,
+                    username: this.localUser.username,
+                    password: "xxxxxxxxx",
+                    role: this.localUser.role
+                };
+                let b = {
+                    name: this.localUser.customer.name,
+                    code: this.localUser.customer.code,
+                    address: this.localUser.customer.address,
+                    discount: this.localUser.customer.discount
+                };
+                console.log(a);
+                console.log(b);
                 const response = await axios.put(`http://localhost:5000/api/users/update/`, {
                     customerId: this.localUser.customerId,
                     username: this.localUser.username,
@@ -180,7 +145,6 @@ export default {
             </div>
     
             <div class="buttons">
-                <button @click="addUser()">Добавление</button>
                 <button @click="applyChanges()">Изменить</button>
                 <button @click="deleteUser()">Удалить</button>
                 <button @click="cancelDialog()">Отмена</button>

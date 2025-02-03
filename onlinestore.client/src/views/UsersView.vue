@@ -47,7 +47,9 @@
       },
       clickWindowRedactor(state) {
         this.isOpenDialog = state;
-        console.log(state);
+        if (!state) {
+          this.getUsers();
+        }
       }
     },
     mounted() {

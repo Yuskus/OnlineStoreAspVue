@@ -101,6 +101,9 @@ export default {
         cancelDialog() {
             this.$emit('close-dialog', false);
         }
+    },
+    mounted() {
+        this.getRole();
     }
 }
 </script>

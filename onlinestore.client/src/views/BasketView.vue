@@ -99,12 +99,10 @@
             alert('Проблемы с сервером!');
             console.log("Статус ошибки: " + response.status);
           }
-          return null;
         } catch (error) {
           console.error('Ошибка при изменении данных (Basket): ', error);
           alert('Проблемы с сервером!');
         }
-        return null;
       },
       clickOnItem(index) {
         this.selectedItem = this.basket[index];
@@ -112,6 +110,9 @@
       },
       clickWindowRedactor(state) {
         this.isOpenDialog = state;
+        if (!state) {
+          this.refreshBasket();
+        }
       }
     },
     mounted() {

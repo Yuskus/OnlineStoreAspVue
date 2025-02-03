@@ -50,7 +50,15 @@ export default {
     methods: {
         async addItem() {
             try {
-                const response = await axios.post(`http://localhost:5000/api/items/add`, this.localItem, {
+                if (this.localItem.code === this.item.code) {
+                    alert("Для добавления нового товара нужно изменить его код!");
+                }
+                const response = await axios.post(`http://localhost:5000/api/items/add`, { 
+                    code: this.localItem.code,
+                    name: this.localItem.name,
+                    category: this.localItem.category,
+                    price: this.localItem.price
+                }, {
                     headers: {
                         'authorization': `Bearer ${localStorage.getItem('jwt')}`
                     }

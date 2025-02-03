@@ -1,6 +1,6 @@
 <script>
   import Pagination from '../components/PaginationComponent.vue'
-  import OrderEditWindow from '@/components/OrderEditWindow.vue';
+  import OrderEditWindow from '../components/OrderEditWindow.vue';
   import axios from 'axios';
 
   export default {
@@ -36,7 +36,7 @@
       },
       async getOrders(number = 1) {
         this.currentPage = number;
-        this.makeUrl();
+        
         try {
           const response = await axios.get(this.ordersUrl, {
             headers: {
@@ -59,7 +59,8 @@
       },
       async clickOnItem(index) {
         this.selectedOrder = this.records[index];
-        this.clickWindowRedactor(true);
+        console.log(this.selectedOrder);
+        this.isOpenDialog = true;
       },
       clickWindowRedactor(state) {
         this.isOpenDialog = state;
@@ -74,7 +75,8 @@
 
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-  <OrderEditWindow v-if="role === '1' && isOpenDialog === true" @close-dialog="clickWindowRedactor" :item="selectedOrder" />
+  <OrderEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :order="selectedOrder" />
+  
   <div class="container">
     <h1 class="line">Заказы</h1>
 
@@ -88,17 +90,20 @@
         <div class="cell colored">Статус</div>
         <div class="cell colored">Опции</div>
       </div>
-      <div class="row" v-for="record in records" :key="record.id">
-        <div class="cell base">{{ record.id }}</div>
-        <div class="cell base">{{ record.customerName }} [ <style color="#9199a2">{{ record.customerId }}</style> ]</div>
+      <div class="row" v-for="(record, index) in records" :key="index">
+        <div class="cell base">[ {{ record.id }} ]</div>
+        <div class="cell base">{{ record.customerName }} [ {{ record.customerId }} ]</div>
         <div class="cell base">{{ record.orderDate }}</div>
         <div class="cell base">{{ record.shipmentDate }}</div>
         <div class="cell base">{{ record.orderNumber }}</div>
         <div class="cell base">{{ record.orderStatus }}</div>
-        <div class="cell base"><a>Редактирование</a></div>
+        <div class="cell base">
+          <a class="accent" v-if="role === '1' || record.orderStatus === 'new'" @click="clickOnItem(index)">Редактировать</a>
+          <a v-else>Нет</a>
+        </div>
       </div>
     </div>
-    <div v-else> <!---какой класс и стиль?-->
+    <div v-else>
       <h2>Заказов нет.</h2>
     </div>
 
@@ -150,6 +155,14 @@
       font-weight: 500;
       font-style: normal;
       color: #1c2633;
+    }
+
+    .accent {
+      text-decoration: underline;
+    }
+
+    .accent:hover {
+      color: #34547a;
     }
 
     h1 {

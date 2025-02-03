@@ -17,11 +17,6 @@
     methods: {
       async register() {
         try {
-          console.log(this.customer.name);
-          console.log(this.customer.code);
-          console.log(this.customer.address);
-          console.log(this.customer.username);
-          console.log(this.customer.password);
           const response = await axios.post(`http://localhost:5000/api/Users/register`, { 
             customerRequest: {
               name: this.customer.name,

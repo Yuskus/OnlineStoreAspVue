@@ -60,6 +60,23 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize(Roles = "Manager")]
+        [HttpPost(template: "addmanager")]
+        public async Task<ActionResult<bool>> AddManager([FromBody] RegisterRequest registerRequest)
+        {
+            try
+            {
+                bool result = await _userService.AddManager(registerRequest);
+                if (result) return Ok(result);
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе AddManager.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize(Roles = "Manager")]
         [HttpGet(template: "getall")]
         public async Task<ActionResult<UserResponseList>> GetPageOfUsersInfo([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {

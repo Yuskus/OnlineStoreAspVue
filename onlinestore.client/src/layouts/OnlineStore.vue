@@ -3,15 +3,11 @@
     name: "OnlineStore",
     data() {
       return {
-        roles: {
-          null: 'Unauthorize',
-          0: 'User',
-          1: 'Manager'
-        },
         sitename: 'Online Shop',
         myId: null,
         username: '',
         role: '',
+        globalRole: '',
         fullPath: ''
       }
     },
@@ -19,7 +15,8 @@
       getMyData() {
         this.myId = localStorage.getItem('guid');
         this.username = localStorage.getItem('username');
-        this.role = this.roles[localStorage.getItem('role')];
+        this.role = localStorage.getItem('role');
+        this.globalRole = this.role === '1' ? 'Manager' : 'Customer';
       },
       logout() {
         localStorage.removeItem('jwt');
@@ -46,11 +43,11 @@
       </div>
       <div class="userinfo">
         <h2>{{ username }}</h2>
-        <h3>{{ role }}</h3>
+        <h3>{{ globalRole }}</h3>
         <a href="/auth" @click="logout()" class="button"><p>Выход</p></a>
       </div>
     </div>
-    <div class="menu" v-if="role == '1'">
+    <div class="menu" v-if="role === '1'">
       <div><router-link @click="refreshPage()" class="link" to="/">Главная</router-link></div>
       <div><router-link class="link" to="/catalog">Каталог</router-link></div>
       <div><router-link class="link" to="/orders">Заказы</router-link></div>
@@ -63,7 +60,6 @@
       <div><router-link class="link" to="/basket">Корзина</router-link></div>
       <div><router-link class="link" to="/orders">Заказы</router-link></div>
       <div><router-link class="link" to="/about">О компании</router-link></div>
-      <div><router-link class="link" to="/users">Пользователи</router-link></div> <!--убрать-->
     </div>
   </header>
 
@@ -108,7 +104,7 @@
   }
 
   header h3 {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 500;
   }
 

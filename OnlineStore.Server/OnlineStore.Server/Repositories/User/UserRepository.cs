@@ -65,6 +65,8 @@ namespace OnlineStore.Server.Repositories.User
 
             if (user is null) return false;
 
+            if (user.Customer != null)
+
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 

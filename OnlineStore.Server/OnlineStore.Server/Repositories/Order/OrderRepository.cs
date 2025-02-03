@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineStore.Server.Database.Context;
-using OnlineStore.Server.Database.Entities;
 using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.Mapping.Order;
+using System.Text.Json;
 using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Repositories.Order
@@ -13,15 +13,12 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<Guid?> CreateOrder(OrderRequest order)
         {
-            Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.OrderNumber == order.OrderNumber);
+            int total = _context.Orders.Count() + 1;
 
-            if (orderEntity is null)
-            {
-                orderEntity = order.MapToDb();
+            Entity.Order orderEntity = order.MapToDb(total);
 
-                await _context.Orders.AddAsync(orderEntity);
-                await _context.SaveChangesAsync();
-            }
+            await _context.Orders.AddAsync(orderEntity);
+            await _context.SaveChangesAsync();
 
             return orderEntity.Id;
         }
@@ -70,6 +67,7 @@ namespace OnlineStore.Server.Repositories.Order
             if (orderEntity is null) return null;
 
             OrderResponse result = orderEntity.MapFromDb();
+            result.CustomerName = orderEntity.Customer?.Name;
 
             return result;
         }
@@ -117,11 +115,20 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<OrderResponse?> GetBasketOrder(Guid customerId)
         {
+            // поиск корзины (заказ со статусом new)
             Entity.Order? order = await _context.Orders.Where(x => x.CustomerId == customerId && x.OrderStatus != null && x.OrderStatus.ToLower() == "new")
-                                                       .Include(x => x.Customer)
                                                        .SingleOrDefaultAsync();
 
-            OrderResponse? orderResponse = order?.MapFromDb();
+            if (order is null)
+            {
+                // создание при отсутствии
+                order = new Entity.Order(customerId, _context.Orders.Count() + 1);
+                await _context.Orders.AddAsync(order);
+                await _context.SaveChangesAsync();
+            }
+
+            OrderResponse orderResponse = order.MapFromDb();
+            orderResponse.CustomerName = order.Customer?.Name;
 
             return orderResponse;
         }

@@ -58,5 +58,21 @@ namespace OnlineStore.Server.Services.User
 
             return new UserResponseList();
         }
+
+        public async Task<bool> AddManager(RegisterRequest registerRequest)
+        {
+            bool isValid = UserValidator.CheckUsername(registerRequest.Username)
+                        && UserValidator.CheckPassword(registerRequest.Password)
+                        && UserValidator.CheckGuid(registerRequest.CustomerId, registerRequest.Role);
+
+            // добавление, если данные юзера валидны, и возврат результата добавления
+            if (isValid)
+            {
+                return await _userRepository.RegisterUser(registerRequest);
+            }
+
+            // если не валидны - false (и отмена транзакции в вызывающем коде)
+            return false;
+        }
     }
 }

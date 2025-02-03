@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineStore.Server.Database.Context;
-using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.DTO.OrderElement;
 using OnlineStore.Server.Mapping.Order;
 using OnlineStore.Server.Mapping.OrderElement;
@@ -14,9 +13,18 @@ namespace OnlineStore.Server.Repositories.OrderElement
 
         public async Task<Guid?> CreateOrderElement(OrderElementRequest orderElement)
         {
-            Entity.OrderElement orderElementEntity = orderElement.MapToDb();
+            Entity.OrderElement? orderElementEntity = await _context.OrderElements.FirstOrDefaultAsync(x => x.OrderId == orderElement.OrderId && x.ItemId == orderElement.ItemId);
+            
+            if (orderElementEntity != null)
+            {
+                orderElementEntity.ItemsCount++;
+            }
+            else
+            {
+                orderElementEntity = orderElement.MapToDb();
+                await _context.OrderElements.AddAsync(orderElementEntity);
+            }
 
-            await _context.OrderElements.AddAsync(orderElementEntity);
             await _context.SaveChangesAsync();
 
             return orderElementEntity.Id;

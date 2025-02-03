@@ -1,21 +1,64 @@
+<template>
+    <div class="dialog-over">
+        <div class="dialog">
+            <h2>Редактировать заказ</h2>
+            <hr>
+            <div class="form">
+                <label>Заказчик</label>
+                <input type="text" v-model="localOrder.customerId">
+            </div>
+            <hr>
+            <div class="form">
+                <label>Дата заказа</label>
+                <input type="text" v-model="localOrder.orderDate">
+            </div>
+            <hr>
+            <div class="form">
+                <label>Дата доставки</label>
+                <input type="text" v-model="localOrder.shipmentDate">
+            </div>
+            <hr>
+            <div class="form">
+                <label>Статус</label>
+                <select v-model="localOrder.orderStatus">
+                    <option>new</option>
+                    <option>in progress</option>
+                    <option>completed</option>
+                </select>
+            </div>
+    
+            <div class="buttons">
+                <button @click="deleteItem()">Удалить</button>
+                <button v-if="role === '1'" @click="applyChanges()">Изменить</button>
+                <button @click="cancelDialog()">Отмена</button>
+            </div>
+        </div>
+    </div>
+</template>
+
 <script>
 import axios from 'axios';
 
 export default {
     props: {
         order: {
-            type: Object
+            type: Object,
+            required: true
         }
     },
     data() {
         return {
-            localOrder: { ...this.order }
+            localOrder: { ...this.order },
+            role: ''
         }
     },
     methods: {
+        getRole() {
+            this.role = localStorage.getItem('role');
+        },
         async deleteItem() {
             try {
-                const response = await axios.delete(`http://localhost:5000/api/orders/delete/${this.localOrder.id}`, {
+                const response = await axios.delete(`http://localhost:5000/api/orders/delete/${this.order.id}`, {
                     headers: {
                         'authorization': `Bearer ${localStorage.getItem('jwt')}`
                     }
@@ -36,7 +79,7 @@ export default {
         },
         async applyChanges() {
             try {
-                const response = await axios.put(`http://localhost:5000/api/orders/update/${this.localOrder.id}`, {
+                const response = await axios.put(`http://localhost:5000/api/orders/update/${this.localOrder.id}`, this.localOrder, {
                     headers: {
                         'authorization': `Bearer ${localStorage.getItem('jwt')}`
                     }
@@ -62,37 +105,84 @@ export default {
 }
 </script>
 
-<template>
-    <!--изменить лейблы и инпуты-->
-    <div class="dialog-over">
-        <div class="dialog">
-            <h2>Редактировать товар</h2>
-            <div class="form">
-                <label>Код</label>
-                <input type="text" v-model="localOrder.code">
-            </div>
-            <div class="form">
-                <label>Имя</label>
-                <input type="text" v-model="localOrder.name">
-            </div>
-            <div class="form">
-                <label>Категория</label>
-                <input type="text" v-model="localOrder.category">
-            </div>
-            <div class="form">
-                <label>Цена</label>
-                <input type="number" v-model="localOrder.price">
-            </div>
-    
-            <div class="buttons">
-                <button @click="deleteItem()">Удалить</button>
-                <button @click="applyChanges()">Изменить</button>
-                <button @click="cancelDialog()">Отмена</button>
-            </div>
-        </div>
-    </div>
-    </template>
-
 <style scoped>
-/*написать стили*/
+.dialog-over {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    transform: scale(1.25);
+    background-color: rgba(0,0,0,0.4);
+    z-index: 1000;
+}
+
+.dialog {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    min-width: 400px;
+    width: 50vw;
+    min-height: fit-content;
+}
+
+.form label {
+    width: 50%;
+    margin-right: 10px;
+    padding: 10px;
+}
+
+.form input {
+    width: 50%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,80,0.5);
+}
+
+h2 {
+    color: #212933;
+}
+
+h2, label, button {
+    font-family: "Sofia Sans", serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+.buttons {
+    width: fit-content;
+    margin-top: 20px;
+    right: 0px;
+    float: right;
+}
+
+.buttons button {
+    margin: 0 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: rgba(0,0,30,0.1);
+}
+
+.buttons button:hover {
+    background-color: rgba(0,0,30,0.25);
+}
+
+.buttons button:focus {
+    background-color: rgba(0,0,30,0.4);
+}
+
+.form {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+hr {
+    border: 1px dashed rgb(141, 169, 221, 0.5);
+    margin: 15px 0px;
+}
 </style>

@@ -30,7 +30,6 @@
             return response;
           } else {
             alert('Проблемы с сервером!');
-            console.log(response.data);
             console.log("Статус ошибки: " + response.status);
           }
           return null;
@@ -52,7 +51,6 @@
             return response;
           } else {
             alert('Проблемы с сервером!');
-            console.log(response.data);
             console.log("Статус ошибки: " + response.status);
           }
           return null;
@@ -67,6 +65,7 @@
         if (response !== null) {
           this.basketOrder = response.data;
         }
+        console.log(this.basketOrder);
       },
       async getBasketElements() {
         const response = await this.urlRequestGET(`http://localhost:5000/api/OrderElements/getbyid/${this.basketOrder.id}`);
@@ -80,14 +79,15 @@
           let result = response.data;
           console.log(result);
         }
+        this.refreshBasket();
       },
       async refreshBasket() {
-        await this.getBasketNumber()
+        await this.getBasketNumber();
         await this.getBasketElements();
       },
       async placeAnOrder() {
         try {
-          const response = await axios.patch(`http://localhost:5000/api/orders/placeanorder/${this.basketOrder.Id}`, {
+          const response = await axios.patch(`http://localhost:5000/api/orders/placeanorder/${this.basketOrder.id}`, {}, {
             headers: {
               'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }
@@ -101,7 +101,7 @@
           }
           return null;
         } catch (error) {
-          console.error('Ошибка при удалении данных (Basket): ', error);
+          console.error('Ошибка при изменении данных (Basket): ', error);
           alert('Проблемы с сервером!');
         }
         return null;
@@ -134,26 +134,27 @@
         <div class="cell">Название</div>
         <div class="cell">Категория</div>
         <div class="cell">Количество</div>
-        <div class="cell">Цена</div>
+        <div class="cell">Цена за шт.</div>
         <div class="cell">Опции</div>
       </div>
-      <div class="row" v-for="(item, index) in basket" :key="index" @click="clickOnItem(index)" >
+      <div class="row" v-for="(item, index) in basket" :key="index" >
         <div class="cell">Image</div>
-        <div class="cell">{{ item.id }}</div>
-        <div class="cell">{{ item.name }}</div>
-        <div class="cell">{{ item.category }}</div>
-        <div class="cell">{{ item.price }}</div>
-        <div class="cell">{{ item.code }}</div>
+        <div class="cell">{{ item.itemResponse.name }}</div>
+        <div class="cell">{{ item.itemResponse.category }}</div>
+        <div class="cell">{{ item.itemsCount }}</div>
+        <div class="cell">{{ item.itemResponse.price }}</div>
+        <div class="cell"><a class="accent
+          " @click="clickOnItem(index)">Редактировать</a></div>
       </div>
     </div>
-    <div v-else> <!---какой класс и стиль?-->
+    <div v-else>
       <h2>В корзине пусто.</h2>
     </div>
 
     <div class="options">
       <button @click="clearBasket()" ><p>Очистить корзину</p></button>
       <button @click="refreshBasket()" ><p>Актуализация цен</p></button>
-      <button><p>Оформить заказ</p></button>
+      <button @click="placeAnOrder()"><p>Оформить заказ</p></button>
     </div>
 
   </div>
@@ -193,12 +194,20 @@
     background-color: rgba(163, 194, 232, 1);
   }
 
-  h1, h2, h3, p, .cell {
+  a, h1, h2, h3, p, .cell {
     font-family: "Sofia Sans", serif;
     font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
     color: #1c2633;
+  }
+
+  .accent {
+    text-decoration: underline;
+  }
+
+  .accent:hover {
+    color: #34547a;
   }
 
   h1 {

@@ -37,6 +37,8 @@ namespace OnlineStore.Server.Services.User.RegistrationService
 
         public async Task<bool> RegisterUser(RegisterRequest registerRequest)
         {
+            if (registerRequest.CustomerRequest is null) return false; // регистрируем здесь только заказчиков
+
             // проверка данных заказчика
             bool isValid = CustomerValidator.CheckName(registerRequest.CustomerRequest.Name)
                         && CustomerValidator.CheckCode(registerRequest.CustomerRequest.Code)

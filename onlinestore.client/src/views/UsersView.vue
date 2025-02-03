@@ -1,17 +1,20 @@
 <script>
   import Pagination from '../components/PaginationComponent.vue'
   import axios from 'axios';
+  import UserEditWindow from '../components/UserEditWindow.vue';
 
   export default {
     name: 'Users',
-    components: { Pagination },
+    components: { Pagination, UserEditWindow },
     data() {
       return {
         currentPage: 1,
         totalPages: 1,
         pageSize: 24,
         totalCount: 0,
-        users: []
+        users: [],
+        selectedUser: null,
+        isOpenDialog: false
       }
     },
     methods: {
@@ -36,6 +39,15 @@
           console.error('Ошибка при получении данных (Users): ', error);
           alert('Проблемы с сервером!');
         }
+      },
+      async clickOnItem(index) {
+        console.log(index);
+        this.selectedUser = this.users[index];
+        this.clickWindowRedactor(true);
+      },
+      clickWindowRedactor(state) {
+        this.isOpenDialog = state;
+        console.log(state);
       }
     },
     mounted() {
@@ -46,6 +58,7 @@
 
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+  <UserEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :user="selectedUser" />
   <div class="container">
     <h1 class="line">Пользователи</h1>
     
@@ -81,7 +94,7 @@
         </div>
         <div class="user-desc">
           <label>Опции:</label>
-          <div>Редактирование</div>
+          <div><a class="accent" @click="clickOnItem(index)">Редактирование</a></div>
         </div>
         </div>
       </div>
@@ -106,13 +119,21 @@
     justify-content: space-evenly;
   }
 
-  div, label, h1, h3, p {
+  div, label, h1, h3, p, a {
     font-family: "Sofia Sans", serif;
     font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
     color: #1c2633;
   }
+
+    .accent {
+      text-decoration: underline;
+    }
+
+    .accent:hover {
+      color: #34547a;
+    }
 
   label {
     color: #9199a2;

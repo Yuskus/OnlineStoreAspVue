@@ -115,7 +115,7 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpPatch(template: "placeanorder/{id}")]
+        [HttpPatch(template: "placeanorder/{orderId}")]
         public async Task<ActionResult<bool>> PlaceAnOrder(Guid orderId)
         {
             try

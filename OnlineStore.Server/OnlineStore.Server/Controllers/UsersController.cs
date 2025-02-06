@@ -14,6 +14,23 @@ namespace OnlineStore.Server.Controllers
         private readonly ICustomerRegistrationService _registrationService = registrationService;
         private readonly ILogger<UsersController> _logger = logger;
 
+        [Authorize(Roles = "Manager")]
+        [HttpGet(template: "getall")]
+        public async Task<ActionResult<UserResponseList>> GetPageOfUsersInfo([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            try
+            {
+                UserResponseList result = await _userService.GetPageOfUsersInfo(pageNumber, pageSize);
+                if (result is null) return BadRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе GetUsersInfo.");
+                return StatusCode(500);
+            }
+        }
+
         [AllowAnonymous]
         [HttpPost(template: "login")]
         public async Task<ActionResult<LoginResponse>> Authenticate([FromBody] LoginRequest loginRequest)
@@ -32,14 +49,14 @@ namespace OnlineStore.Server.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost(template: "register")]
-        public async Task<ActionResult<bool>> RegisterUser([FromBody] RegisterRequest registerRequest)
+        [HttpPost(template: "registercustomer")]
+        public async Task<ActionResult<bool>> RegisterUser([FromBody] CustomerRegisterRequest customerRegisterRequest)
         {
             try
             {
                 _registrationService.CreateTransaction();
 
-                bool result = await _registrationService.RegisterUser(registerRequest);
+                bool result = await _registrationService.RegisterUser(customerRegisterRequest);
 
                 if (result)
                 {
@@ -60,46 +77,29 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize(Roles = "Manager")]
-        [HttpPost(template: "addmanager")]
-        public async Task<ActionResult<bool>> AddManager([FromBody] RegisterRequest registerRequest)
+        [HttpPost(template: "registermanager")]
+        public async Task<ActionResult<bool>> RegisterManager([FromBody] ManagerRegisterRequest managerRegisterRequest)
         {
             try
             {
-                bool result = await _userService.AddManager(registerRequest);
+                bool result = await _userService.RegisterManager(managerRegisterRequest);
                 if (result) return Ok(result);
                 return BadRequest();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при запросе AddManager.");
+                _logger.LogError(ex, "Ошибка при запросе RegisterManager.");
                 return StatusCode(500);
             }
         }
 
         [Authorize(Roles = "Manager")]
-        [HttpGet(template: "getall")]
-        public async Task<ActionResult<UserResponseList>> GetPageOfUsersInfo([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        [HttpPut(template: "update/{id}")]
+        public async Task<ActionResult> UpdateUser(Guid id, [FromBody] UserRequest userRequest)
         {
             try
             {
-                UserResponseList result = await _userService.GetPageOfUsersInfo(pageNumber, pageSize);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetUsersInfo.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize(Roles = "Manager")]
-        [HttpPut(template: "update")]
-        public async Task<ActionResult> UpdateUser([FromBody] UserRequest userRequest)
-        {
-            try
-            {
-                bool result = await _userService.UpdateUser(userRequest);
+                bool result = await _userService.UpdateUser(id, userRequest);
                 if (result) return Ok(result);
                 return BadRequest();
             }

@@ -21,15 +21,15 @@ namespace OnlineStore.Server.Services.User
             return null;
         }
 
-        public async Task<bool> UpdateUser(UserRequest userRequest)
+        public async Task<bool> UpdateUser(Guid id, UserRequest userRequest)
         {
-            bool isValid = UserValidator.CheckGuid(userRequest.CustomerId, userRequest.Role)
+            bool isValid = UserValidator.CheckGuid(id)
                         && UserValidator.CheckUsername(userRequest.Username)
                         && UserValidator.CheckPassword(userRequest.Password);
 
             if (isValid)
             {
-                return await _userRepository.UpdateUser(userRequest);
+                return await _userRepository.UpdateUser(id, userRequest);
             }
 
             return false;
@@ -59,19 +59,18 @@ namespace OnlineStore.Server.Services.User
             return new UserResponseList();
         }
 
-        public async Task<bool> AddManager(RegisterRequest registerRequest)
+        public async Task<bool> RegisterManager(ManagerRegisterRequest managerRegisterRequest)
         {
-            bool isValid = UserValidator.CheckUsername(registerRequest.Username)
-                        && UserValidator.CheckPassword(registerRequest.Password)
-                        && UserValidator.CheckGuid(registerRequest.CustomerId, registerRequest.Role);
+            bool isValid = UserValidator.CheckUsername(managerRegisterRequest.Username)
+                        && UserValidator.CheckPassword(managerRegisterRequest.Password);
 
             // добавление, если данные юзера валидны, и возврат результата добавления
             if (isValid)
             {
-                return await _userRepository.RegisterUser(registerRequest);
+                return await _userRepository.RegisterManager(managerRegisterRequest);
             }
 
-            // если не валидны - false (и отмена транзакции в вызывающем коде)
+            // если не валидны - false
             return false;
         }
     }

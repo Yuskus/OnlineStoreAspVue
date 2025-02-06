@@ -33,13 +33,13 @@ namespace OnlineStore.Server.Repositories.User
             return null;
         }
 
-        public async Task<bool> RegisterUser(RegisterRequest registerRequest)
+        public async Task<bool> RegisterManager(ManagerRegisterRequest managerRegisterRequest)
         {
-            if (await _context.Users.AnyAsync(x => x.Username == registerRequest.Username)) return false;
+            if (await _context.Users.AnyAsync(x => x.Username == managerRegisterRequest.Username)) return false;
 
-            (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(registerRequest.Password);
+            (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(managerRegisterRequest.Password);
 
-            Entity.User userEntity = registerRequest.MapAuthToDb(hash, salt);
+            Entity.User userEntity = managerRegisterRequest.MapManagerToDb(hash, salt);
 
             await _context.Users.AddAsync(userEntity);
             await _context.SaveChangesAsync();
@@ -47,13 +47,27 @@ namespace OnlineStore.Server.Repositories.User
             return true;
         }
 
-        public async Task<bool> UpdateUser(UserRequest userRequest)
+        public async Task<bool> RegisterUser(CustomerRegisterRequest customerRegisterRequest)
         {
-            Entity.User? user = await _context.Users.FirstOrDefaultAsync(x => x.Username == userRequest.Username);
+            if (await _context.Users.AnyAsync(x => x.Username == customerRegisterRequest.Username)) return false;
+
+            (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(customerRegisterRequest.Password);
+
+            Entity.User userEntity = customerRegisterRequest.MapCustomerToDb(hash, salt);
+
+            await _context.Users.AddAsync(userEntity);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> UpdateUser(Guid id, UserRequest userRequest)
+        {
+            Entity.User? user = await _context.Users.FirstOrDefaultAsync(x => x.CustomerId == id);
 
             if (user is null) return false;
 
-            user.Role = (int)userRequest.Role;
+            user.Role = (int)userRequest.Role; // обновляем пока только роль
             await _context.SaveChangesAsync();
 
             return true;

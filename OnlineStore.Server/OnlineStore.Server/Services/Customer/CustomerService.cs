@@ -8,20 +8,6 @@ namespace OnlineStore.Server.Services.Customer
     {
         private readonly ICustomerRepository _customerRepository = customerRepository;
 
-        public async Task<Guid?> CreateCustomer(CustomerRequest customer)
-        {
-            bool isValid = CustomerValidator.CheckName(customer.Name) 
-                        && CustomerValidator.CheckCode(customer.Code)
-                        && CustomerValidator.CheckDiscount(customer.Discount);
-
-            if (isValid)
-            {
-                return await _customerRepository.CreateCustomer(customer);
-            }
-
-            return null;
-        }
-
         public async Task<bool> UpdateCustomer(Guid id, CustomerRequest customer)
         {
             bool isValid = CustomerValidator.CheckGuid(id)

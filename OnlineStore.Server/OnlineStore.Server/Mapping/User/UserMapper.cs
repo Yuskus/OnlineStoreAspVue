@@ -7,18 +7,6 @@ namespace OnlineStore.Server.Mapping.User
 {
     public static class UserMapper
     {
-        public static Entity.User MapToDb(this UserRequest userRequest, byte[] hash, byte[] salt)
-        {
-            return new()
-            {
-                CustomerId = userRequest.CustomerId,
-                Username = userRequest.Username,
-                Password = hash,
-                Salt = salt,
-                Role = (int)userRequest.Role
-            };
-        }
-
         public static UserResponse MapFromDb(this Entity.User userEntity)
         {
             return new()
@@ -35,15 +23,27 @@ namespace OnlineStore.Server.Mapping.User
             userEntity.Role = (int)userRequest.Role;
         }
 
-        public static Entity.User MapAuthToDb(this RegisterRequest registerRequest, byte[] hash, byte[] salt)
+        public static Entity.User MapCustomerToDb(this CustomerRegisterRequest registerRequest, byte[] hash, byte[] salt)
         {
             return new()
             {
-                CustomerId = registerRequest.CustomerId ?? Guid.NewGuid(),
+                CustomerId = registerRequest.CustomerId,
                 Username = registerRequest.Username,
                 Password = hash,
                 Salt = salt,
-                Role = (int)registerRequest.Role
+                Role = 0 //тк Customer
+            };
+        }
+
+        public static Entity.User MapManagerToDb(this ManagerRegisterRequest registerRequest, byte[] hash, byte[] salt)
+        {
+            return new()
+            {
+                CustomerId = Guid.NewGuid(), //есть личный Guid, но связи с записью в Customers нет
+                Username = registerRequest.Username,
+                Password = hash,
+                Salt = salt,
+                Role = 1 //тк Manager
             };
         }
 

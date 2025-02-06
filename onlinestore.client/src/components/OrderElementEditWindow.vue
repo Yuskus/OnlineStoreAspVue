@@ -15,7 +15,7 @@ export default {
     methods: {
         async deleteItem() {
             try {
-                const response = await axios.delete(`http://localhost:5000/api/orderelementss/delete/${this.localItem.id}`, {
+                const response = await axios.delete(`http://localhost:5000/api/orderelements/delete/${this.localItem.id}`, {
                     headers: {
                         'authorization': `Bearer ${localStorage.getItem('jwt')}`
                     }

@@ -35,33 +35,33 @@ namespace OnlineStore.Server.Services.User.RegistrationService
             _transaction = _context.Database.BeginTransaction();
         }
 
-        public async Task<bool> RegisterUser(RegisterRequest registerRequest)
+        public async Task<bool> RegisterUser(CustomerRegisterRequest customerRegisterRequest)
         {
-            if (registerRequest.CustomerRequest is null) return false; // регистрируем здесь только заказчиков
+            if (customerRegisterRequest.CustomerRequest is null) return false; // регистрируем здесь только заказчиков
 
             // проверка данных заказчика
-            bool isValid = CustomerValidator.CheckName(registerRequest.CustomerRequest.Name)
-                        && CustomerValidator.CheckCode(registerRequest.CustomerRequest.Code)
-                        && CustomerValidator.CheckDiscount(registerRequest.CustomerRequest.Discount);
+            bool isValid = CustomerValidator.CheckName(customerRegisterRequest.CustomerRequest.Name)
+                        && CustomerValidator.CheckCode(customerRegisterRequest.CustomerRequest.Code)
+                        && CustomerValidator.CheckDiscount(customerRegisterRequest.CustomerRequest.Discount);
 
             // создание заказчика, добавление в базу
-            registerRequest.CustomerId = await _customerRepository.CreateCustomer(registerRequest.CustomerRequest);
+            customerRegisterRequest.CustomerId = await _customerRepository.CreateCustomer(customerRegisterRequest.CustomerRequest);
 
             // проверка guid-а заказчика
-            isValid &= CustomerValidator.CheckGuid(registerRequest.CustomerId);
+            isValid &= CustomerValidator.CheckGuid(customerRegisterRequest.CustomerId);
 
             // выход (и отмена транзакции в вызывающем коде), если данные не валидны
             if (!isValid) return false;
 
             // проверка данных юзера
-            isValid &= UserValidator.CheckUsername(registerRequest.Username)
-                    && UserValidator.CheckPassword(registerRequest.Password)
-                    && UserValidator.CheckGuid(registerRequest.CustomerId, registerRequest.Role);
+            isValid &= UserValidator.CheckUsername(customerRegisterRequest.Username)
+                    && UserValidator.CheckPassword(customerRegisterRequest.Password)
+                    && UserValidator.CheckGuid(customerRegisterRequest.CustomerId);
 
             // добавление, если данные юзера валидны, и возврат результата добавления
             if (isValid)
             {
-                return await _userRepository.RegisterUser(registerRequest);
+                return await _userRepository.RegisterUser(customerRegisterRequest);
             }
 
             // если не валидны - false (и отмена транзакции в вызывающем коде)

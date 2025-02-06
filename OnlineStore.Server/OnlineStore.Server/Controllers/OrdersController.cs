@@ -30,8 +30,8 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize]
-        [HttpGet(template: "getbycustomer")]
-        public async Task<ActionResult<OrderResponseList>> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
+        [HttpGet(template: "getpagebycustomer/{id}")]
+        public async Task<ActionResult<OrderResponseList>> GetPageOfOrdersByCustomerId(Guid id, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
@@ -42,6 +42,23 @@ namespace OnlineStore.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при запросе GetPageOfOrdersByCustomerId.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpGet(template: "getpagebystatus/{status}")]
+        public async Task<ActionResult<OrderResponseList>> GetPageOfOrdersByStatus(string status, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            try
+            {
+                OrderResponseList result = await _orderService.GetPageOfOrdersByStatus(status, pageNumber, pageSize);
+                if (result is null) return BadRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе GetOrderByStatus.");
                 return StatusCode(500);
             }
         }
@@ -76,23 +93,6 @@ namespace OnlineStore.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при запросе GetBasketOrder.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize]
-        [HttpGet(template: "getbystatus/{status}")]
-        public async Task<ActionResult<OrderResponseList>> GetPageOfOrdersByStatus(string status, [FromQuery] int pageNumber, [FromQuery] int pageSize)
-        {
-            try
-            {
-                OrderResponseList result = await _orderService.GetPageOfOrdersByStatus(status, pageNumber, pageSize);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetOrderByStatus.");
                 return StatusCode(500);
             }
         }

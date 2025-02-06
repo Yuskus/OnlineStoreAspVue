@@ -31,6 +31,40 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize]
+        [HttpGet(template: "getpagebycategory/{category}")]
+        public async Task<ActionResult<ItemResponseList>> GetPageOfItemsByCategory(string category, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            try
+            {
+                ItemResponseList result = await _itemService.GetPageOfItemsByCategory(category, pageNumber, pageSize);
+                if (result is null) return BadRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе GetItemsByCategory.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpGet(template: "getcategories")]
+        public ActionResult<ImmutableSortedSet<string>> GetAllCategories()
+        {
+            try
+            {
+                ImmutableSortedSet<string> result = _itemService.GetAllCategories();
+                if (result is null) return BadRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе GetAllCategories.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
         [HttpGet(template: "getbyid/{id}")]
         public async Task<ActionResult<ItemResponse>> GetItemById(Guid id)
         {
@@ -81,23 +115,6 @@ namespace OnlineStore.Server.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet(template: "category/{category}")]
-        public async Task<ActionResult<ItemResponseList>> GetPageOfItemsByCategory(string category, [FromQuery] int pageNumber, [FromQuery] int pageSize)
-        {
-            try
-            {
-                ItemResponseList result = await _itemService.GetPageOfItemsByCategory(category, pageNumber, pageSize);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetItemsByCategory.");
-                return StatusCode(500);
-            }
-        }
-
         [Authorize(Roles = "Manager")]
         [HttpPost(template: "add")]
         public async Task<ActionResult<Guid>> CreateItem([FromBody] ItemRequest item)
@@ -105,7 +122,7 @@ namespace OnlineStore.Server.Controllers
             try
             {
                 Guid? result = await _itemService.CreateItem(item);
-                if (result == null) return BadRequest();
+                if (result is null) return BadRequest();
                 return Ok((Guid)result);
             }
             catch (Exception ex)
@@ -145,23 +162,6 @@ namespace OnlineStore.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при запросе DeleteItem.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize]
-        [HttpGet(template: "getcategories")]
-        public ActionResult<ImmutableSortedSet<string>> GetAllCategories()
-        {
-            try
-            {
-                ImmutableSortedSet<string> result = _itemService.GetAllCategories();
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetAllCategories.");
                 return StatusCode(500);
             }
         }

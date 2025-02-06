@@ -4,9 +4,14 @@ namespace OnlineStore.Server.Validation.User
 {
     public class UserValidator
     {
-        public static bool CheckGuid(Guid? guid, UserRole role)
+        public static bool CheckGuid(Guid? guid)
         {
-            return guid == null ? role == UserRole.Manager : guid != Guid.Empty;
+            return guid != null && guid != Guid.Empty;
+        }
+
+        public static bool CheckManagerGuid(Guid? guid, UserRole role)
+        {
+            return guid == null && role == UserRole.Manager;
         }
 
         public static bool CheckUsername(string? name)

@@ -64,23 +64,6 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize(Roles = "Manager")]
-        [HttpPost(template: "add")]
-        public async Task<ActionResult<Guid>> CreateCustomer([FromBody] CustomerRequest customer)
-        {
-            try
-            {
-                Guid? result = await _customerService.CreateCustomer(customer);
-                if (result is null) return BadRequest();
-                return Ok((Guid)result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе CreateCustomer.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize(Roles = "Manager")]
         [HttpPut(template: "update/{id}")]
         public async Task<ActionResult> UpdateCustomer(Guid id, [FromBody] CustomerRequest customer)
         {

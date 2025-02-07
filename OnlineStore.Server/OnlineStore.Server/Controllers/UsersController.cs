@@ -94,12 +94,12 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize(Roles = "Manager")]
-        [HttpPut(template: "update/{id}")]
-        public async Task<ActionResult> UpdateUser(Guid id, [FromBody] UserRequest userRequest)
+        [HttpPut(template: "update/{username}")]
+        public async Task<ActionResult> UpdateUser(string username, [FromBody] UserRequest userRequest)
         {
             try
             {
-                bool result = await _userService.UpdateUser(id, userRequest);
+                bool result = await _userService.UpdateUser(username, userRequest);
                 if (result) return Ok(result);
                 return BadRequest();
             }

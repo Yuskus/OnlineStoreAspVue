@@ -8,6 +8,5 @@ namespace OnlineStore.Server.Services.Customer
         Task<CustomerResponse?> GetCustomerById(Guid id);
         Task<CustomerResponse?> GetCustomerByCode(string code);
         Task<bool> UpdateCustomer(Guid id, CustomerRequest customer);
-        Task<bool> DeleteCustomer(Guid id);
     }
 }

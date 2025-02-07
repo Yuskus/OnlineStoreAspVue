@@ -34,6 +34,8 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
                    .HasColumnName("shipment_date");
 
             builder.Property(p => p.OrderNumber)
+                   .IsRequired()
+                   .ValueGeneratedOnAdd()
                    .HasColumnName("order_number");
 
             builder.Property(p => p.OrderStatus)

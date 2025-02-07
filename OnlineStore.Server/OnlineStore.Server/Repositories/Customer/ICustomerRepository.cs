@@ -9,6 +9,5 @@ namespace OnlineStore.Server.Repositories.Customer
         Task<CustomerResponse?> GetCustomerByCode(string code);
         Task<Guid?> CreateCustomer(CustomerBaseRequest customer);
         Task<bool> UpdateCustomer(Guid id, CustomerRequest customer);
-        Task<bool> DeleteCustomer(Guid id);
     }
 }

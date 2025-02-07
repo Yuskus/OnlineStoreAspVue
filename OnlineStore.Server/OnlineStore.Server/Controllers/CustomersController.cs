@@ -79,22 +79,5 @@ namespace OnlineStore.Server.Controllers
                 return StatusCode(500);
             }
         }
-
-        [Authorize(Roles = "Manager")]
-        [HttpDelete(template: "delete/{id}")]
-        public async Task<ActionResult> DeleteCustomer(Guid id)
-        {
-            try
-            {
-                bool result = await _customerService.DeleteCustomer(id);
-                if (result) return Ok(result);
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе DeleteCustomer.");
-                return StatusCode(500);
-            }
-        }
     }
 }

@@ -12,12 +12,11 @@
         public virtual ICollection<OrderElement> OrderElements { get; set; } = [];
 
         public Order() { }
-        public Order(Guid customerId, int orderNumber)
+        public Order(Guid customerId)
         {
             Id = Guid.NewGuid();
             CustomerId = customerId;
             OrderDate = DateOnly.FromDateTime(DateTime.Now);
-            OrderNumber = orderNumber;
             OrderStatus = "new";
         }
     }

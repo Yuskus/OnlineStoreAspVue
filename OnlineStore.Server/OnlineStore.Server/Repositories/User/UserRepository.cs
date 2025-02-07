@@ -61,13 +61,13 @@ namespace OnlineStore.Server.Repositories.User
             return true;
         }
 
-        public async Task<bool> UpdateUser(Guid id, UserRequest userRequest)
+        public async Task<bool> UpdateUser(string username, UserRequest userRequest)
         {
-            Entity.User? user = await _context.Users.FirstOrDefaultAsync(x => x.CustomerId == id);
+            Entity.User? userEntity = await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
 
-            if (user is null) return false;
+            if (userEntity is null) return false;
 
-            user.Role = (int)userRequest.Role; // обновляем пока только роль
+            userEntity.UpdateInDb(userRequest); // меняем только роль и логин (логика смены пароля не добавлена)
             await _context.SaveChangesAsync();
 
             return true;
@@ -78,8 +78,6 @@ namespace OnlineStore.Server.Repositories.User
             Entity.User? user = await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
 
             if (user is null) return false;
-
-            if (user.Customer != null)
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();

@@ -80,7 +80,7 @@ namespace OnlineStore.Server.Controllers
             }
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Manager")]
         [HttpGet(template: "getbasket/{customerId}")]
         public async Task<ActionResult<OrderResponse?>> GetBasketOrder(Guid customerId)
         {

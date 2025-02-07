@@ -21,15 +21,14 @@ namespace OnlineStore.Server.Services.User
             return null;
         }
 
-        public async Task<bool> UpdateUser(Guid id, UserRequest userRequest)
+        public async Task<bool> UpdateUser(string username, UserRequest userRequest)
         {
-            bool isValid = UserValidator.CheckGuid(id)
-                        && UserValidator.CheckUsername(userRequest.Username)
-                        && UserValidator.CheckPassword(userRequest.Password);
+            bool isValid = UserValidator.CheckUsername(username)
+                        && UserValidator.CheckUsername(userRequest.Username);
 
             if (isValid)
             {
-                return await _userRepository.UpdateUser(id, userRequest);
+                return await _userRepository.UpdateUser(username, userRequest);
             }
 
             return false;

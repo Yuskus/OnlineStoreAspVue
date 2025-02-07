@@ -36,18 +36,6 @@ namespace OnlineStore.Server.Repositories.Customer
             return true;
         }
 
-        public async Task<bool> DeleteCustomer(Guid id)
-        {
-            Entity.Customer? customerEntity = await _context.Customers.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (customerEntity is null) return false;
-
-            _context.Customers.Remove(customerEntity);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
         public async Task<CustomerResponse?> GetCustomerByCode(string code)
         {
             Entity.Customer? customerEntity = await _context.Customers.FirstOrDefaultAsync(x => x.Code == code);

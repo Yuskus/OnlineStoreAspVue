@@ -2,7 +2,6 @@
 using OnlineStore.Server.Database.Context;
 using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.Mapping.Order;
-using System.Text.Json;
 using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Repositories.Order
@@ -61,8 +60,7 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<OrderResponse?> GetOrderByNumber(int number)
         {
-            Entity.Order? orderEntity = await _context.Orders.Include(x => x.Customer)
-                                                             .FirstOrDefaultAsync(x => x.OrderNumber == number);
+            Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.OrderNumber == number);
 
             if (orderEntity is null) return null;
 
@@ -122,7 +120,7 @@ namespace OnlineStore.Server.Repositories.Order
             if (order is null)
             {
                 // создание при отсутствии
-                order = new Entity.Order(customerId, _context.Orders.Count() + 1);
+                order = new Entity.Order(customerId);
                 await _context.Orders.AddAsync(order);
                 await _context.SaveChangesAsync();
             }

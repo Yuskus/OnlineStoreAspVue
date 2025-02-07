@@ -12,7 +12,6 @@ namespace OnlineStore.Server.Mapping.User
             return new()
             {
                 Id = userEntity.Id,
-                CustomerId = userEntity.CustomerId,
                 Customer = userEntity.Customer?.MapFromDb(),
                 Username = userEntity.Username,
                 Role = (UserRole)userEntity.Role
@@ -21,6 +20,7 @@ namespace OnlineStore.Server.Mapping.User
 
         public static void UpdateInDb(this Entity.User userEntity, UserRequest userRequest)
         {
+            userEntity.Username = userRequest.Username;
             userEntity.Role = (int)userRequest.Role;
         }
 

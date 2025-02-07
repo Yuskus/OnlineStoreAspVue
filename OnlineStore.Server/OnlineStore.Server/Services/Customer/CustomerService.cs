@@ -23,18 +23,6 @@ namespace OnlineStore.Server.Services.Customer
             return false;
         }
 
-        public async Task<bool> DeleteCustomer(Guid id)
-        {
-            bool isValid = CustomerValidator.CheckGuid(id);
-
-            if (isValid)
-            {
-                return await _customerRepository.DeleteCustomer(id);
-            }
-
-            return false;
-        }
-
         public async Task<CustomerResponse?> GetCustomerByCode(string code)
         {
             bool isValid = CustomerValidator.CheckCode(code);

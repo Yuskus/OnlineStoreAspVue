@@ -10,7 +10,7 @@ namespace OnlineStore.Server.Authorization.Utilities
 
         public static RSA GetPublicKey()
         {
-            return GetKey(PUBLIC_KEY, "Warning! Private key is not found!");
+            return GetKey(PUBLIC_KEY, "Warning! Public key is not found!");
         }
 
         public static RSA GetPrivateKey()

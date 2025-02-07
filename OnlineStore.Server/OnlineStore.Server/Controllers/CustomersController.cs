@@ -65,7 +65,7 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize(Roles = "Manager")]
         [HttpPut(template: "update/{id}")]
-        public async Task<ActionResult> UpdateCustomer(Guid id, [FromBody] CustomerRequest customer)
+        public async Task<ActionResult<bool>> UpdateCustomer(Guid id, [FromBody] CustomerRequest customer)
         {
             try
             {

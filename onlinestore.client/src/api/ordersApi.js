@@ -9,26 +9,56 @@ const API_URL = 'http://localhost:5000';
 // http://localhost:5000/api/orders/update/${this.localOrder.id} [body]
 // http://localhost:5000/api/orders/delete/${this.order.id}
 
-export const getPageOfOrders = (pageNumber, pageSize) => {
+export const getPageOfOrders = async (pageNumber, pageSize) => {
+    try {
 
+    } catch (error) {
+        console.error('Ошибка при получении данных (getPageOfOrders): ', error);
+        alert('Проблемы с сервером!');
+    }
 }
 
-export const getPageOfOrdersByCustomer = (customerId, pageNumber, pageSize) => {
-    
+export const getPageOfOrdersByCustomer = async (customerId, pageNumber, pageSize) => {
+    try {
+
+    } catch (error) {
+        console.error('Ошибка при получении данных (getPageOfOrdersByCustomer): ', error);
+        alert('Проблемы с сервером!');
+    }
 }
 
-export const getBasket = (customerId) => {
+export const getBasket = async (customerId) => {
+    try {
 
+    } catch (error) {
+        console.error('Ошибка при получении данных (getBasket): ', error);
+        alert('Проблемы с сервером!');
+    }
 }
 
-export const placeAnOrder = (orderId) => {
+export const placeAnOrder = async (orderId) => {
+    try {
 
+    } catch (error) {
+        console.error('Ошибка при оформлении заказа (placeAnOrder): ', error);
+        alert('Проблемы с сервером!');
+    }
 }
 
-export const updateOrder = (orderId) => {
+export const updateOrder = async (orderId) => {
+    try {
 
+    } catch (error) {
+        console.error('Ошибка при обновлении данных (updateOrder): ', error);
+        alert('Проблемы с сервером!');
+    }
 }
 
-export const deleteOrder = (orderId) => {
+export const deleteOrder = async (orderId) => {
+    try {
 
+    } catch (error) {
+        console.error('Ошибка при удалении данных (deleteOrder): ', error);
+        alert('Проблемы с сервером!');
+    }
 }

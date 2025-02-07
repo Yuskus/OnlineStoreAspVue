@@ -9,26 +9,56 @@ const API_URL = 'http://localhost:5000';
 // http://localhost:5000/api/users/update/{this.user.customerId} [body]
 // http://localhost:5000/api/users/delete/${this.user.customerId}
 
-export const getPageOfUsers = (pageNumber, pageSize) => {
+export const getPageOfUsers = async (pageNumber, pageSize) => {
+    try {
 
+    } catch (error) {
+        console.error('Ошибка при получении данных (getPageOfUsers): ', error);
+        alert('Проблемы с сервером!');
+    }
 }
 
-export const logIn = (logForm) => {
+export const logIn = async (logForm) => {
+    try {
 
+    } catch (error) {
+        console.error('Ошибка при аутентификации (logIn): ', error);
+        alert('Проблемы с сервером!');
+    }
 }
 
-export const registerCustomer = (customer) => {
+export const registerCustomer = async (customer) => {
+    try {
 
+    } catch (error) {
+        console.error('Ошибка при регистрации заказчика (registerCustomer): ', error);
+        alert('Проблемы с сервером!');
+    }
 }
 
-export const registerManager = (manager) => {
+export const registerManager = async (manager) => {
+    try {
 
+    } catch (error) {
+        console.error('Ошибка при регистрации менеджера (registerManager): ', error);
+        alert('Проблемы с сервером!');
+    }
 }
 
-export const updateUser = (userId, newUser) => {
+export const updateUser = async (userId, newUser) => {
+    try {
 
+    } catch (error) {
+        console.error('Ошибка при обновлении данных (updateUser): ', error);
+        alert('Проблемы с сервером!');
+    }
 }
 
-export const deleteUser = (userId) => {
-    
+export const deleteUser = async (userId) => {
+    try {
+
+    } catch (error) {
+        console.error('Ошибка при удалении данных (deleteUser): ', error);
+        alert('Проблемы с сервером!');
+    }
 }

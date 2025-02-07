@@ -9,7 +9,7 @@ namespace OnlineStore.Server.Repositories.Customer
     public class CustomerRepository(OnlineStoreDbContext context) : ICustomerRepository
     {
         private readonly OnlineStoreDbContext _context = context;
-        public async Task<Guid?> CreateCustomer(CustomerRequest customer)
+        public async Task<Guid?> CreateCustomer(CustomerBaseRequest customer)
         {
             Entity.Customer? customerEntity = await _context.Customers.FirstOrDefaultAsync(x => x.Code == customer.Code);
 

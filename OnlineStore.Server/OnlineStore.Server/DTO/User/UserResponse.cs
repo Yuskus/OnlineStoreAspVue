@@ -5,6 +5,7 @@ namespace OnlineStore.Server.DTO.User
 {
     public class UserResponse
     {
+        public int Id { get; set; }
         public Guid? CustomerId { get; set; }
         public CustomerResponse? Customer { get; set; }
         public required string Username { get; set; }

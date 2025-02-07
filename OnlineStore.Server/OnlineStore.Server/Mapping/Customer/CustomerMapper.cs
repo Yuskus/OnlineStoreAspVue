@@ -5,16 +5,22 @@ namespace OnlineStore.Server.Mapping.Customer
 {
     public static class CustomerMapper
     {
-        public static Entity.Customer MapToDb(this CustomerRequest customer)
+        public static Entity.Customer MapToDb(this CustomerBaseRequest customer)
         {
-            return new()
+            Entity.Customer mapped = new()
             {
                 Id = Guid.NewGuid(),
                 Name = customer.Name,
                 Code = customer.Code,
-                Address = customer.Address,
-                Discount = customer.Discount
+                Address = customer.Address
             };
+
+            if (customer is CustomerRequest customerRequest)
+            {
+                mapped.Discount = customerRequest.Discount;
+            }
+
+            return mapped;
         }
 
         public static CustomerResponse MapFromDb(this Entity.Customer customer)

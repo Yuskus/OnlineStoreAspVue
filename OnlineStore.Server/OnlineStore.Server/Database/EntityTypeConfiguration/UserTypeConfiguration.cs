@@ -9,14 +9,18 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
         public void Configure(EntityTypeBuilder<User> builder)
         {
             // primary key
-            builder.HasKey(p => p.CustomerId)
+            builder.HasKey(p => p.Id)
                    .HasName("id_user_pk");
 
             // table name
             builder.ToTable("users_table");
 
             // properties
+            builder.Property(p => p.Id)
+                   .HasColumnName("id");
+
             builder.Property(p => p.CustomerId)
+                   .HasColumnType("uuid")
                    .HasColumnName("customer_id");
 
             builder.Property(p => p.Username)
@@ -33,6 +37,7 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
                    .HasColumnName("salt");
 
             builder.Property(p => p.Role)
+                   .IsRequired()
                    .HasColumnName("role");
 
             // indexes

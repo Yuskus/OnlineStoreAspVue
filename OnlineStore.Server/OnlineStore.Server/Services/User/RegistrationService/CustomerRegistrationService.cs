@@ -37,31 +37,27 @@ namespace OnlineStore.Server.Services.User.RegistrationService
 
         public async Task<bool> RegisterUser(CustomerRegisterRequest customerRegisterRequest)
         {
-            if (customerRegisterRequest.CustomerRequest is null) return false; // регистрируем здесь только заказчиков
-
             // проверка данных заказчика
-            bool isValid = CustomerValidator.CheckName(customerRegisterRequest.CustomerRequest.Name)
-                        && CustomerValidator.CheckCode(customerRegisterRequest.CustomerRequest.Code)
-                        && CustomerValidator.CheckDiscount(customerRegisterRequest.CustomerRequest.Discount);
+            bool isValid = CustomerValidator.CheckName(customerRegisterRequest.CustomerInfo.Name)
+                        && CustomerValidator.CheckCode(customerRegisterRequest.CustomerInfo.Code);
 
             // создание заказчика, добавление в базу
-            customerRegisterRequest.CustomerId = await _customerRepository.CreateCustomer(customerRegisterRequest.CustomerRequest);
+            Guid? customerId = await _customerRepository.CreateCustomer(customerRegisterRequest.CustomerInfo);
 
             // проверка guid-а заказчика
-            isValid &= CustomerValidator.CheckGuid(customerRegisterRequest.CustomerId);
+            isValid &= CustomerValidator.CheckGuid(customerId);
 
             // выход (и отмена транзакции в вызывающем коде), если данные не валидны
             if (!isValid) return false;
 
             // проверка данных юзера
             isValid &= UserValidator.CheckUsername(customerRegisterRequest.Username)
-                    && UserValidator.CheckPassword(customerRegisterRequest.Password)
-                    && UserValidator.CheckGuid(customerRegisterRequest.CustomerId);
+                    && UserValidator.CheckPassword(customerRegisterRequest.Password);
 
             // добавление, если данные юзера валидны, и возврат результата добавления
             if (isValid)
             {
-                return await _userRepository.RegisterUser(customerRegisterRequest);
+                return await _userRepository.RegisterUser((Guid)customerId, customerRegisterRequest);
             }
 
             // если не валидны - false (и отмена транзакции в вызывающем коде)

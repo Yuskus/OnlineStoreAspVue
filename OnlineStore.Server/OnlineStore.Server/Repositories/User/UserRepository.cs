@@ -47,13 +47,13 @@ namespace OnlineStore.Server.Repositories.User
             return true;
         }
 
-        public async Task<bool> RegisterUser(CustomerRegisterRequest customerRegisterRequest)
+        public async Task<bool> RegisterUser(Guid customerId, CustomerRegisterRequest customerRegisterRequest)
         {
             if (await _context.Users.AnyAsync(x => x.Username == customerRegisterRequest.Username)) return false;
 
             (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(customerRegisterRequest.Password);
 
-            Entity.User userEntity = customerRegisterRequest.MapCustomerToDb(hash, salt);
+            Entity.User userEntity = customerRegisterRequest.MapCustomerToDb(customerId, hash, salt);
 
             await _context.Users.AddAsync(userEntity);
             await _context.SaveChangesAsync();

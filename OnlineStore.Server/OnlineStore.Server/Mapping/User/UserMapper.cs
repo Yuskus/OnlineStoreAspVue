@@ -11,6 +11,7 @@ namespace OnlineStore.Server.Mapping.User
         {
             return new()
             {
+                Id = userEntity.Id,
                 CustomerId = userEntity.CustomerId,
                 Customer = userEntity.Customer?.MapFromDb(),
                 Username = userEntity.Username,
@@ -23,11 +24,11 @@ namespace OnlineStore.Server.Mapping.User
             userEntity.Role = (int)userRequest.Role;
         }
 
-        public static Entity.User MapCustomerToDb(this CustomerRegisterRequest registerRequest, byte[] hash, byte[] salt)
+        public static Entity.User MapCustomerToDb(this CustomerRegisterRequest registerRequest, Guid id, byte[] hash, byte[] salt)
         {
             return new()
             {
-                CustomerId = registerRequest.CustomerId,
+                CustomerId = id,
                 Username = registerRequest.Username,
                 Password = hash,
                 Salt = salt,
@@ -39,7 +40,6 @@ namespace OnlineStore.Server.Mapping.User
         {
             return new()
             {
-                CustomerId = Guid.NewGuid(), //есть личный Guid, но связи с записью в Customers нет
                 Username = registerRequest.Username,
                 Password = hash,
                 Salt = salt,

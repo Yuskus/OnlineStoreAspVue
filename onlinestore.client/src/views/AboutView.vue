@@ -1,9 +1,3 @@
-<script>
-  export default {
-    name: 'About'
-  }
-</script>
-
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <div class="container">
@@ -52,6 +46,12 @@
     <p>В "Online Shop" мы уверены, что каждый найдет здесь что-то для себя. Мы работаем для вас и рады предложить лучший сервис и качественные товары. Начните свой шопинг прямо сейчас — откройте для себя мир удобства и комфорта с нашим интернет-магазином!</p>
   </div>
 </template>
+
+<script>
+  export default {
+    name: 'About'
+  }
+</script>
 
 <style scoped>
   .container {

@@ -1,39 +1,3 @@
-<script>
-  export default {
-    name: "OnlineStore",
-    data() {
-      return {
-        sitename: 'Online Shop',
-        myId: null,
-        username: '',
-        role: '',
-        globalRole: '',
-        fullPath: ''
-      }
-    },
-    methods: {
-      getMyData() {
-        this.myId = localStorage.getItem('guid');
-        this.username = localStorage.getItem('username');
-        this.role = localStorage.getItem('role');
-        this.globalRole = this.role === '1' ? 'Manager' : 'Customer';
-      },
-      logout() {
-        localStorage.removeItem('jwt');
-      },
-      refreshPage() {
-        this.fullPath = this.$route.fullPath;
-        if (this.fullPath.endsWith('/') || this.fullPath.endsWith('/catalog')) {
-          window.location.reload();
-        }
-      }
-    },
-    mounted() {
-      this.getMyData();
-    }
-  }
-</script>
-
 <template>
   <header>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
@@ -71,6 +35,42 @@
     <p>© Виноградова Юлия</p>
   </footer>
 </template>
+
+<script>
+  export default {
+    name: "OnlineStore",
+    data() {
+      return {
+        sitename: 'Online Shop',
+        myId: null,
+        username: '',
+        role: '',
+        globalRole: '',
+        fullPath: ''
+      }
+    },
+    methods: {
+      getMyData() {
+        this.myId = localStorage.getItem('guid');
+        this.username = localStorage.getItem('username');
+        this.role = localStorage.getItem('role');
+        this.globalRole = this.role === '1' ? 'Manager' : 'Customer';
+      },
+      logout() {
+        localStorage.removeItem('jwt');
+      },
+      refreshPage() {
+        this.fullPath = this.$route.fullPath;
+        if (this.fullPath.endsWith('/') || this.fullPath.endsWith('/catalog')) {
+          window.location.reload();
+        }
+      }
+    },
+    mounted() {
+      this.getMyData();
+    }
+  }
+</script>
 
 <style scoped>
   header {

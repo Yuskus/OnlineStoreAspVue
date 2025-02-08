@@ -1,3 +1,21 @@
+<template>
+  <div class="container">
+    <button v-if="isNormalPage(1)" type="button" @click="goToPage(1)">&lt;&lt;</button>
+    <button v-else type="button" disabled>&lt;&lt;</button>
+
+    <button v-if="isNormalPage(thisPage - 1)" type="button" @click="goToPrev()">&lt;</button>
+    <button v-else type="button" disabled>&lt;</button>
+    
+    <button type="button" v-for="page in nearbyPages()" :key="page" :class="{active: thisPage === page}" @click="goToPage(page)">{{ page }}</button>
+
+    <button v-if="isNormalPage(thisPage + 1)" type="button" @click="goToNext()">&gt;</button>
+    <button v-else type="button" disabled>&gt;</button>
+
+    <button v-if="isNormalPage(totalPages)" type="button" @click="goToPage(totalPages)">&gt;&gt;</button>
+    <button v-else type="button" disabled>&gt;&gt;</button>
+  </div>
+</template>
+
 <script>
   export default {
     name: "Pagination",
@@ -41,24 +59,6 @@
     }
   };
 </script>
-
-<template>
-  <div class="container">
-    <button v-if="isNormalPage(1)" type="button" @click="goToPage(1)">&lt;&lt;</button>
-    <button v-else type="button" disabled>&lt;&lt;</button>
-
-    <button v-if="isNormalPage(thisPage - 1)" type="button" @click="goToPrev()">&lt;</button>
-    <button v-else type="button" disabled>&lt;</button>
-    
-    <button type="button" v-for="page in nearbyPages()" :key="page" :class="{active: thisPage === page}" @click="goToPage(page)">{{ page }}</button>
-
-    <button v-if="isNormalPage(thisPage + 1)" type="button" @click="goToNext()">&gt;</button>
-    <button v-else type="button" disabled>&gt;</button>
-
-    <button v-if="isNormalPage(totalPages)" type="button" @click="goToPage(totalPages)">&gt;&gt;</button>
-    <button v-else type="button" disabled>&gt;&gt;</button>
-  </div>
-</template>
 
 <style scoped>
   .container {

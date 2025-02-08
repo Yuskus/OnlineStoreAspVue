@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import itemsApi from '../api/itemsApi';
 
 export default {
     props: {
@@ -48,77 +48,59 @@ export default {
         }
     },
     methods: {
+        makeItemRequestBody() {
+            return {
+                code: this.localItem.code,
+                name: this.localItem.name,
+                price: this.localItem.price,
+                category: this.localItem.category
+            };
+        },
         async addItem() {
+            if (this.localItem.code === this.item.code) {
+                alert("Для добавления нового товара нужно изменить его код!");
+                return;
+            }
             try {
-                if (this.localItem.code === this.item.code) {
-                    alert("Для добавления нового товара нужно изменить его код!");
+                let newItem = this.makeItemRequestBody();
+                const response = await itemsApi.addItem(newItem);
+                if (!response) {
+                    alert('Ошибка при добавлении товара (Item).');
                 }
-                const response = await axios.post(`http://localhost:5000/api/items/add`, { 
-                    code: this.localItem.code,
-                    name: this.localItem.name,
-                    category: this.localItem.category,
-                    price: this.localItem.price
-                }, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response.status === 200 && response.data) {
-                    console.log("Добавлено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
-                }
-                this.cancelDialog();
             } catch (error) {
-                console.error('Ошибка при получении данных (ItemEdit): ', error);
-                alert('Проблемы с сервером!');
+                this.warnInfo('Ошибка при добавлении данных (ItemEdit): ', error);
+            } finally {
                 this.cancelDialog();
             }
         },
         async applyChanges() {
             try {
-                console.log(`http://localhost:5000/api/items/update/${this.localItem.id}`);
-                const response = await axios.put(`http://localhost:5000/api/items/update/${this.localItem.id}`, this.localItem, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response.status === 200 && response.data) {
-                    console.log("Обновлено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
+                let newItem = this.makeItemRequestBody();
+                const response = await itemsApi.updateItem(this.localItem.id, newItem);
+                if (!response) {
+                    alert('Ошибка при изменении товара (Item).');
                 }
-                this.cancelDialog();
             } catch (error) {
-                console.error('Ошибка при получении данных (ItemEdit): ', error);
-                alert('Проблемы с сервером!');
+                this.warnInfo('Ошибка при изменении данных (ItemEdit): ', error);
+            } finally {
                 this.cancelDialog();
             }
         },
         async deleteItem() {
             try {
-                const response = await axios.delete(`http://localhost:5000/api/items/delete/${this.localItem.id}`, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response.status === 200 && response.data) {
-                    console.log("Удалено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
+                const response = await itemsApi.deleteItem(this.localItem.id);
+                if (!response) {
+                    alert('Ошибка при удалении товара (Item).');
                 }
-                this.cancelDialog();
             } catch (error) {
-                console.error('Ошибка при получении данных (ItemEdit): ', error);
-                alert('Проблемы с сервером!');
+                this.warnInfo('Ошибка при удалении данных (ItemEdit): ', error);
+            } finally {
                 this.cancelDialog();
             }
+        },
+        warnInfo(message, error) {
+            console.error(message, error);
+            alert('Проблемы с сервером!');
         },
         cancelDialog() {
             this.$emit('close-dialog', false);

@@ -1,127 +1,3 @@
-<script>
-  import axios from 'axios';
-  import OrderElementEditWindow from '../components/OrderElementEditWindow.vue'
-
-  export default {
-    name: 'Basket',
-    components: { OrderElementEditWindow },
-    data() {
-      return {
-        myId: null,
-        basketOrder: null,
-        basket: [],
-        isOpenDialog: false,
-        selectedItem: null
-      }
-    },
-    methods: {
-      getMyData() {
-        this.myId = localStorage.getItem('guid');
-      },
-      async urlRequestGET(url) {
-        try {
-          const response = await axios.get(url, {
-            headers: {
-              'authorization': `Bearer ${localStorage.getItem('jwt')}`
-            }
-          });
-          
-          if (response.status === 200 && response.data) {
-            return response;
-          } else {
-            alert('Проблемы с сервером!');
-            console.log("Статус ошибки: " + response.status);
-          }
-          return null;
-        } catch (error) {
-          console.error('Ошибка при получении данных (Basket): ', error);
-          alert('Проблемы с сервером!');
-        }
-        return null;
-      },
-      async urlRequestDELETE(url) {
-        try {
-          const response = await axios.delete(url, {
-            headers: {
-              'authorization': `Bearer ${localStorage.getItem('jwt')}`
-            }
-          });
-          
-          if (response.status === 200 && response.data) {
-            return response;
-          } else {
-            alert('Проблемы с сервером!');
-            console.log("Статус ошибки: " + response.status);
-          }
-          return null;
-        } catch (error) {
-          console.error('Ошибка при удалении данных (Basket): ', error);
-          alert('Проблемы с сервером!');
-        }
-        return null;
-      },
-      async getBasketNumber() {
-        const response = await this.urlRequestGET(`http://localhost:5000/api/Orders/getbasket/${this.myId}`);
-        if (response !== null) {
-          this.basketOrder = response.data;
-        }
-        console.log(this.basketOrder);
-      },
-      async getBasketElements() {
-        const response = await this.urlRequestGET(`http://localhost:5000/api/OrderElements/getbyid/${this.basketOrder.id}`);
-        if (response !== null) {
-          this.basket = response.data;
-        }
-      },
-      async clearBasket() {
-        const response = await this.urlRequestDELETE(`http://localhost:5000/api/Orders/delete/${this.basketOrder.id}`);
-        if (response !== null) {
-          let result = response.data;
-          console.log(result);
-        }
-        this.refreshBasket();
-      },
-      async refreshBasket() {
-        await this.getBasketNumber();
-        await this.getBasketElements();
-      },
-      async placeAnOrder() {
-        try {
-          const response = await axios.patch(`http://localhost:5000/api/orders/placeanorder/${this.basketOrder.id}`, {}, {
-            headers: {
-              'authorization': `Bearer ${localStorage.getItem('jwt')}`
-            }
-          });
-          
-          if (response.status === 200 && response.data) {
-            await this.refreshBasket();
-          } else {
-            alert('Проблемы с сервером!');
-            console.log("Статус ошибки: " + response.status);
-          }
-        } catch (error) {
-          console.error('Ошибка при изменении данных (Basket): ', error);
-          alert('Проблемы с сервером!');
-        }
-      },
-      clickOnItem(index) {
-        this.selectedItem = this.basket[index];
-        this.clickWindowRedactor(true);
-      },
-      clickWindowRedactor(state) {
-        this.isOpenDialog = state;
-        if (!state) {
-          this.refreshBasket();
-        }
-      }
-    },
-    mounted() {
-      this.getMyData();
-      this.refreshBasket();
-    }
-  }
-</script>
-
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <OrderElementEditWindow v-if="isOpenDialog === true" @close-dialog="clickWindowRedactor" :item="selectedItem" />
@@ -160,6 +36,96 @@
 
   </div>
 </template>
+
+<script>
+  import ordersApi from '../api/ordersApi';
+  import orderElementsApi from '../api/orderElementsApi';
+  import OrderElementEditWindow from '../components/OrderElementEditWindow.vue'
+
+  export default {
+    name: 'Basket',
+    components: { OrderElementEditWindow },
+    data() {
+      return {
+        myId: null,
+        basketOrder: null,
+        basket: [],
+        isOpenDialog: false,
+        selectedItem: null
+      }
+    },
+    methods: {
+      getMyData() {
+        this.myId = localStorage.getItem('guid');
+      },
+      async getBasketNumber() {
+        try {
+          const response = await ordersApi.getBasket(this.myId);
+          if (response !== null) {
+            this.basketOrder = response;
+          }
+        } catch (error) {
+          this.warnInfo('Ошибка при получении данных (BasketView): ', error);
+        }
+      },
+      async getBasketElements() {
+        try {
+          const response = await orderElementsApi.getOrderElementByOrderId(this.basketOrder.id);
+          if (response !== null) {
+            this.basket = response;
+          }
+        } catch (error) {
+          this.warnInfo('Ошибка при получении данных (BasketView): ', error);
+        }
+      },
+      async clearBasket() {
+        try {
+          const response = await ordersApi.deleteOrder(this.basketOrder.id);
+          if (response === false) {
+            alert('Ошибка при очистке корзины.');
+          }
+          await this.refreshBasket();
+        } catch (error) {
+          this.warnInfo('Ошибка при удалении данных (BasketView): ', error);
+        }
+      },
+      async placeAnOrder() {
+        try {
+          const response = await ordersApi.placeAnOrder(this.basketOrder.id);
+          if (response === false) {
+            alert('Ошибка при очистке корзины.');
+          }
+          await this.refreshBasket();
+        } catch (error) {
+          console.error('Ошибка при изменении данных (Basket): ', error);
+          alert('Проблемы с сервером!');
+        }
+      },
+      async refreshBasket() {
+        await this.getBasketNumber();
+        await this.getBasketElements();
+      },
+      async clickOnItem(index) {
+        this.selectedItem = this.basket[index];
+        await this.clickWindowRedactor(true);
+      },
+      async clickWindowRedactor(state) {
+        this.isOpenDialog = state;
+        if (!state) {
+          await this.refreshBasket();
+        }
+      },
+      warnInfo(message, error) {
+        console.error(message, error);
+        alert('Проблемы с сервером!');
+      }
+    },
+    mounted() {
+      this.getMyData();
+      this.refreshBasket();
+    }
+  }
+</script>
 
 <style scoped>
   .container {

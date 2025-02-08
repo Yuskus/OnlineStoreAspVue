@@ -1,3 +1,42 @@
+<template>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+  <OrderEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :order="selectedOrder" />
+  
+  <div class="container">
+    <h1 class="line">Заказы</h1>
+
+    <div v-if="records.length > 0" class="table">
+      <div class="row">
+        <div class="cell colored">Заказ</div>
+        <div class="cell colored">Заказчик</div>
+        <div class="cell colored">Дата заказа</div>
+        <div class="cell colored">Дата доставки</div>
+        <div class="cell colored">Номер</div>
+        <div class="cell colored">Статус</div>
+        <div class="cell colored">Опции</div>
+      </div>
+      <div class="row" v-for="(record, index) in records" :key="index">
+        <div class="cell base">[ {{ record.id }} ]</div>
+        <div class="cell base">{{ record.customerName }} [ {{ record.customerId }} ]</div>
+        <div class="cell base">{{ record.orderDate }}</div>
+        <div class="cell base">{{ record.shipmentDate }}</div>
+        <div class="cell base">{{ record.orderNumber }}</div>
+        <div class="cell base">{{ record.orderStatus }}</div>
+        <div class="cell base">
+          <a class="accent" v-if="role === '1' || record.orderStatus === 'new'" @click="clickOnItem(index)">Редактировать</a>
+          <a v-else>Нет</a>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <h2>Заказов нет.</h2>
+    </div>
+
+    <Pagination @page-changed="getOrders" :current="currentPage" :totalPages="totalPages" />
+
+  </div>
+</template>
+
 <script>
   import Pagination from '../components/PaginationComponent.vue'
   import OrderEditWindow from '../components/OrderEditWindow.vue';
@@ -73,123 +112,84 @@
   }
 </script>
 
-<template>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-  <OrderEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :order="selectedOrder" />
-  
-  <div class="container">
-    <h1 class="line">Заказы</h1>
+<style scoped>
+  .container {
+    max-width: 65vw;
+    margin: 0px auto;
+    padding-top: 20px;
+    background-color: #e0ebf7;
+    filter: drop-shadow(0 0.2rem 0.25rem rgba(0, 0, 0, 0.2));
+  }
 
-    <div v-if="records.length > 0" class="table">
-      <div class="row">
-        <div class="cell colored">Заказ</div>
-        <div class="cell colored">Заказчик</div>
-        <div class="cell colored">Дата заказа</div>
-        <div class="cell colored">Дата доставки</div>
-        <div class="cell colored">Номер</div>
-        <div class="cell colored">Статус</div>
-        <div class="cell colored">Опции</div>
-      </div>
-      <div class="row" v-for="(record, index) in records" :key="index">
-        <div class="cell base">[ {{ record.id }} ]</div>
-        <div class="cell base">{{ record.customerName }} [ {{ record.customerId }} ]</div>
-        <div class="cell base">{{ record.orderDate }}</div>
-        <div class="cell base">{{ record.shipmentDate }}</div>
-        <div class="cell base">{{ record.orderNumber }}</div>
-        <div class="cell base">{{ record.orderStatus }}</div>
-        <div class="cell base">
-          <a class="accent" v-if="role === '1' || record.orderStatus === 'new'" @click="clickOnItem(index)">Редактировать</a>
-          <a v-else>Нет</a>
-        </div>
-      </div>
-    </div>
-    <div v-else>
-      <h2>Заказов нет.</h2>
-    </div>
+  .table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-    <Pagination @page-changed="getOrders" :current="currentPage" :totalPages="totalPages" />
+  .row {
+    display: table-row;
+  }
 
-  </div>
-  </template>
+  .cell {
+    display: table-cell;
+    border: 1px solid #6678b1;
+    padding: 10px;
+    text-align: left;
+    font-size: 18px;
+    line-height: 28px;
+  }
 
-  <style scoped>
-    .container {
-      max-width: 65vw;
-      margin: 0px auto;
-      padding-top: 20px;
-      background-color: #e0ebf7;
-      filter: drop-shadow(0 0.2rem 0.25rem rgba(0, 0, 0, 0.2));
-    }
+  .colored {
+    font-weight: bold;
+    background-color: rgba(163, 194, 232, 1);
+  }
 
-    .table {
-      display: table;
-      width: 100%;
-      border-collapse: collapse;
-    }
+  .base {
+    background-color: white;
+  }
 
-    .row {
-      display: table-row;
-    }
+  a, h1, h2, h3, p, .cell {
+    font-family: "Sofia Sans", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    color: #1c2633;
+  }
 
-    .cell {
-      display: table-cell;
-      border: 1px solid #6678b1;
-      padding: 10px;
-      text-align: left;
-      font-size: 18px;
-      line-height: 28px;
-    }
+  .accent {
+    text-decoration: underline;
+  }
 
-    .colored {
-      font-weight: bold;
-      background-color: rgba(163, 194, 232, 1);
-    }
+  .accent:hover {
+    color: #34547a;
+  }
 
-    .base {
-      background-color: white;
-    }
+  h1 {
+    font-size: 26px;
+    line-height: 36px;
+    padding: 20px 10px;
+  }
 
-    a, h1, h2, h3, p, .cell {
-      font-family: "Sofia Sans", serif;
-      font-optical-sizing: auto;
-      font-weight: 500;
-      font-style: normal;
-      color: #1c2633;
-    }
+  h2 {
+    font-size: 24px;
+    line-height: 32px;
+    padding: 20px 10px;
+  }
 
-    .accent {
-      text-decoration: underline;
-    }
+  h3 {
+    font-size: 22px;
+    line-height: 30px;
+    padding: 15px 10px;
+  }
 
-    .accent:hover {
-      color: #34547a;
-    }
+  p {
+    font-size: 18px;
+    line-height: 28px;
+    padding: 0px 10px;
+  }
 
-    h1 {
-      font-size: 26px;
-      line-height: 36px;
-      padding: 20px 10px;
-    }
-
-    h2 {
-      font-size: 24px;
-      line-height: 32px;
-      padding: 20px 10px;
-    }
-
-    h3 {
-      font-size: 22px;
-      line-height: 30px;
-      padding: 15px 10px;
-    }
-
-    p {
-      font-size: 18px;
-      line-height: 28px;
-      padding: 0px 10px;
-    }
-
-    .line {
-      background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
-    }
-  </style>
+  .line {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
+  }
+</style>

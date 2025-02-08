@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import ordersApi from '../api/ordersApi';
 
 export default {
     props: {
@@ -56,47 +56,42 @@ export default {
         getRole() {
             this.role = localStorage.getItem('role');
         },
-        async deleteItem() {
-            try {
-                const response = await axios.delete(`http://localhost:5000/api/orders/delete/${this.order.id}`, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response.status === 200 && response.data) {
-                    console.log("Удалено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
-                }
-                this.cancelDialog();
-            } catch (error) {
-                console.error('Ошибка при получении данных (Orders): ', error);
-                alert('Проблемы с сервером!');
-                this.cancelDialog();
-            }
+        makeOrderRequestBody() {
+            return {
+                customerId: this.localOrder.customerId,
+                orderDate: this.localOrder.orderDate,
+                shipmentDate: this.localOrder.shipmentDate,
+                orderStatus: this.localOrder.orderStatus
+            };
         },
         async applyChanges() {
             try {
-                const response = await axios.put(`http://localhost:5000/api/orders/update/${this.localOrder.id}`, this.localOrder, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response.status === 200 && response.data) {
-                    console.log("Обновлено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
+                let newOrder = this.makeOrderRequestBody();
+                const response = await ordersApi.updateOrder(this.localOrder.id, newOrder);
+                if (!response) {
+                    alert('Ошибка при изменении заказа (Order).');
                 }
-                this.cancelDialog();
             } catch (error) {
-                console.error('Ошибка при получении данных (Orders): ', error);
-                alert('Проблемы с сервером!');
+                this.warnInfo('Ошибка при изменении данных (Orders): ', error);
+            } finally {
                 this.cancelDialog();
             }
+        },
+        async deleteItem() {
+            try {
+                const response = await ordersApi.delete(this.order.id);
+                if (!response) {
+                    alert('Ошибка при удалении заказа (Order).');
+                }
+            } catch (error) {
+                this.warnInfo('Ошибка при удалении данных (Orders): ', error);
+            } finally {
+                this.cancelDialog();
+            }
+        },
+        warnInfo(message, error) {
+            console.error(message, error);
+            alert('Проблемы с сервером!');
         },
         cancelDialog() {
             this.$emit('close-dialog', false);

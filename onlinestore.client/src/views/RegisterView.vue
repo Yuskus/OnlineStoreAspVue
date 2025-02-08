@@ -1,3 +1,30 @@
+<template>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+  <div class="auth">
+    <div class="input-fields">
+      <label class="to-center">Registration Form</label>
+
+      <label>Enter Username:</label>
+      <input type="text" v-model="customer.username" placeholder="Username" required />
+
+      <label>Enter Password:</label>
+      <input type="password" v-model="customer.password" placeholder="Password" required />
+
+      <label>Enter Customer Name:</label>
+      <input type="text" v-model="customer.name" placeholder="Customer Name" required />
+
+      <label>Enter Customer Code:</label>
+      <input type="text" v-model="customer.code" placeholder="Customer Code" required />
+      <label>Enter Customer Address:</label>
+      <input type="text" v-model="customer.address" placeholder="Customer Address" />
+    </div>
+    <div class="btns">
+      <button @click="register()" class="accent">Зарегистрироваться</button>
+      <a href="/auth" >Войти</a>
+    </div>
+  </div>
+</template>
+
 <script>
   import axios from 'axios';
   
@@ -42,33 +69,6 @@
     }
   }
 </script>
-
-<template>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-  <div class="auth">
-    <div class="input-fields">
-      <label class="to-center">Registration Form</label>
-
-      <label>Enter Username:</label>
-      <input type="text" v-model="customer.username" placeholder="Username" required />
-
-      <label>Enter Password:</label>
-      <input type="password" v-model="customer.password" placeholder="Password" required />
-
-      <label>Enter Customer Name:</label>
-      <input type="text" v-model="customer.name" placeholder="Customer Name" required />
-
-      <label>Enter Customer Code:</label>
-      <input type="text" v-model="customer.code" placeholder="Customer Code" required />
-      <label>Enter Customer Address:</label>
-      <input type="text" v-model="customer.address" placeholder="Customer Address" />
-    </div>
-    <div class="btns">
-      <button @click="register()" class="accent">Зарегистрироваться</button>
-      <a href="/auth" >Войти</a>
-    </div>
-  </div>
-</template>
 
 <style scoped>
   .auth {

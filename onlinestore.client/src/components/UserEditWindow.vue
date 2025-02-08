@@ -1,109 +1,3 @@
-<script>
-import axios from 'axios';
-
-export default {
-    props: {
-        user: {
-            type: Object
-        }
-    },
-    data() {
-        return {
-            localUser: { ...this.user }
-        }
-    },
-    methods: {
-        async deleteUser() {
-            let url;
-            if (this.user.customer.id !== null) {
-                url = `http://localhost:5000/api/customers/delete/${this.user.customerId}`;
-            } else {
-                url = `http://localhost:5000/api/users/delete/${this.user.customerId}`;
-            }
-            try {
-                const response = await axios.delete(url, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response.status === 200 && response.data) {
-                    console.log("Удалено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
-                }
-                this.cancelDialog();
-            } catch (error) {
-                console.error('Ошибка при получении данных (UserEdit): ', error);
-                alert('Проблемы с сервером!');
-                this.cancelDialog();
-            }
-        },
-        async applyChanges() {
-            try {
-                let a = {
-                    customerId: this.localUser.customerId,
-                    username: this.localUser.username,
-                    password: "xxxxxxxxx",
-                    role: this.localUser.role
-                };
-                let b = {
-                    name: this.localUser.customer.name,
-                    code: this.localUser.customer.code,
-                    address: this.localUser.customer.address,
-                    discount: this.localUser.customer.discount
-                };
-                console.log(a);
-                console.log(b);
-                const response = await axios.put(`http://localhost:5000/api/users/update/`, {
-                    customerId: this.localUser.customerId,
-                    username: this.localUser.username,
-                    password: "xxxxxxxxx",
-                    role: this.localUser.role
-                }, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-
-                if (response.status === 200 && response.data) {
-                    console.log("Обновлено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
-                }
-
-                const response2 = await axios.put(`http://localhost:5000/api/customers/update/${this.localUser.customerId}`, {
-                    name: this.localUser.customer.name,
-                    code: this.localUser.customer.code,
-                    address: this.localUser.customer.address,
-                    discount: this.localUser.customer.discount
-                }, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response2.status === 200 && response2.data) {
-                    console.log("Обновлено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response2.status);
-                }
-                this.cancelDialog();
-            } catch (error) {
-                console.error('Ошибка при получении данных (UserEdit): ', error);
-                alert('Проблемы с сервером!');
-                this.cancelDialog();
-            }
-        },
-        cancelDialog() {
-            this.$emit('close-dialog', false);
-        }
-    }
-}
-</script>
 <template>
     <div class="dialog-over">
         <div class="dialog">
@@ -152,6 +46,80 @@ export default {
         </div>
     </div>
 </template>
+
+<script>
+import usersApi from '../api/usersApi';
+import customersApi from '../api/customersApi';
+
+export default {
+    props: {
+        user: {
+            type: Object
+        }
+    },
+    data() {
+        return {
+            localUser: { ...this.user }
+        }
+    },
+    methods: {
+        makeCustomerRequestBody() {
+            return {
+                name: this.localUser.customer.name,
+                code: this.localUser.customer.code,
+                address: this.localUser.customer.address,
+                discount: this.localUser.customer.discount
+            };
+        },
+        makeUserRequestBody() {
+            return {
+                username: this.localUser.username,
+                role: this.localUser.role
+            };
+        },
+        async applyChanges() {
+            try {
+                let newCustomer = this.makeCustomerRequestBody();
+                let newUser = this.makeUserRequestBody();
+
+                const responseCustomer = await customersApi.updateCustomer(this.localUser.customerId, newCustomer);
+                const responseUser = await usersApi.updateUser(this.localUser.username, newUser);
+
+                if (!responseCustomer) {
+                    alert('Ошибка при изменении пользователя (Customer part).');
+                }
+                if (!responseUser) {
+                    alert('Ошибка при изменении пользователя (User part).');
+                }
+            } catch (error) {
+                this.warnInfo('Ошибка при изменении данных (UserEdit): ', error);
+            } finally {
+                this.cancelDialog();
+            }
+        },
+        async deleteUser() {
+            try {
+                const response = await usersApi.deleteUser(this.localUser.username);
+                if (!response) {
+                    alert('Ошибка при удалении пользователя.');
+                }
+            } catch (error) {
+                this.warnInfo('Ошибка при удалении данных (UserEdit): ', error);
+            } finally {
+                this.cancelDialog();
+            }
+        },
+        warnInfo(message, error) {
+            console.error(message, error);
+            alert('Проблемы с сервером!');
+        },
+        cancelDialog() {
+            this.$emit('close-dialog', false);
+        }
+    }
+}
+</script>
+
 <style scoped>
 .dialog-over {
     position: fixed;

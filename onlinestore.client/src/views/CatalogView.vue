@@ -29,99 +29,107 @@
 <script>
   import ItemEditWindow from '../components/ItemEditWindow.vue';
   import Pagination from '../components/PaginationComponent.vue';
-  import axios from 'axios';
+  
+  import ordersApi from '../api/ordersApi';
+  import orderElementsApi from '../api/orderElementsApi';
+  import itemsApi from '../api/itemsApi';
 
   export default {
     name: 'Catalog',
     components: { Pagination, ItemEditWindow },
     data() {
       return {
+        myId: null,
         role: '',
         items: [],
+        categories: [],
+        selectedCategory: '',
+        basketOrder: null,
         currentPage: 1,
         totalPages: 1,
         totalCount: 0,
         pageSize: 12,
-        categories: [],
-        selectedCategory: '',
-        basketOrder: null,
         selectedItem: null,
         isOpenDialog: false
       }
     },
     methods: {
       getMyData() {
+        this.myId = localStorage.getItem('guid');
         this.role = localStorage.getItem('role');
       },
-      async urlRequestGET(url) {
-        try {
-          const response = await axios.get(url, {
-            headers: {
-              'authorization': `Bearer ${localStorage.getItem('jwt')}`
-            }
-          });
-          
-          if (response.status === 200 && response.data) {
-            return response;
-          } else {
-            alert('Проблемы с сервером!');
-            console.log(response.data);
-            console.log("Статус ошибки: " + response.status + " 32");
-          }
-          return null;
-        } catch (error) {
-          console.error('Ошибка при получении данных (Catalog): ', error);
-          alert('Проблемы с сервером!');
-        }
-        return null;
-      },
-      async urlRequestPOST(url, body) {
-        try {
-          const response = await axios.post(url, body, {
-            headers: {
-              'authorization': `Bearer ${localStorage.getItem('jwt')}`
-            }
-          });
-          
-          if (response.status === 200 && response.data) {
-            return response;
-          } else {
-            alert('Проблемы с сервером!');
-            console.log(response.data);
-            console.log("Статус ошибки: " + response.status);
-          }
-          return null;
-        } catch (error) {
-          console.error('Ошибка при получении данных (Catalog): ', error);
-          alert('Проблемы с сервером!');
-        }
-        return null;
-      },
-      async getByCategory(category, number = 1) {
-        console.log("getByCategory " + category);
-        this.currentPage = number;
-        const response = await this.urlRequestGET(`http://localhost:5000/api/Items/category/${category}?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`);
-        if (response !== null) {
-          this.items = response.data.itemResponses;
-          this.totalCount = response.data.totalCount;
-          this.totalPages = Math.ceil(this.totalCount / this.pageSize);
-        }
+      makeOrderElementRequest(item) {
+        return {
+          orderId: this.basketOrder.id,
+          itemId: item.id,
+          itemsCount: 1,
+          itemPrice: item.price
+        };
       },
       async getCategories() {
-        console.log("getCategories");
-        const response = await this.urlRequestGET('http://localhost:5000/api/Items/getcategories');
-        if (response !== null) {
-          this.categories = response.data;
+        try {
+          const response = await itemsApi.getCategories();
+          if (!response) {
+            alert('Ошибка во время получения категорий.');
+          } else {
+            this.categories = response;
+          }
+        } catch (error) {
+          this.warnInfo('Ошибка во время получения данных (CatalogView).', error);
+        }
+      },
+      async getByCategory(category, number = 1) {
+        this.currentPage = number;
+        try {
+          const response = await itemsApi.getPageOfItemsByCategory(category, this.currentPage, this.pageSize);
+          if (!response) {
+            alert('Ошибка во время получения страницы товаров по выбранной категории.');
+          } else {
+            this.items = response.itemResponses;
+            this.totalCount = response.totalCount;
+            this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+          }
+        } catch (error) {
+          this.warnInfo('Ошибка во время получения данных (CatalogView).', error);
         }
       },
       async getItems(number = 1) {
-        console.log("getItems "+number);
         this.currentPage = number;
-        const response = await this.urlRequestGET(`http://localhost:5000/api/Items/getpage?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`);
-        if (response !== null) {
-          this.items = response.data.itemResponses;
-          this.totalCount = response.data.totalCount;
-          this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+        try {
+          const response = await itemsApi.getPageOfItems(this.currentPage, this.pageSize);
+          if (!response) {
+            alert('Ошибка во время получения товаров.');
+          } else {
+            this.items = response.itemResponses;
+            this.totalCount = response.totalCount;
+            this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+          }
+        } catch (error) {
+          this.warnInfo('Ошибка во время получения данных (CatalogView).', error);
+        }
+      },
+      async getBasketNumber() {
+        if (this.role === '1') return;
+        try {
+          const response = await ordersApi.getBasket(this.myId);
+          if (!response) {
+            alert('Ошибка во время получения информации о корзине.');
+          } else {
+            this.basketOrder = response;
+          }
+        } catch (error) {
+          this.warnInfo('Ошибка во время получения данных (CatalogView).', error);
+        }
+      },
+      async addInBasket(item) {
+        try {
+          let newOrderElement = this.makeOrderElementRequest(item);
+          const response = await orderElementsApi.addOrderElement(newOrderElement);
+          if (!response) {
+            alert('Ошибка во время добавления товара в корзину.');
+          }
+        } catch (error) {
+          this.warnInfo('Ошибка во время добавления данных (CatalogView).', error);
         }
       },
       async clickOnItem(index) {
@@ -129,40 +137,23 @@
           this.selectedItem = this.items[index];
           this.clickWindowRedactor(true);
         } else {
-          await this.addInBasket(this.items[index]); //
+          await this.addInBasket(this.items[index]);
         }
-      },
-      async getBasketNumber() {
-        if (this.role === '1') return;
-
-        const response = await this.urlRequestGET(`http://localhost:5000/api/Orders/getbasket/${localStorage.getItem('guid')}`);
-        if (response !== null) {
-          this.basketOrder = response.data;
-        }
-      },
-      async addInBasket(item) {
-        let body = {
-          orderId: this.basketOrder.id,
-          itemId: item.id,
-          itemsCount: 1,
-          itemPrice: item.price
-        }
-        const response = await this.urlRequestPOST(`http://localhost:5000/api/OrderElements/add`, body);
-        if (response !== null) {
-          let guid = response.data;
-          console.log(guid);
-        }
-      },
-      refreshDataOnPage() {
-        this.getCategories();
-        this.getItems();
-        this.getBasketNumber();
       },
       clickWindowRedactor(state) {
         this.isOpenDialog = state;
         if (!state) {
           this.refreshDataOnPage();
         }
+      },
+      async refreshDataOnPage() {
+        await this.getCategories();
+        await this.getItems();
+        await this.getBasketNumber();
+      },
+      warnInfo(message, error) {
+        console.error(message, error);
+        alert('Проблемы с сервером!');
       }
     },
     mounted() {

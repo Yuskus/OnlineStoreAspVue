@@ -1,67 +1,3 @@
-<script>
-import axios from 'axios';
-
-export default {
-    props: {
-        item: {
-            type: Object
-        }
-    },
-    data() {
-        return {
-            localItem: { ...this.item }
-        }
-    },
-    methods: {
-        async deleteItem() {
-            try {
-                const response = await axios.delete(`http://localhost:5000/api/orderelements/delete/${this.localItem.id}`, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response.status === 200 && response.data) {
-                    console.log("Удалено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
-                }
-                this.cancelDialog();
-            } catch (error) {
-                console.error('Ошибка при получении данных (OrderElementsEdit): ', error);
-                alert('Проблемы с сервером!');
-                this.cancelDialog();
-            }
-        },
-        async applyChanges() {
-            try {
-                const response = await axios.put(`http://localhost:5000/api/orderelements/update/${this.localItem.id}`, this.localItem, {
-                    headers: {
-                        'authorization': `Bearer ${localStorage.getItem('jwt')}`
-                    }
-                });
-          
-                if (response.status === 200 && response.data) {
-                    console.log("Обновлено");
-                } else {
-                    alert('Проблемы с сервером!');
-                    console.log("Статус ошибки: " + response.status);
-                }
-                this.cancelDialog();
-            } catch (error) {
-                console.error('Ошибка при получении данных (Orders): ', error);
-                alert('Проблемы с сервером!');
-                this.cancelDialog();
-            }
-        },
-        cancelDialog() {
-            this.$emit('close-dialog', false);
-        }
-    }
-}
-</script>
-
 <template>
     <div class="dialog-over">
         <div class="dialog">
@@ -80,6 +16,65 @@ export default {
         </div>
     </div>
 </template>
+
+<script>
+import orderElementsApi from '../api/orderElementsApi';
+
+export default {
+    props: {
+        item: {
+            type: Object
+        }
+    },
+    data() {
+        return {
+            localItem: { ...this.item }
+        }
+    },
+    methods: {
+        makeOrderElementRequestBody() {
+            return {
+                orderId: this.localItem.orderId,
+                itemId: this.localItem.itemId,
+                itemsCount: this.localItem.itemsCount,
+                itemPrice: this.localItem.itemPrice
+            };
+        },
+        async applyChanges() {
+            try {
+                let newOrderElement = this.makeOrderElementRequestBody();
+                const response = await orderElementsApi.updateOrderElement(this.localItem.id, newOrderElement);
+                if (!response) {
+                    alert('Ошибка при изменении элемента заказа (OrderElement).');
+                }
+            } catch (error) {
+                this.warnInfo('Ошибка при изменении данных (OrderElementsEdit): ', error);
+            } finally {
+                this.cancelDialog();
+            }
+        },
+        async deleteItem() {
+            try {
+                const response = await orderElementsApi.deleteOrderElement(this.localItem.id);
+                if (!response) {
+                    alert('Ошибка при удалении элемента заказа (OrderElement).');
+                }
+            } catch (error) {
+                this.warnInfo('Ошибка при удалении данных (OrderElementsEdit): ', error);
+            } finally {
+                this.cancelDialog();
+            }
+        },
+        warnInfo(message, error) {
+            console.error(message, error);
+            alert('Проблемы с сервером!');
+        },
+        cancelDialog() {
+            this.$emit('close-dialog', false);
+        }
+    }
+}
+</script>
 
 <style scoped>
 .dialog-over {

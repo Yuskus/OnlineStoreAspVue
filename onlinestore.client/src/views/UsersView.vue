@@ -1,3 +1,51 @@
+<template>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+  <UserEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :user="selectedUser" />
+  <div class="container">
+    <h1 class="line">Пользователи</h1>
+    
+    <div class="catalog">
+      <div class="user" v-for="(user, index) in users" :key="index">
+        <div class="user-desc">
+          <label>ID Заказчика:</label>
+          <div>{{ user.customerId }}</div>
+        </div>
+        <div class="user-desc">
+          <label>Никнейм:</label>
+          <div>{{ user.username }}</div>
+        </div>
+        <div class="user-desc">
+          <label>Роль:</label>
+          <div>{{ user.role }}</div>
+        </div>
+        <div class="user-desc">
+          <label>Полное имя:</label>
+          <div>{{ user.customer.name }}</div>
+        </div>
+        <div class="user-desc">
+          <label>Код заказчика:</label>
+          <div>{{ user.customer.code }}</div>
+        </div>
+        <div class="user-desc">
+          <label>Адрес:</label>
+          <div>{{ user.customer.address }}</div>
+        </div>
+        <div class="user-desc">
+          <label>Персональная скидка:</label>
+          <div>{{ user.customer.discount }}</div>
+        </div>
+        <div class="user-desc">
+          <label>Опции:</label>
+          <div><a class="accent" @click="clickOnItem(index)">Редактирование</a></div>
+        </div>
+        </div>
+      </div>
+
+    <Pagination @page-changed="getUsers" :current="currentPage" :totalPages="totalPages" />
+
+  </div>
+</template>
+
 <script>
   import Pagination from '../components/PaginationComponent.vue'
   import axios from 'axios';
@@ -57,54 +105,6 @@
     }
   }
 </script>
-
-<template>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-  <UserEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :user="selectedUser" />
-  <div class="container">
-    <h1 class="line">Пользователи</h1>
-    
-    <div class="catalog">
-      <div class="user" v-for="(user, index) in users" :key="index">
-        <div class="user-desc">
-          <label>ID Заказчика:</label>
-          <div>{{ user.customerId }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Никнейм:</label>
-          <div>{{ user.username }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Роль:</label>
-          <div>{{ user.role }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Полное имя:</label>
-          <div>{{ user.customer.name }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Код заказчика:</label>
-          <div>{{ user.customer.code }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Адрес:</label>
-          <div>{{ user.customer.address }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Персональная скидка:</label>
-          <div>{{ user.customer.discount }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Опции:</label>
-          <div><a class="accent" @click="clickOnItem(index)">Редактирование</a></div>
-        </div>
-        </div>
-      </div>
-
-    <Pagination @page-changed="getUsers" :current="currentPage" :totalPages="totalPages" />
-
-  </div>
-</template>
 
 <style scoped>
   .container {

@@ -1,3 +1,22 @@
+<template>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+  <div class="auth">
+    <div class="input-fields">
+      <label class="to-center">Login Form</label>
+
+      <label>Enter Username:</label>
+      <input type="text" v-model="username" placeholder="Username" required />
+
+      <label>Enter Password:</label>
+      <input type="password" v-model="password" placeholder="Password" required />
+    </div>
+    <div class="btns">
+      <button @click.prevent="login()" class="accent">Войти</button>
+      <a href="/auth/new">Зарегистрироваться</a>
+    </div>
+  </div>
+</template>
+
 <script>
   import axios from 'axios';
 
@@ -35,25 +54,6 @@
     }
   }
 </script>
-
-<template>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-  <div class="auth">
-    <div class="input-fields">
-      <label class="to-center">Login Form</label>
-
-      <label>Enter Username:</label>
-      <input type="text" v-model="username" placeholder="Username" required />
-
-      <label>Enter Password:</label>
-      <input type="password" v-model="password" placeholder="Password" required />
-    </div>
-    <div class="btns">
-      <button @click.prevent="login()" class="accent">Войти</button>
-      <a href="/auth/new">Зарегистрироваться</a>
-    </div>
-  </div>
-</template>
 
 <style scoped>
   .auth {

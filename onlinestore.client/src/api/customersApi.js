@@ -4,6 +4,7 @@ const API_URL = 'http://localhost:5000';
 
 export const updateCustomer = async (customerId, newCustomer) => {
     try {
+        if (!checkGuid(customerId)) throw new Error("Ошибка валидации Guid (Customer).");
         validateCustomerRequest(customerId, newCustomer);
 
         const response = await axios.put(`${API_URL}/api/customers/update/${customerId}`, newCustomer, {
@@ -28,13 +29,12 @@ const handleResponse = (response) => {
     }
 };
 
-const validateCustomerRequest = (customerId, newCustomer) => {
+const validateCustomerRequest = (newCustomer) => {
     let validationErrors = [];
 
-    if (!validateGuid(customerId)) validationErrors.push("Ошибка валидации id (Customer).");
-    if (!validateName(newCustomer.name)) validationErrors.push("Ошибка валидации name (Customer).");
-    if (!validateCode(newCustomer.code)) validationErrors.push("Ошибка валидации code (Customer).");
-    if (!validateDiscount(newCustomer.discount)) validationErrors.push("Ошибка валидации discount (Customer).");
+    if (!checkName(newCustomer.name)) validationErrors.push("Ошибка валидации name (Customer).");
+    if (!checkCode(newCustomer.code)) validationErrors.push("Ошибка валидации code (Customer).");
+    if (!checkDiscount(newCustomer.discount)) validationErrors.push("Ошибка валидации discount (Customer).");
 
     if (validationErrors.length > 0) {
         let error = new Error("Ошибки валидации Customer");
@@ -43,15 +43,15 @@ const validateCustomerRequest = (customerId, newCustomer) => {
     }
 }
 
-const validateGuid = (id) => {
+const checkGuid = (id) => {
     return id && id.length === 36 && /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/i.test(id);
 }
 
-const validateDiscount = (discount) => {
+const checkDiscount = (discount) => {
     return Number.isInteger(discount) && discount >= 0 && discount < 100;
 }
 
-const validateCode = (code) => { 
+const checkCode = (code) => { 
     if (code && /^[0-9]{4}-[0-9]{4}$/i.test(code)) {
         let rightPart = parseInt(code.split('-')[1]);
         return !isNaN(rightPart) && rightPart > 1900 && rightPart < new Date().getFullYear();
@@ -59,6 +59,6 @@ const validateCode = (code) => {
     return false;
 }
 
-const validateName = (name) => {
+const checkName = (name) => {
     return name && name.trim() > 0;
 }

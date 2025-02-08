@@ -2,14 +2,9 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000';
 
-// http://localhost:5000/api/OrderElements/getbyid/${this.basketOrder.id}
-// http://localhost:5000/api/OrderElements/add [body]
-// http://localhost:5000/api/orderelements/update/${this.localItem.id} [body]
-// http://localhost:5000/api/orderelements/delete/${this.localItem.id}
-
 export const getOrderElementByOrderId = async (orderId) => {
     try {
-        if (!validateGuid(orderId)) throw new Error("Ошибка валидации Guid.");
+        if (!checkGuid(orderId)) throw new Error("Ошибка валидации Guid.");
 
         const response = await axios.get(`${API_URL}/api/orderelements/getbyorderid/${orderId}`, {
             headers: {
@@ -20,7 +15,7 @@ export const getOrderElementByOrderId = async (orderId) => {
         return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при получении данных (getOrderElementByOrderId): ', error);
-        alert('Проблемы с сервером!');
+        throw error;
     }
 }
 
@@ -37,13 +32,13 @@ export const addOrderElement = async (orderElement) => {
         return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при добавлении данных (addOrderElement): ', error);
-        alert('Проблемы с сервером!');
+        throw error;
     }
 }
 
 export const updateOrderElement = async (orderElementId, newOrderElement) => {
     try {
-        if (!validateGuid(orderElementId)) throw new Error("Ошибка валидации Guid.");
+        if (!checkGuid(orderElementId)) throw new Error("Ошибка валидации Guid.");
         validateOrderElementRequest(newOrderElement);
 
         const response = await axios.put(`${API_URL}/api/orderelements/update/${orderElementId}`, newOrderElement, {
@@ -55,13 +50,13 @@ export const updateOrderElement = async (orderElementId, newOrderElement) => {
         return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при обновлении данных (updateOrderElement): ', error);
-        alert('Проблемы с сервером!');
+        throw error;
     }
 }
 
 export const deleteOrderElement = async (orderElementId) => {
     try {
-        if (!validateGuid(orderElementId)) throw new Error("Ошибка валидации Guid.");
+        if (!checkGuid(orderElementId)) throw new Error("Ошибка валидации Guid.");
 
         const response = await axios.delete(`${API_URL}/api/orderelements/delete/${orderElementId}`, {
             headers: {
@@ -72,7 +67,7 @@ export const deleteOrderElement = async (orderElementId) => {
         return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при удалении данных (deleteOrderElement): ', error);
-        alert('Проблемы с сервером!');
+        throw error;
     }
 }
 
@@ -88,10 +83,10 @@ const handleResponse = (response) => {
 const validateOrderElementRequest = (orderElement) => {
     let validationErrors = [];
 
-    if (!validateGuid(orderElement.orderId)) validationErrors.push("Ошибка валидации orderId (orderElement).");
-    if (!validateGuid(orderElement.itemId)) validationErrors.push("Ошибка валидации itemId (orderElement).");
-    if (!validateCount(orderElement.itemsCount)) validationErrors.push("Ошибка валидации itemsCount (orderElement).");
-    if (!validatePrice(orderElement.itemPrice)) validationErrors.push("Ошибка валидации itemPrice (orderElement).");
+    if (!checkGuid(orderElement.orderId)) validationErrors.push("Ошибка валидации orderId (orderElement).");
+    if (!checkGuid(orderElement.itemId)) validationErrors.push("Ошибка валидации itemId (orderElement).");
+    if (!checkCount(orderElement.itemsCount)) validationErrors.push("Ошибка валидации itemsCount (orderElement).");
+    if (!checkPrice(orderElement.itemPrice)) validationErrors.push("Ошибка валидации itemPrice (orderElement).");
 
     if (validationErrors.length > 0) {
         let error = new Error("Ошибки валидации OrderElement");
@@ -100,14 +95,14 @@ const validateOrderElementRequest = (orderElement) => {
     }
 }
 
-const validateGuid = (id) => {
+const checkGuid = (id) => {
     return id && id.length === 36 && /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/i.test(id);
 }
 
-const validateCount = (count) => {
+const checkCount = (count) => {
     return Number.isInteger(count) && count > 0;
 }
 
-const validatePrice = (price) => {
+const checkPrice = (price) => {
     return !isNaN(price) && price > 0;
 }

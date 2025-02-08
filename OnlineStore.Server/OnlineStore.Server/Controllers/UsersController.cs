@@ -15,7 +15,7 @@ namespace OnlineStore.Server.Controllers
         private readonly ILogger<UsersController> _logger = logger;
 
         [Authorize(Roles = "Manager")]
-        [HttpGet(template: "getall")]
+        [HttpGet(template: "getpage")]
         public async Task<ActionResult<UserResponseList>> GetPageOfUsersInfo([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
@@ -111,12 +111,12 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize(Roles = "Manager")]
-        [HttpDelete(template: "delete/{name}")]
-        public async Task<ActionResult> DeleteUser(string name)
+        [HttpDelete(template: "delete/{username}")]
+        public async Task<ActionResult> DeleteUser(string username)
         {
             try
             {
-                bool result = await _userService.DeleteUser(name);
+                bool result = await _userService.DeleteUser(username);
                 if (result) return Ok(result);
                 return BadRequest();
             }

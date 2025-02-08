@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:5000';
 
 export const getPageOfItems = async (pageNumber, pageSize) => {
     try {
-        if (!validatePages(pageNumber, pageSize)) throw new Error("Ошибка валидации страниц: pageNumber, pageSize (Item).");
+        if (!checkPages(pageNumber, pageSize)) throw new Error("Ошибка валидации страниц: pageNumber, pageSize (Item).");
 
         const response = await axios.get(`${API_URL}/api/items/getpage?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             headers: {
@@ -21,8 +21,8 @@ export const getPageOfItems = async (pageNumber, pageSize) => {
 
 export const getPageOfItemsByCategory = async (category, pageNumber, pageSize) => {
     try {
-        if (!validateCategory(category)) throw new Error("Ошибка валидации category (Item).");
-        if (!validatePages(pageNumber, pageSize)) throw new Error("Ошибка валидации pageNumber, pageSize (Item).");
+        if (!checkCategory(category)) throw new Error("Ошибка валидации category (Item).");
+        if (!checkPages(pageNumber, pageSize)) throw new Error("Ошибка валидации pageNumber, pageSize (Item).");
 
         const response = await axios.get(`${API_URL}/api/items/getpagebycategory/${category}?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             headers: {
@@ -71,7 +71,7 @@ export const addItem = async (item) => {
 
 export const updateItem = async (itemId, newItem) => {
     try {
-        if (!validateGuid(itemId)) throw new Error("Ошибка валидации Guid.");
+        if (!checkGuid(itemId)) throw new Error("Ошибка валидации Guid (Item).");
         validateItemRequest(newItem);
 
         const response = await axios.put(`${API_URL}/api/items/update/${itemId}`, newItem, {
@@ -89,7 +89,7 @@ export const updateItem = async (itemId, newItem) => {
 
 export const deleteItem = async (itemId) => {
     try {
-        if (!validateGuid(itemId)) throw new Error("Ошибка валидации Guid.");
+        if (!checkGuid(itemId)) throw new Error("Ошибка валидации Guid (Item).");
 
         const response = await axios.put(`${API_URL}/api/items/delete/${itemId}`, {
             headers: {
@@ -116,9 +116,9 @@ const handleResponse = (response) => {
 const validateItemRequest = (item) => {
     let validationErrors = [];
 
-    if (!validateCode(item.code)) validationErrors.push("Ошибка валидации code (Item).");
-    if (!validateName(item.name)) validationErrors.push("Ошибка валидации name (Item).");
-    if (!validatePrice(item.price)) validationErrors.push("Ошибка валидации price (Item).");
+    if (!checkCode(item.code)) validationErrors.push("Ошибка валидации code (Item).");
+    if (!checkName(item.name)) validationErrors.push("Ошибка валидации name (Item).");
+    if (!checkPrice(item.price)) validationErrors.push("Ошибка валидации price (Item).");
 
     if (validationErrors.length > 0) {
         let error = new Error("Ошибки валидации Item");
@@ -127,26 +127,26 @@ const validateItemRequest = (item) => {
     }
 }
 
-const validateGuid = (id) => {
+const checkGuid = (id) => {
     return id && id.length === 36 && /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/i.test(id);
 }
 
-const validatePages = (pageNumber, pageSize) => {
+const checkPages = (pageNumber, pageSize) => {
     return Number.isInteger(pageNumber) && Number.isInteger(pageSize) && pageNumber > 0 && pageSize > 0 && pageSize <= 36;
 }
 
-const validateCode = (code) => {
+const checkCode = (code) => {
     return code && code.length === 12 && /^[0-9]{2}-[0-9]{4}-[A-Z]{2}[0-9]{2}$/.test(code);
 }
 
-const validateName = (name) => {
+const checkName = (name) => {
     return name && name.trim() > 0;
 }
 
-const validatePrice = (price) => {
+const checkPrice = (price) => {
     return !isNaN(price) && price > 0;
 }
 
-const validateCategory = (category) => {
+const checkCategory = (category) => {
     return category && category.trim() > 0;
 }

@@ -11,7 +11,7 @@ const API_URL = 'http://localhost:5000';
 
 export const getPageOfOrders = async (pageNumber, pageSize) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при получении данных (getPageOfOrders): ', error);
         alert('Проблемы с сервером!');
@@ -20,7 +20,7 @@ export const getPageOfOrders = async (pageNumber, pageSize) => {
 
 export const getPageOfOrdersByCustomer = async (customerId, pageNumber, pageSize) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при получении данных (getPageOfOrdersByCustomer): ', error);
         alert('Проблемы с сервером!');
@@ -29,7 +29,7 @@ export const getPageOfOrdersByCustomer = async (customerId, pageNumber, pageSize
 
 export const getBasket = async (customerId) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при получении данных (getBasket): ', error);
         alert('Проблемы с сервером!');
@@ -38,7 +38,7 @@ export const getBasket = async (customerId) => {
 
 export const placeAnOrder = async (orderId) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при оформлении заказа (placeAnOrder): ', error);
         alert('Проблемы с сервером!');
@@ -47,7 +47,7 @@ export const placeAnOrder = async (orderId) => {
 
 export const updateOrder = async (orderId) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при обновлении данных (updateOrder): ', error);
         alert('Проблемы с сервером!');
@@ -56,9 +56,18 @@ export const updateOrder = async (orderId) => {
 
 export const deleteOrder = async (orderId) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при удалении данных (deleteOrder): ', error);
         alert('Проблемы с сервером!');
     }
 }
+
+const handleResponse = (response) => {
+    if (response.status === 200 && response.data) {
+        return response.data;
+    } else {
+        console.log("Статус операции: " + response.status + ".");
+        return null;
+    }
+};

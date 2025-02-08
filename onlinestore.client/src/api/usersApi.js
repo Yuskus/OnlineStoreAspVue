@@ -11,7 +11,7 @@ const API_URL = 'http://localhost:5000';
 
 export const getPageOfUsers = async (pageNumber, pageSize) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при получении данных (getPageOfUsers): ', error);
         alert('Проблемы с сервером!');
@@ -20,7 +20,7 @@ export const getPageOfUsers = async (pageNumber, pageSize) => {
 
 export const logIn = async (logForm) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при аутентификации (logIn): ', error);
         alert('Проблемы с сервером!');
@@ -29,7 +29,7 @@ export const logIn = async (logForm) => {
 
 export const registerCustomer = async (customer) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при регистрации заказчика (registerCustomer): ', error);
         alert('Проблемы с сервером!');
@@ -38,7 +38,7 @@ export const registerCustomer = async (customer) => {
 
 export const registerManager = async (manager) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при регистрации менеджера (registerManager): ', error);
         alert('Проблемы с сервером!');
@@ -47,7 +47,7 @@ export const registerManager = async (manager) => {
 
 export const updateUser = async (userId, newUser) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при обновлении данных (updateUser): ', error);
         alert('Проблемы с сервером!');
@@ -56,9 +56,18 @@ export const updateUser = async (userId, newUser) => {
 
 export const deleteUser = async (userId) => {
     try {
-
+        return handleResponse(response);
     } catch (error) {
         console.error('Ошибка при удалении данных (deleteUser): ', error);
         alert('Проблемы с сервером!');
     }
 }
+
+const handleResponse = (response) => {
+    if (response.status === 200 && response.data) {
+        return response.data;
+    } else {
+        console.log("Статус операции: " + response.status + ".");
+        return null;
+    }
+};

@@ -13,7 +13,7 @@ namespace OnlineStore.Server.Controllers
         private readonly ILogger<OrderElementsController> _logger = logger;
 
         [Authorize]
-        [HttpGet(template: "getbyid/{id}")] //getbyorderid
+        [HttpGet(template: "getbyorderid/{id}")]
         public async Task<ActionResult<IEnumerable<OrderElementResponse>>> GetOrderElementsByOrderId(Guid id)
         {
             try

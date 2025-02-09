@@ -18,7 +18,7 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import usersApi from '../api/usersApi';
 
   export default {
     name: "Login",
@@ -29,27 +29,36 @@
       }
     },
     methods: {
+      makeLoginRequest() {
+        return {
+          username: this.username,
+          password: this.password
+        };
+      },
       async login() {
         try {
-          const response = await axios.post(`http://localhost:5000/api/Users/login`, {
-            username: this.username,
-            password: this.password
-          });
-          if (response.status === 200 && response.data && response.data.token) {
-            localStorage.setItem('jwt', response.data.token);
-            localStorage.setItem('username', response.data.username);
-            localStorage.setItem('guid', response.data.customerId);
-            localStorage.setItem('role', response.data.role);
-            this.$router.push('/');
+          let loginForm = this.makeLoginRequest();
+          const response = await usersApi.logIn(loginForm);
+          if (response) {
+            localStorage.setItem('jwt', response.token);
+            localStorage.setItem('username', response.username);
+            localStorage.setItem('guid', response.customerId);
+            localStorage.setItem('role', response.role);
           } else {
             localStorage.clear();
             alert('Неверный логин или пароль!');
           }
         } catch (error) {
           localStorage.clear();
-          console.error('Ошибка при аутентификации (Login): ', error);
-          alert('Непредвиденная ошибка!');
+          this.warnInfo('Ошибка при аутентификации (Login): ', error);
         }
+      },
+      toMainPage() {
+        this.$router.push('/');
+      },
+      warnInfo(message, error) {
+        console.error(message, error);
+        alert('Непредвиденная ошибка!');
       }
     }
   }

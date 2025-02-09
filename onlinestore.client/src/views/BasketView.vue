@@ -61,8 +61,10 @@
       async getBasketNumber() {
         try {
           const response = await ordersApi.getBasket(this.myId);
-          if (response !== null) {
+          if (response) {
             this.basketOrder = response;
+          } else {
+            alert('Ошибка при получении информации о корзине.');
           }
         } catch (error) {
           this.warnInfo('Ошибка при получении данных (BasketView): ', error);
@@ -71,8 +73,10 @@
       async getBasketElements() {
         try {
           const response = await orderElementsApi.getOrderElementByOrderId(this.basketOrder.id);
-          if (response !== null) {
+          if (response) {
             this.basket = response;
+          } else {
+            alert('Ошибка при получении содержимого корзины.');
           }
         } catch (error) {
           this.warnInfo('Ошибка при получении данных (BasketView): ', error);
@@ -81,7 +85,7 @@
       async clearBasket() {
         try {
           const response = await ordersApi.deleteOrder(this.basketOrder.id);
-          if (response === false) {
+          if (!response) {
             alert('Ошибка при очистке корзины.');
           }
           await this.refreshBasket();
@@ -92,13 +96,12 @@
       async placeAnOrder() {
         try {
           const response = await ordersApi.placeAnOrder(this.basketOrder.id);
-          if (response === false) {
+          if (!response) {
             alert('Ошибка при очистке корзины.');
           }
           await this.refreshBasket();
         } catch (error) {
-          console.error('Ошибка при изменении данных (Basket): ', error);
-          alert('Проблемы с сервером!');
+          this.warnInfo('Ошибка при изменении данных (Basket): ', error);
         }
       },
       async refreshBasket() {

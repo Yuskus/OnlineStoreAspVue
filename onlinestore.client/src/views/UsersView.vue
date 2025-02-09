@@ -47,8 +47,9 @@
 </template>
 
 <script>
+  import usersApi from '../api/usersApi';
+
   import Pagination from '../components/PaginationComponent.vue'
-  import axios from 'axios';
   import UserEditWindow from '../components/UserEditWindow.vue';
 
   export default {
@@ -68,36 +69,32 @@
     methods: {
       async getUsers(number = 1) {
         this.currentPage = number;
-        
         try {
-          const response = await axios.get(`http://localhost:5000/api/Users/getall?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`, {
-            headers: {
-              'authorization': `Bearer ${localStorage.getItem('jwt')}`
-            }
-          });
-          if (response.status === 200 && response.data) {
+          const response = await usersApi.getPageOfUsers(this.currentPage, this.pageSize);
+          if (response) {
             this.users = response.data.userResponses;
             this.totalCount = response.data.totalCount;
             this.totalPages = Math.ceil(this.totalCount / this.pageSize);
           } else {
-            alert('Проблемы с сервером!');
-            console.log("Статус ошибки: " + response.status);
+            alert('Ошибка во время получения списка пользователей.');
           }
         } catch (error) {
-          console.error('Ошибка при получении данных (Users): ', error);
-          alert('Проблемы с сервером!');
+          this.warnInfo('Ошибка при получении данных (Users): ', error);
         }
       },
       async clickOnItem(index) {
-        console.log(index);
         this.selectedUser = this.users[index];
-        this.clickWindowRedactor(true);
+        await this.clickWindowRedactor(true);
       },
-      clickWindowRedactor(state) {
+      async clickWindowRedactor(state) {
         this.isOpenDialog = state;
         if (!state) {
-          this.getUsers();
+          await this.getUsers();
         }
+      },
+      warnInfo(message, error) {
+        console.error(message, error);
+        alert('Непредвиденная ошибка!');
       }
     },
     mounted() {

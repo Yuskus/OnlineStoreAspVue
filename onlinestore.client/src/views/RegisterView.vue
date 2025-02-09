@@ -26,7 +26,7 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import usersApi from '../api/usersApi';
   
   export default {
     name: "Register",
@@ -42,29 +42,36 @@
       }
     },
     methods: {
+      makeRegisterCustomerRequest() {
+        return {
+          customerRequest: {
+            name: this.customer.name,
+            code: this.customer.code,
+            address: this.customer.address
+          },
+          username: this.customer.username,
+          password: this.customer.password
+        };
+      },
       async register() {
         try {
-          const response = await axios.post(`http://localhost:5000/api/Users/register`, { 
-            customerRequest: {
-              name: this.customer.name,
-              code: this.customer.code,
-              address: this.customer.address,
-              discount: 0
-            },
-            username: this.customer.username,
-            password: this.customer.password,
-            role: 0
-          });
-          if (response.status === 200 && response.data) {
-            console.log(response.data);
-            this.$router.push('/auth');
+          let newCustomer = this.makeRegisterCustomerRequest();
+          const response = await usersApi.registerCustomer(newCustomer);
+          if (response) {
+            this.toLoginPage();
           } else {
             alert('Ошибка регистрации. Попробуйте снова.');
           }
         } catch (error) {
-          console.error('Ошибка при регистрации (Register): ', error);
-          alert('Непредвиденная ошибка!');
+          this.warnInfo('Ошибка при регистрации (Register): ', error);
         }
+      },
+      toLoginPage() {
+        this.$router.push('/auth');
+      },
+      warnInfo(message, error) {
+        console.error(message, error);
+        alert('Непредвиденная ошибка!');
       }
     }
   }

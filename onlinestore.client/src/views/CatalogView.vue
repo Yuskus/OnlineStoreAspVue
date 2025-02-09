@@ -69,10 +69,10 @@
       async getCategories() {
         try {
           const response = await itemsApi.getCategories();
-          if (!response) {
-            alert('Ошибка во время получения категорий.');
-          } else {
+          if (response) {
             this.categories = response;
+          } else {
+            alert('Ошибка во время получения категорий.');
           }
         } catch (error) {
           this.warnInfo('Ошибка во время получения данных (CatalogView).', error);
@@ -82,12 +82,12 @@
         this.currentPage = number;
         try {
           const response = await itemsApi.getPageOfItemsByCategory(category, this.currentPage, this.pageSize);
-          if (!response) {
-            alert('Ошибка во время получения страницы товаров по выбранной категории.');
-          } else {
+          if (response) {
             this.items = response.itemResponses;
             this.totalCount = response.totalCount;
             this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+          } else {
+            alert('Ошибка во время получения страницы товаров по выбранной категории.');
           }
         } catch (error) {
           this.warnInfo('Ошибка во время получения данных (CatalogView).', error);
@@ -97,12 +97,12 @@
         this.currentPage = number;
         try {
           const response = await itemsApi.getPageOfItems(this.currentPage, this.pageSize);
-          if (!response) {
-            alert('Ошибка во время получения товаров.');
-          } else {
+          if (response) {
             this.items = response.itemResponses;
             this.totalCount = response.totalCount;
             this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+          } else {
+            alert('Ошибка во время получения товаров.');
           }
         } catch (error) {
           this.warnInfo('Ошибка во время получения данных (CatalogView).', error);
@@ -112,10 +112,10 @@
         if (this.role === '1') return;
         try {
           const response = await ordersApi.getBasket(this.myId);
-          if (!response) {
-            alert('Ошибка во время получения информации о корзине.');
-          } else {
+          if (response) {
             this.basketOrder = response;
+          } else {
+            alert('Ошибка во время получения информации о корзине.');
           }
         } catch (error) {
           this.warnInfo('Ошибка во время получения данных (CatalogView).', error);
@@ -135,15 +135,15 @@
       async clickOnItem(index) {
         if (this.role === '1') {
           this.selectedItem = this.items[index];
-          this.clickWindowRedactor(true);
+          await this.clickWindowRedactor(true);
         } else {
           await this.addInBasket(this.items[index]);
         }
       },
-      clickWindowRedactor(state) {
+      async clickWindowRedactor(state) {
         this.isOpenDialog = state;
         if (!state) {
-          this.refreshDataOnPage();
+          await this.refreshDataOnPage();
         }
       },
       async refreshDataOnPage() {

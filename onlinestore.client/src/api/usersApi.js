@@ -23,11 +23,7 @@ export const logIn = async (logForm) => {
     try {
         validateUserRequest(logForm);
 
-        const response = await axios.post(`${API_URL}/api/users/login`, logForm, {
-            headers: {
-                'authorization': `Bearer ${localStorage.getItem('jwt')}`
-            }
-        });
+        const response = await axios.post(`${API_URL}/api/users/login`, logForm);
 
         return handleResponse(response);
     } catch (error) {
@@ -40,11 +36,7 @@ export const registerCustomer = async (customer) => {
     try {
         validateCustomerRegisterRequest(customer);
 
-        const response = await axios.post(`${API_URL}/api/users/registercustomer`, customer, {
-            headers: {
-                'authorization': `Bearer ${localStorage.getItem('jwt')}`
-            }
-        });
+        const response = await axios.post(`${API_URL}/api/users/registercustomer`, customer);
 
         return handleResponse(response);
     } catch (error) {

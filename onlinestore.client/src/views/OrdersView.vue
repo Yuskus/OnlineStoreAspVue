@@ -40,7 +40,7 @@
 <script>
   import Pagination from '../components/PaginationComponent.vue'
   import OrderEditWindow from '../components/OrderEditWindow.vue';
-  import axios from 'axios';
+  import ordersApi from '../api/ordersApi';
 
   export default {
     name: 'Orders',
@@ -53,7 +53,6 @@
         totalCount: 0,
         myId: null,
         role: null,
-        ordersUrl: '',
         records: [],
         selectedOrder: null,
         isOpenDialog: false
@@ -63,46 +62,34 @@
       getMyData() {
         this.myId = localStorage.getItem('guid');
         this.role = localStorage.getItem('role');
-        
-        this.makeUrl();
-      },
-      makeUrl() {
-        if (this.role === '1') {
-          this.ordersUrl = `http://localhost:5000/api/Orders/getpage?pageNumber=${this.currentPage}&pageSize=${this.pageSize}`;
-        } else {
-          this.ordersUrl = `http://localhost:5000/api/Orders/getbycustomer?id=${this.myId}&pageNumber=${this.currentPage}&pageSize=${this.pageSize}`;
-        }
       },
       async getOrders(number = 1) {
         this.currentPage = number;
-        
         try {
-          const response = await axios.get(this.ordersUrl, {
-            headers: {
-              'authorization': `Bearer ${localStorage.getItem('jwt')}`
-            }
-          });
-          
-          if (response.status === 200 && response.data) {
-            this.records = response.data.orderResponses;
-            this.totalCount = response.data.totalCount;
+          const response = this.role === '1'
+                        ? await ordersApi.getPageOfOrders(this.currentPage, this.pageSize)
+                        : await ordersApi.getPageOfOrdersByCustomer(this.myId, this.currentPage, this.pageSize);
+          if (response) {
+            this.records = response.orderResponses;
+            this.totalCount = response.totalCount;
             this.totalPages = Math.ceil(this.totalCount / this.pageSize);
           } else {
-            alert('Проблемы с сервером!');
-            console.log("Статус ошибки: " + response.status);
+            alert('Ошибка при получении заказов.');
           }
         } catch (error) {
-          console.error('Ошибка при получении данных (Orders): ', error);
-          alert('Проблемы с сервером!');
+          this.warnInfo('Ошибка при получении данных (Orders): ', error);
         }
       },
       async clickOnItem(index) {
         this.selectedOrder = this.records[index];
-        console.log(this.selectedOrder);
         this.isOpenDialog = true;
       },
       clickWindowRedactor(state) {
         this.isOpenDialog = state;
+      },
+      warnInfo(message, error) {
+        console.error(message, error);
+        alert('Проблемы с сервером!');
       }
     },
     mounted() {

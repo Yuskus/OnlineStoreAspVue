@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:5000';
 
 export const getPageOfUsers = async (pageNumber, pageSize) => {
     try {
-        if (!checkPages(pageNumber, pageSize)) throw new Error("Ошибка валидации страниц: pageNumber, pageSize (Users).");
+        validatePages(pageNumber, pageSize);
 
         const response = await axios.get(`${API_URL}/api/users/getpage?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             headers: {
@@ -64,7 +64,7 @@ export const registerManager = async (manager) => {
 
 export const updateUser = async (username, newUser) => {
     try {
-        if (!checkUsername(username)) throw new Error("Ошибка при валидации никнейма (Users).");
+        validateUsername(username);
         validateUserInfo(newUser);
 
         const response = await axios.put(`${API_URL}/api/users/update/${username}`, newUser, {
@@ -82,7 +82,7 @@ export const updateUser = async (username, newUser) => {
 
 export const deleteUser = async (username) => {
     try {
-        if (!checkUsername(user.username)) throw new Error("Ошибка при валидации никнейма (Users).");
+        validateUsername(user.username);
 
         const response = await axios.delete(`${API_URL}/api/users/delete/${username}`, {
             headers: {
@@ -107,70 +107,52 @@ const handleResponse = (response) => {
 };
 
 const validateUserInfo = (user) => {
-    let validationErrors = [];
-
-    if (!checkUsername(user.username)) validationErrors.push("Ошибка валидации username (user).");
-    if (!checkRole(user.role)) validationErrors.push("Ошибка валидации role (user).");
-
-    if (validationErrors.length > 0) {
-        let error = new Error("Ошибки валидации User");
-        error.validationErrors = validationErrors;
-        throw error;
-    }
+    validateUsername(user.username);
+    validateRole(user.role);
 }
 
 const validateUserRequest = (user) => {
-    let validationErrors = [];
-
-    if (!checkUsername(user.username)) validationErrors.push("Ошибка валидации username (user).");
-    if (!checkPassword(user.password)) validationErrors.push("Ошибка валидации password (user).");
-
-    if (validationErrors.length > 0) {
-        let error = new Error("Ошибки валидации User");
-        error.validationErrors = validationErrors;
-        throw error;
-    }
+    validateUsername(user.username);
+    validatePassword(user.password);
 }
 
 const validateCustomerRegisterRequest = (user) => {
-    let validationErrors = [];
-
-    if (!checkUsername(user.username)) validationErrors.push("Ошибка валидации username (user).");
-    if (!checkPassword(user.password)) validationErrors.push("Ошибка валидации password (user).");
-    if (!checkCustomerName(user.customerInfo.name)) validationErrors.push("Ошибка валидации customerInfo.name (user).");
-    if (!checkCustomerCode(user.customerInfo.code)) validationErrors.push("Ошибка валидации customerInfo.code (user).");
-
-    if (validationErrors.length > 0) {
-        let error = new Error("Ошибки валидации User");
-        error.validationErrors = validationErrors;
-        throw error;
-    }
+    validateUsername(user.username);
+    validatePassword(user.password);
+    validateCustomerName(user.customerInfo.name);
+    validateCustomerCode(user.customerInfo.code);
 }
 
-const checkPages = (pageNumber, pageSize) => {
-    return Number.isInteger(pageNumber) && Number.isInteger(pageSize) && pageNumber > 0 && pageSize > 0 && pageSize <= 36;
+const validatePages = (pageNumber, pageSize) => {
+    const isValid = Number.isInteger(pageNumber) && Number.isInteger(pageSize) && pageNumber > 0 && pageSize > 0 && pageSize <= 36;
+    if (!isValid) throw new Error('Ошибка валидации pageNumber, pageSize.');
 }
 
-const checkUsername = (username) => {
-    return username && username.trim() > 6;
+const validateUsername = (username) => {
+    const isValid = username && username.trim().length > 6;
+    if (!isValid) throw new Error('Ошибка валидации username.');
 }
 
-const checkPassword = (password) => {
-    return password && password.length > 6;
+const validatePassword = (password) => {
+    const isValid = password && password.length > 6;
+    if (!isValid) throw new Error('Ошибка валидации password.');
 }
 
-const checkRole = (role) => {
-    return role === 0 || role === 1;
+const validateRole = (role) => {
+    const isValid = role === 0 || role === 1;
+    if (!isValid) throw new Error('Ошибка валидации role.');
 }
 
-const checkCustomerCode = (code) => { 
-    if (code && /^[0-9]{4}-[0-9]{4}$/i.test(code)) {
+const validateCustomerCode = (code) => { 
+    let isValid = code && /^[0-9]{4}-[0-9]{4}$/i.test(code)
+    if (isValid) {
         let rightPart = parseInt(code.split('-')[1]);
-        return !isNaN(rightPart) && rightPart > 1900 && rightPart < new Date().getFullYear();
+        isValid &&= !isNaN(rightPart) && rightPart > 1900 && rightPart < new Date().getFullYear();
     }
-    return false;
+    if (!isValid) throw new Error('Ошибка валидации code.');
 }
 
-const checkCustomerName = (name) => {
-    return name && name.trim() > 0;
+const validateCustomerName = (name) => {
+    const isValid = name && name.trim().length > 0;
+    if (!isValid) throw new Error('Ошибка валидации name.');
 }

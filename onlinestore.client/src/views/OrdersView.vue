@@ -38,9 +38,10 @@
 </template>
 
 <script>
-  import Pagination from '../components/PaginationComponent.vue'
-  import OrderEditWindow from '../components/OrderEditWindow.vue';
-  import ordersApi from '../api/ordersApi';
+  import { getPageOfOrders, getPageOfOrdersByCustomer } from '../api/ordersApi';
+
+  import Pagination from '../components/pagination/PaginationComponent.vue'
+  import OrderEditWindow from '../components/dialogs/OrderEditWindow.vue';
 
   export default {
     name: 'Orders',
@@ -67,8 +68,8 @@
         this.currentPage = number;
         try {
           const response = this.role === '1'
-                        ? await ordersApi.getPageOfOrders(this.currentPage, this.pageSize)
-                        : await ordersApi.getPageOfOrdersByCustomer(this.myId, this.currentPage, this.pageSize);
+                        ? await getPageOfOrders(this.currentPage, this.pageSize)
+                        : await getPageOfOrdersByCustomer(this.myId, this.currentPage, this.pageSize);
           if (response) {
             this.records = response.orderResponses;
             this.totalCount = response.totalCount;
@@ -84,8 +85,11 @@
         this.selectedOrder = this.records[index];
         this.isOpenDialog = true;
       },
-      clickWindowRedactor(state) {
+      async clickWindowRedactor(state) {
         this.isOpenDialog = state;
+        if (!state) {
+          await this.getOrders();
+        }
       },
       warnInfo(message, error) {
         console.error(message, error);
@@ -137,10 +141,7 @@
   }
 
   a, h1, h2, h3, p, .cell {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
     font-weight: 500;
-    font-style: normal;
     color: #1c2633;
   }
 

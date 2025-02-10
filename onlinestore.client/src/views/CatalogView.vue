@@ -27,12 +27,12 @@
 </template>
 
 <script>
-  import ItemEditWindow from '../components/ItemEditWindow.vue';
-  import Pagination from '../components/PaginationComponent.vue';
-  
-  import ordersApi from '../api/ordersApi';
-  import orderElementsApi from '../api/orderElementsApi';
-  import itemsApi from '../api/itemsApi';
+  import { getBasket } from '../api/ordersApi';
+  import { addOrderElement } from '../api/orderElementsApi';
+  import { getCategories, getPageOfItemsByCategory, getPageOfItems } from '../api/itemsApi';
+
+  import ItemEditWindow from '../components/dialogs/ItemEditWindow.vue';
+  import Pagination from '../components/pagination/PaginationComponent.vue';
 
   export default {
     name: 'Catalog',
@@ -68,7 +68,7 @@
       },
       async getCategories() {
         try {
-          const response = await itemsApi.getCategories();
+          const response = await getCategories();
           if (response) {
             this.categories = response;
           } else {
@@ -81,7 +81,7 @@
       async getByCategory(category, number = 1) {
         this.currentPage = number;
         try {
-          const response = await itemsApi.getPageOfItemsByCategory(category, this.currentPage, this.pageSize);
+          const response = await getPageOfItemsByCategory(category, this.currentPage, this.pageSize);
           if (response) {
             this.items = response.itemResponses;
             this.totalCount = response.totalCount;
@@ -96,7 +96,7 @@
       async getItems(number = 1) {
         this.currentPage = number;
         try {
-          const response = await itemsApi.getPageOfItems(this.currentPage, this.pageSize);
+          const response = await getPageOfItems(this.currentPage, this.pageSize);
           if (response) {
             this.items = response.itemResponses;
             this.totalCount = response.totalCount;
@@ -111,7 +111,7 @@
       async getBasketNumber() {
         if (this.role === '1') return;
         try {
-          const response = await ordersApi.getBasket(this.myId);
+          const response = await getBasket(this.myId);
           if (response) {
             this.basketOrder = response;
           } else {
@@ -124,7 +124,7 @@
       async addInBasket(item) {
         try {
           let newOrderElement = this.makeOrderElementRequest(item);
-          const response = await orderElementsApi.addOrderElement(newOrderElement);
+          const response = await addOrderElement(newOrderElement);
           if (!response) {
             alert('Ошибка во время добавления товара в корзину.');
           }
@@ -179,6 +179,13 @@
     align-items: center;
   }
 
+  .catalog {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px 0px 30px 0px;
+  }
+
   .button {
     display: inline-block;
     justify-content: space-around;
@@ -189,23 +196,17 @@
     border-radius: 15px;
   }
 
-  a, h1, h2, h3, p, .cell, div {
-      font-family: "Sofia Sans", serif;
-      font-optical-sizing: auto;
-      font-weight: 500;
-      font-style: normal;
-      color: #1c2633;
-  }
-
   .button:hover {
     background-color: #dce1f0;
   }
 
-  .catalog {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 20px 0px 30px 0px;
+  a, h1, h2, h3, p, .cell, div {
+      font-weight: 500;
+      color: #1c2633;
+  }
+
+  img {
+    border-radius: 20px 20px 0px 0px;
   }
 
   .item {
@@ -217,24 +218,16 @@
     border-radius: 20px 20px 20px 20px;
   }
 
-  img {
-    border-radius: 20px 20px 0px 0px;
-  }
-
   .item div {
     align-self: center;
-  }
-
-  .item-desc {
-    padding: 10px;
   }
 
   .item:hover {
     box-shadow: 4px 8px 16px rgba(0, 50, 100, 0.4);
   }
 
-  p {
-    color: #1c2633;
+  .item-desc {
+    padding: 10px;
   }
 </style>
 

@@ -38,9 +38,10 @@
 </template>
 
 <script>
-  import ordersApi from '../api/ordersApi';
-  import orderElementsApi from '../api/orderElementsApi';
-  import OrderElementEditWindow from '../components/OrderElementEditWindow.vue'
+  import { getBasket, placeAnOrder, deleteOrder } from '../api/ordersApi';
+  import { getOrderElementByOrderId } from '../api/orderElementsApi';
+
+  import OrderElementEditWindow from '../components/dialogs/OrderElementEditWindow.vue'
 
   export default {
     name: 'Basket',
@@ -60,7 +61,7 @@
       },
       async getBasketNumber() {
         try {
-          const response = await ordersApi.getBasket(this.myId);
+          const response = await getBasket(this.myId);
           if (response) {
             this.basketOrder = response;
           } else {
@@ -72,7 +73,7 @@
       },
       async getBasketElements() {
         try {
-          const response = await orderElementsApi.getOrderElementByOrderId(this.basketOrder.id);
+          const response = await getOrderElementByOrderId(this.basketOrder.id);
           if (response) {
             this.basket = response;
           } else {
@@ -84,7 +85,7 @@
       },
       async clearBasket() {
         try {
-          const response = await ordersApi.deleteOrder(this.basketOrder.id);
+          const response = await deleteOrder(this.basketOrder.id);
           if (!response) {
             alert('Ошибка при очистке корзины.');
           }
@@ -95,7 +96,7 @@
       },
       async placeAnOrder() {
         try {
-          const response = await ordersApi.placeAnOrder(this.basketOrder.id);
+          const response = await placeAnOrder(this.basketOrder.id);
           if (!response) {
             alert('Ошибка при очистке корзины.');
           }
@@ -165,10 +166,7 @@
   }
 
   a, h1, h2, h3, p, .cell {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
     font-weight: 500;
-    font-style: normal;
     color: #1c2633;
   }
 

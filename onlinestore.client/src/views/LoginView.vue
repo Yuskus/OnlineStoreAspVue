@@ -18,7 +18,7 @@
 </template>
 
 <script>
-  import usersApi from '../api/usersApi';
+  import { logIn } from '../api/usersApi';
 
   export default {
     name: "Login",
@@ -38,12 +38,13 @@
       async login() {
         try {
           let loginForm = this.makeLoginRequest();
-          const response = await usersApi.logIn(loginForm);
+          const response = await logIn(loginForm);
           if (response) {
             localStorage.setItem('jwt', response.token);
             localStorage.setItem('username', response.username);
             localStorage.setItem('guid', response.customerId);
             localStorage.setItem('role', response.role);
+            this.toMainPage();
           } else {
             localStorage.clear();
             alert('Неверный логин или пароль!');
@@ -106,16 +107,7 @@
     margin-top: 20px;
     color: #1c2633;
     text-shadow: 1px 1px rgba(0,0,0,0.1);
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
     font-weight: 500;
-    font-style: normal;
-  }
-
-  a, label, button {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
-    font-style: normal;
     font-size: 16px;
   }
 
@@ -125,10 +117,6 @@
     padding: 20px;
   }
 
-  .accent {
-    background-color: rgba(0, 0, 50, 0.05);
-  }
-
   a, button {
     display: inline-block;
     font-weight: 400;
@@ -136,6 +124,7 @@
     border-radius: 8px;
     margin: 5px;
     text-decoration: none;
+    font-size: 16px;
   }
 
   button {
@@ -148,6 +137,10 @@
 
   a:hover {
     background-color: rgba(0, 0, 50, 0.1);
+  }
+
+  .accent {
+    background-color: rgba(0, 0, 50, 0.05);
   }
 
   .accent:hover {

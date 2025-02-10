@@ -24,6 +24,7 @@ namespace OnlineStore.Server.Mapping.Order
             {
                 Id = order.Id,
                 CustomerId = order.CustomerId,
+                CustomerName = order.Customer?.Name,
                 OrderDate = order.OrderDate,
                 ShipmentDate = order.ShipmentDate,
                 OrderNumber = order.OrderNumber,

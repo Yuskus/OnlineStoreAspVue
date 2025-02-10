@@ -2,21 +2,11 @@
     <div class="dialog-over">
         <div class="dialog">
             <h2>Редактировать заказ</h2>
-            <hr>
-            <div class="form">
-                <label>Заказчик</label>
-                <input type="text" v-model="localOrder.customerId">
-            </div>
-            <hr>
-            <div class="form">
-                <label>Дата заказа</label>
-                <input type="text" v-model="localOrder.orderDate">
-            </div>
-            <hr>
-            <div class="form">
-                <label>Дата доставки</label>
-                <input type="text" v-model="localOrder.shipmentDate">
-            </div>
+
+            <DialogLineForm v-model="localOrder.customerId" :labelName="'Заказчик'" :inputText="localOrder.customerId" />
+            <DialogLineForm v-model="localOrder.orderDate" :labelName="'Дата заказа'" :inputText="localOrder.orderDate" />
+            <DialogLineForm v-model="localOrder.shipmentDate" :labelName="'Дата доставки'" :inputText="localOrder.shipmentDate" />
+
             <hr>
             <div class="form">
                 <label>Статус</label>
@@ -26,10 +16,10 @@
                     <option>completed</option>
                 </select>
             </div>
-    
+            
             <div class="buttons">
-                <button @click="deleteItem()">Удалить</button>
                 <button v-if="role === '1'" @click="applyChanges()">Изменить</button>
+                <button @click="deleteItem()">Удалить</button>
                 <button @click="cancelDialog()">Отмена</button>
             </div>
         </div>
@@ -37,9 +27,12 @@
 </template>
 
 <script>
-import ordersApi from '../api/ordersApi';
+import { updateOrder, deleteOrder } from '../../api/ordersApi';
+
+import DialogLineForm from '../forms/DialogLineForm.vue';
 
 export default {
+    components: { DialogLineForm },
     props: {
         order: {
             type: Object,
@@ -67,7 +60,7 @@ export default {
         async applyChanges() {
             try {
                 let newOrder = this.makeOrderRequestBody();
-                const response = await ordersApi.updateOrder(this.localOrder.id, newOrder);
+                const response = await updateOrder(this.localOrder.id, newOrder);
                 if (!response) {
                     alert('Ошибка при изменении заказа (Order).');
                 }
@@ -79,7 +72,7 @@ export default {
         },
         async deleteItem() {
             try {
-                const response = await ordersApi.delete(this.order.id);
+                const response = await deleteOrder(this.order.id);
                 if (!response) {
                     alert('Ошибка при удалении заказа (Order).');
                 }
@@ -143,12 +136,6 @@ export default {
 
 h2 {
     color: #212933;
-}
-
-h2, label, button {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
-    font-style: normal;
 }
 
 .buttons {

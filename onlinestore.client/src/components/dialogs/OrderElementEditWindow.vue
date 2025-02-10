@@ -2,15 +2,12 @@
     <div class="dialog-over">
         <div class="dialog">
             <h2>Редактировать единицу заказа</h2>
-            <hr>
-            <div class="form">
-                <label>Количество</label>
-                <input type="number" v-model="localItem.itemsCount">
-            </div>
+
+            <DialogLineForm v-model="localItem.itemsCount" :labelName="'Количество'" :inputType="'number'" :inputText="localItem.itemsCount" />
     
             <div class="buttons">
-                <button @click="deleteItem()">Удалить</button>
                 <button @click="applyChanges()">Изменить</button>
+                <button @click="deleteItem()">Удалить</button>
                 <button @click="cancelDialog()">Отмена</button>
             </div>
         </div>
@@ -18,9 +15,12 @@
 </template>
 
 <script>
-import orderElementsApi from '../api/orderElementsApi';
+import { updateOrderElement, deleteOrderElement } from '../../api/orderElementsApi';
+
+import DialogLineForm from '../forms/DialogLineForm.vue';
 
 export default {
+    components: { DialogLineForm },
     props: {
         item: {
             type: Object
@@ -43,7 +43,7 @@ export default {
         async applyChanges() {
             try {
                 let newOrderElement = this.makeOrderElementRequestBody();
-                const response = await orderElementsApi.updateOrderElement(this.localItem.id, newOrderElement);
+                const response = await updateOrderElement(this.localItem.id, newOrderElement);
                 if (!response) {
                     alert('Ошибка при изменении элемента заказа (OrderElement).');
                 }
@@ -55,7 +55,7 @@ export default {
         },
         async deleteItem() {
             try {
-                const response = await orderElementsApi.deleteOrderElement(this.localItem.id);
+                const response = await deleteOrderElement(this.localItem.id);
                 if (!response) {
                     alert('Ошибка при удалении элемента заказа (OrderElement).');
                 }
@@ -116,12 +116,6 @@ export default {
 
 h2 {
     color: #212933;
-}
-
-h2, label, button {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
-    font-style: normal;
 }
 
 .buttons {

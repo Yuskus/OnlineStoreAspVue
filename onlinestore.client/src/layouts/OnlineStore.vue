@@ -105,7 +105,6 @@
 
   header h3 {
     font-size: 20px;
-    font-weight: 500;
   }
 
   header .button {
@@ -137,7 +136,6 @@
   .userinfo {
     min-width: 350px;
     min-height: 10vh;
-    font-family: Roboto, Arial, Helvetica, sans-serif, system-ui;
   }
 
   .menu {
@@ -179,9 +177,6 @@
   }
 
   h1, h2, h3, p, .link {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
     font-weight: 500;
-    font-style: normal;
   }
 </style>

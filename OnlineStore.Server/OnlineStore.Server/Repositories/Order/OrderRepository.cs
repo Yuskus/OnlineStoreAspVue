@@ -72,7 +72,8 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<OrderResponseList> GetPageOfOrders(int pageNumber, int pageSize)
         {
-            List<OrderResponse> response = await _context.Orders.Skip((pageNumber - 1) * pageSize)
+            List<OrderResponse> response = await _context.Orders.Include(x => x.Customer)
+                                                                .Skip((pageNumber - 1) * pageSize)
                                                                 .Take(pageSize)
                                                                 .Select(x => x.MapFromDb()).ToListAsync();
 
@@ -85,7 +86,8 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<OrderResponseList> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
         {
-            List<OrderResponse> response = await _context.Orders.Where(x => x.CustomerId == id)
+            List<OrderResponse> response = await _context.Orders.Include(x => x.Customer)
+                                                                .Where(x => x.CustomerId == id)
                                                                 .Skip((pageNumber - 1) * pageSize)
                                                                 .Take(pageSize)
                                                                 .Select(x => x.MapFromDb()).ToListAsync();
@@ -99,7 +101,8 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<OrderResponseList> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
         {
-            List<OrderResponse> response = await _context.Orders.Where(x => x.OrderStatus == status)
+            List<OrderResponse> response = await _context.Orders.Include(x => x.Customer)
+                                                                .Where(x => x.OrderStatus == status)
                                                                 .Skip((pageNumber - 1) * pageSize)
                                                                 .Take(pageSize)
                                                                 .Select(x => x.MapFromDb()).ToListAsync();
@@ -114,8 +117,7 @@ namespace OnlineStore.Server.Repositories.Order
         public async Task<OrderResponse?> GetBasketOrder(Guid customerId)
         {
             // поиск корзины (заказ со статусом new)
-            Entity.Order? order = await _context.Orders.Where(x => x.CustomerId == customerId && x.OrderStatus != null && x.OrderStatus.ToLower() == "new")
-                                                       .SingleOrDefaultAsync();
+            Entity.Order? order = await _context.Orders.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.OrderStatus == "new");
 
             if (order is null)
             {
@@ -126,7 +128,6 @@ namespace OnlineStore.Server.Repositories.Order
             }
 
             OrderResponse orderResponse = order.MapFromDb();
-            orderResponse.CustomerName = order.Customer?.Name;
 
             return orderResponse;
         }

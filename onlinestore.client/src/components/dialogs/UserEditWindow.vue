@@ -2,42 +2,18 @@
     <div class="dialog-over">
         <div class="dialog">
             <h2>Редактировать пользователя</h2>
-            <hr>
-            <div class="form">
-                <label>ID Заказчика</label>
-                <input type="text" v-model="localUser.customerId">
+
+            <DialogLineForm v-model="localUser.username" :labelName="'Никнейм'" :inputText="localUser.username" />
+            <DialogLineForm v-model="localUser.role" :labelName="'Роль'" :inputType="'number'" :inputText="localUser.role" />
+
+            <div v-if="localUser.customer">
+                <DialogLineForm v-model="localUser.customer.id" :labelName="'ID Заказчика'" :inputText="localUser.customer.id" />
+                <DialogLineForm v-model="localUser.customer.name" :labelName="'Имя'" :inputText="localUser.customer.name" />
+                <DialogLineForm v-model="localUser.customer.code" :labelName="'Код'" :inputText="localUser.customer.code" />
+                <DialogLineForm v-model="localUser.customer.address" :labelName="'Адрес'" :inputText="localUser.customer.address" />
+                <DialogLineForm v-model="localUser.customer.discount" :labelName="'Скидка'" :inputType="'number'" :inputText="localUser.customer.discount" />
             </div>
-            <hr>
-            <div class="form">
-                <label>Никнейм</label>
-                <input type="text" v-model="localUser.username">
-            </div>
-            <hr>
-            <div class="form">
-                <label>Роль</label>
-                <input type="number" v-model="localUser.role">
-            </div>
-            <hr>
-            <div class="form">
-                <label>Имя</label>
-                <input type="text" v-model="localUser.customer.name">
-            </div>
-            <hr>
-            <div class="form">
-                <label>Код</label>
-                <input type="text" v-model="localUser.customer.code">
-            </div>
-            <hr>
-            <div class="form">
-                <label>Адрес</label>
-                <input type="text" v-model="localUser.customer.address">
-            </div>
-            <hr>
-            <div class="form">
-                <label>Скидка</label>
-                <input type="number" v-model="localUser.customer.discount">
-            </div>
-    
+
             <div class="buttons">
                 <button @click="applyChanges()">Изменить</button>
                 <button @click="deleteUser()">Удалить</button>
@@ -48,10 +24,13 @@
 </template>
 
 <script>
-import usersApi from '../api/usersApi';
-import customersApi from '../api/customersApi';
+import { updateUser, deleteUser } from '../../api/usersApi';
+import { updateCustomer } from '../../api/customersApi';
+
+import DialogLineForm from '../forms/DialogLineForm.vue';
 
 export default {
+    components: { DialogLineForm },
     props: {
         user: {
             type: Object
@@ -74,20 +53,20 @@ export default {
         makeUserRequestBody() {
             return {
                 username: this.localUser.username,
-                role: this.localUser.role
+                role: parseInt(this.localUser.role)
             };
         },
         async applyChanges() {
             try {
-                let newCustomer = this.makeCustomerRequestBody();
-                let newUser = this.makeUserRequestBody();
-
-                const responseCustomer = await customersApi.updateCustomer(this.localUser.customerId, newCustomer);
-                const responseUser = await usersApi.updateUser(this.localUser.username, newUser);
-
-                if (!responseCustomer) {
-                    alert('Ошибка при изменении пользователя (Customer part).');
+                if (this.localUser.customer) {
+                    let newCustomer = this.makeCustomerRequestBody();
+                    const responseCustomer = await updateCustomer(this.localUser.customer.id, newCustomer);
+                    if (!responseCustomer) {
+                        alert('Ошибка при изменении пользователя (Customer part).');
+                    }
                 }
+                let newUser = this.makeUserRequestBody();
+                const responseUser = await updateUser(this.localUser.username, newUser);
                 if (!responseUser) {
                     alert('Ошибка при изменении пользователя (User part).');
                 }
@@ -99,7 +78,7 @@ export default {
         },
         async deleteUser() {
             try {
-                const response = await usersApi.deleteUser(this.localUser.username);
+                const response = await deleteUser(this.localUser.username);
                 if (!response) {
                     alert('Ошибка при удалении пользователя.');
                 }
@@ -145,27 +124,8 @@ export default {
     min-height: fit-content;
 }
 
-.form label {
-    width: 50%;
-    margin-right: 10px;
-    padding: 10px;
-}
-
-.form input {
-    width: 50%;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid rgba(0,0,80,0.5);
-}
-
 h2 {
     color: #212933;
-}
-
-h2, label, button {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
-    font-style: normal;
 }
 
 .buttons {
@@ -175,7 +135,7 @@ h2, label, button {
     float: right;
 }
 
-.buttons button {
+button {
     margin: 0 10px;
     padding: 10px;
     border-radius: 10px;
@@ -183,21 +143,11 @@ h2, label, button {
     background-color: rgba(0,0,30,0.1);
 }
 
-.buttons button:hover {
+button:hover {
     background-color: rgba(0,0,30,0.25);
 }
 
-.buttons button:focus {
+button:focus {
     background-color: rgba(0,0,30,0.4);
-}
-
-.form {
-    display: flex;
-    margin-bottom: 15px;
-}
-
-hr {
-    border: 1px dashed rgb(141, 169, 221, 0.5);
-    margin: 15px 0px;
 }
 </style>

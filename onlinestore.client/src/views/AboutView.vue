@@ -63,10 +63,7 @@
   }
 
   h1, h3, p {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
     font-weight: 500;
-    font-style: normal;
     color: #1c2633;
   }
 
@@ -97,5 +94,4 @@
     border-top: 1px solid rgba(0,0,0,0.08);
     margin-top: 20px;
   }
-
 </style>

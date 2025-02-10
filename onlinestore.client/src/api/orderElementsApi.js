@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:5000';
 
 export const getOrderElementByOrderId = async (orderId) => {
     try {
-        if (!checkGuid(orderId)) throw new Error("Ошибка валидации Guid.");
+        validateGuid(orderId);
 
         const response = await axios.get(`${API_URL}/api/orderelements/getbyorderid/${orderId}`, {
             headers: {
@@ -38,7 +38,7 @@ export const addOrderElement = async (orderElement) => {
 
 export const updateOrderElement = async (orderElementId, newOrderElement) => {
     try {
-        if (!checkGuid(orderElementId)) throw new Error("Ошибка валидации Guid.");
+        validateGuid(orderElementId);
         validateOrderElementRequest(newOrderElement);
 
         const response = await axios.put(`${API_URL}/api/orderelements/update/${orderElementId}`, newOrderElement, {
@@ -56,7 +56,7 @@ export const updateOrderElement = async (orderElementId, newOrderElement) => {
 
 export const deleteOrderElement = async (orderElementId) => {
     try {
-        if (!checkGuid(orderElementId)) throw new Error("Ошибка валидации Guid.");
+        validateGuid(orderElementId);
 
         const response = await axios.delete(`${API_URL}/api/orderelements/delete/${orderElementId}`, {
             headers: {
@@ -81,28 +81,23 @@ const handleResponse = (response) => {
 };
 
 const validateOrderElementRequest = (orderElement) => {
-    let validationErrors = [];
-
-    if (!checkGuid(orderElement.orderId)) validationErrors.push("Ошибка валидации orderId (orderElement).");
-    if (!checkGuid(orderElement.itemId)) validationErrors.push("Ошибка валидации itemId (orderElement).");
-    if (!checkCount(orderElement.itemsCount)) validationErrors.push("Ошибка валидации itemsCount (orderElement).");
-    if (!checkPrice(orderElement.itemPrice)) validationErrors.push("Ошибка валидации itemPrice (orderElement).");
-
-    if (validationErrors.length > 0) {
-        let error = new Error("Ошибки валидации OrderElement");
-        error.validationErrors = validationErrors;
-        throw error;
-    }
+    validateGuid(orderElement.orderId);
+    validateGuid(orderElement.itemId);
+    validateCount(orderElement.itemsCount);
+    validatePrice(orderElement.itemPrice);
 }
 
-const checkGuid = (id) => {
-    return id && id.length === 36 && /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/i.test(id);
+const validateGuid = (id) => {
+    const isValid = id && id.length === 36 && /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/i.test(id);
+    if (!isValid) throw new Error('Ошибка валидации guid.');
 }
 
-const checkCount = (count) => {
-    return Number.isInteger(count) && count > 0;
+const validateCount = (count) => {
+    const isValid = count % 1 === 0 && count > 0;
+    if (!isValid) throw new Error('Ошибка валидации count.');
 }
 
-const checkPrice = (price) => {
-    return !isNaN(price) && price > 0;
+const validatePrice = (price) => {
+    const isValid = !isNaN(price) && price > 0;
+    if (!isValid) throw new Error('Ошибка валидации price.');
 }

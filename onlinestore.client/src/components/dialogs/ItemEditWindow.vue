@@ -2,26 +2,11 @@
     <div class="dialog-over">
         <div class="dialog">
             <h2>Редактировать товар</h2>
-            <hr>
-            <div class="form">
-                <label>Код</label>
-                <input type="text" v-model="localItem.code">
-            </div>
-            <hr>
-            <div class="form">
-                <label>Имя</label>
-                <input type="text" v-model="localItem.name">
-            </div>
-            <hr>
-            <div class="form">
-                <label>Категория</label>
-                <input type="text" v-model="localItem.category">
-            </div>
-            <hr>
-            <div class="form">
-                <label>Цена</label>
-                <input type="number" v-model="localItem.price">
-            </div>
+
+            <DialogLineForm v-model="localItem.code" :labelName="'Код'" :inputText="localItem.code" />
+            <DialogLineForm v-model="localItem.name" :labelName="'Имя'" :inputText="localItem.name" />
+            <DialogLineForm v-model="localItem.category" :labelName="'Категория'" :inputText="localItem.category" />
+            <DialogLineForm v-model="localItem.price" :labelName="'Цена'" :inputType="'number'" :inputText="localItem.price" />
     
             <div class="buttons">
                 <button @click="addItem()">Добавление</button>
@@ -34,9 +19,12 @@
 </template>
 
 <script>
-import itemsApi from '../api/itemsApi';
+import { addItem, updateItem, deleteItem } from '../../api/itemsApi';
+
+import DialogLineForm from '../forms/DialogLineForm.vue';
 
 export default {
+    components: { DialogLineForm },
     props: {
         item: {
             type: Object
@@ -63,7 +51,7 @@ export default {
             }
             try {
                 let newItem = this.makeItemRequestBody();
-                const response = await itemsApi.addItem(newItem);
+                const response = await addItem(newItem);
                 if (!response) {
                     alert('Ошибка при добавлении товара (Item).');
                 }
@@ -76,7 +64,7 @@ export default {
         async applyChanges() {
             try {
                 let newItem = this.makeItemRequestBody();
-                const response = await itemsApi.updateItem(this.localItem.id, newItem);
+                const response = await updateItem(this.localItem.id, newItem);
                 if (!response) {
                     alert('Ошибка при изменении товара (Item).');
                 }
@@ -88,7 +76,7 @@ export default {
         },
         async deleteItem() {
             try {
-                const response = await itemsApi.deleteItem(this.localItem.id);
+                const response = await deleteItem(this.localItem.id);
                 if (!response) {
                     alert('Ошибка при удалении товара (Item).');
                 }
@@ -149,12 +137,6 @@ export default {
 
 h2 {
     color: #212933;
-}
-
-h2, label, button {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
-    font-style: normal;
 }
 
 .buttons {

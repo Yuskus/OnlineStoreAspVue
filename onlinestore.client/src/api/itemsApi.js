@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:5000';
 
 export const getPageOfItems = async (pageNumber, pageSize) => {
     try {
-        if (!checkPages(pageNumber, pageSize)) throw new Error("Ошибка валидации страниц: pageNumber, pageSize (Item).");
+        validatePages(pageNumber, pageSize);
 
         const response = await axios.get(`${API_URL}/api/items/getpage?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             headers: {
@@ -21,8 +21,8 @@ export const getPageOfItems = async (pageNumber, pageSize) => {
 
 export const getPageOfItemsByCategory = async (category, pageNumber, pageSize) => {
     try {
-        if (!checkCategory(category)) throw new Error("Ошибка валидации category (Item).");
-        if (!checkPages(pageNumber, pageSize)) throw new Error("Ошибка валидации pageNumber, pageSize (Item).");
+        validateCategory(category);
+        validatePages(pageNumber, pageSize);
 
         const response = await axios.get(`${API_URL}/api/items/getpagebycategory/${category}?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             headers: {
@@ -71,7 +71,7 @@ export const addItem = async (item) => {
 
 export const updateItem = async (itemId, newItem) => {
     try {
-        if (!checkGuid(itemId)) throw new Error("Ошибка валидации Guid (Item).");
+        validateGuid(itemId);
         validateItemRequest(newItem);
 
         const response = await axios.put(`${API_URL}/api/items/update/${itemId}`, newItem, {
@@ -89,9 +89,9 @@ export const updateItem = async (itemId, newItem) => {
 
 export const deleteItem = async (itemId) => {
     try {
-        if (!checkGuid(itemId)) throw new Error("Ошибка валидации Guid (Item).");
+        validateGuid(itemId);
 
-        const response = await axios.put(`${API_URL}/api/items/delete/${itemId}`, {
+        const response = await axios.delete(`${API_URL}/api/items/delete/${itemId}`, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }
@@ -114,39 +114,37 @@ const handleResponse = (response) => {
 };
 
 const validateItemRequest = (item) => {
-    let validationErrors = [];
-
-    if (!checkCode(item.code)) validationErrors.push("Ошибка валидации code (Item).");
-    if (!checkName(item.name)) validationErrors.push("Ошибка валидации name (Item).");
-    if (!checkPrice(item.price)) validationErrors.push("Ошибка валидации price (Item).");
-
-    if (validationErrors.length > 0) {
-        let error = new Error("Ошибки валидации Item");
-        error.validationErrors = validationErrors;
-        throw error;
-    }
+    validateCode(item.code);
+    validateName(item.name);
+    validatePrice(item.price);
 }
 
-const checkGuid = (id) => {
-    return id && id.length === 36 && /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/i.test(id);
+const validateGuid = (id) => {
+    const isValid = id && id.length === 36 && /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/i.test(id);
+    if (!isValid) throw new Error('Ошибка валидации guid.');
 }
 
-const checkPages = (pageNumber, pageSize) => {
-    return Number.isInteger(pageNumber) && Number.isInteger(pageSize) && pageNumber > 0 && pageSize > 0 && pageSize <= 36;
+const validatePages = (pageNumber, pageSize) => {
+    const isValid = Number.isInteger(pageNumber) && Number.isInteger(pageSize) && pageNumber > 0 && pageSize > 0 && pageSize <= 36;
+    if (!isValid) throw new Error('Ошибка валидации pageNumber, pageSize.');
 }
 
-const checkCode = (code) => {
-    return code && code.length === 12 && /^[0-9]{2}-[0-9]{4}-[A-Z]{2}[0-9]{2}$/.test(code);
+const validateCode = (code) => {
+    const isValid = code && code.length === 12 && /^[0-9]{2}-[0-9]{4}-[A-Z]{2}[0-9]{2}$/.test(code);
+    if (!isValid) throw new Error('Ошибка валидации code.');
 }
 
-const checkName = (name) => {
-    return name && name.trim() > 0;
+const validateName = (name) => {
+    const isValid = name && name.trim().length > 0;
+    if (!isValid) throw new Error('Ошибка валидации name.');
 }
 
-const checkPrice = (price) => {
-    return !isNaN(price) && price > 0;
+const validatePrice = (price) => {
+    const isValid = !isNaN(price) && price > 0;
+    if (!isValid) throw new Error('Ошибка валидации price.');
 }
 
-const checkCategory = (category) => {
-    return category && category.trim() > 0;
+const validateCategory = (category) => {
+    const isValid = category && category.trim().length > 0;
+    if (!isValid) throw new Error('Ошибка валидации category.');
 }

@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:5000';
 
 export const getPageOfOrders = async (pageNumber, pageSize) => {
     try {
-        if (!checkPages(pageNumber, pageSize)) throw new Error("Ошибка валидации страниц: pageNumber, pageSize (Order).");
+        validatePages(pageNumber, pageSize);
 
         const response = await axios.get(`${API_URL}/api/orders/getpage?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             headers: {
@@ -21,8 +21,8 @@ export const getPageOfOrders = async (pageNumber, pageSize) => {
 
 export const getPageOfOrdersByCustomer = async (customerId, pageNumber, pageSize) => {
     try {
-        if (!checkGuid(customerId)) throw new Error("Ошибка валидации Guid (Order).");
-        if (!checkPages(pageNumber, pageSize)) throw new Error("Ошибка валидации страниц: pageNumber, pageSize (Order).");
+        validateGuid(customerId);
+        validatePages(pageNumber, pageSize);
 
         const response = await axios.get(`${API_URL}/api/orders/getpagebycustomer/${customerId}?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             headers: {
@@ -39,7 +39,7 @@ export const getPageOfOrdersByCustomer = async (customerId, pageNumber, pageSize
 
 export const getBasket = async (customerId) => {
     try {
-        if (!checkGuid(customerId)) throw new Error("Ошибка валидации Guid (Order).");
+        validateGuid(customerId);
 
         const response = await axios.get(`${API_URL}/api/orders/getbasket/${customerId}`, {
             headers: {
@@ -56,7 +56,7 @@ export const getBasket = async (customerId) => {
 
 export const placeAnOrder = async (orderId) => {
     try {
-        if (!checkGuid(orderId)) throw new Error("Ошибка валидации Guid (Order).");
+        validateGuid(orderId);
 
         const response = await axios.patch(`${API_URL}/api/orders/placeanorder/${orderId}`, {}, {
             headers: {
@@ -73,7 +73,7 @@ export const placeAnOrder = async (orderId) => {
 
 export const updateOrder = async (orderId, newOrder) => {
     try {
-        if (!checkGuid(orderId)) throw new Error("Ошибка валидации Guid (Order).");
+        validateGuid(orderId);
         validateOrderRequest(newOrder);
 
         const response = await axios.put(`${API_URL}/api/orders/update/${orderId}`, newOrder, {
@@ -91,7 +91,7 @@ export const updateOrder = async (orderId, newOrder) => {
 
 export const deleteOrder = async (orderId) => {
     try {
-        if (!checkGuid(orderId)) throw new Error("Ошибка валидации Guid (Order).");
+        validateGuid(orderId);
 
         const response = await axios.delete(`${API_URL}/api/orders/delete/${orderId}`, {
             headers: {
@@ -116,36 +116,33 @@ const handleResponse = (response) => {
 };
 
 const validateOrderRequest = (order) => {
-    let validationErrors = [];
-
-    if (!checkGuid(order.customerId)) validationErrors.push("Ошибка валидации customerId (order).");
-    if (!checkOrderDate(order.orderDate)) validationErrors.push("Ошибка валидации orderDate (order).");
-    if (!checkShipmentDate(order.shipmentDate)) validationErrors.push("Ошибка валидации shipmentDate (order).");
-    if (!checkOrderStatus(order.orderStatus)) validationErrors.push("Ошибка валидации orderStatus (order).");
-
-    if (validationErrors.length > 0) {
-        let error = new Error("Ошибки валидации Order");
-        error.validationErrors = validationErrors;
-        throw error;
-    }
+    validateGuid(order.customerId);
+    validateOrderDate(order.orderDate);
+    validateShipmentDate(order.shipmentDate);
+    validateOrderStatus(order.orderStatus);
 }
 
-const checkGuid = (id) => {
-    return id && id.length === 36 && /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/i.test(id);
+const validateGuid = (id) => {
+    const isValid = id && id.length === 36 && /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/i.test(id);
+    if (!isValid) throw new Error('Ошибка валидации guid.');
 }
 
-const checkPages = (pageNumber, pageSize) => {
-    return Number.isInteger(pageNumber) && Number.isInteger(pageSize) && pageNumber > 0 && pageSize > 0 && pageSize <= 50;
+const validatePages = (pageNumber, pageSize) => {
+    const isValid = Number.isInteger(pageNumber) && Number.isInteger(pageSize) && pageNumber > 0 && pageSize > 0 && pageSize <= 50;
+    if (!isValid) throw new Error('Ошибка валидации pageNumber, pageSize.');
 }
 
-const checkOrderDate = (orderDate) => {
-    return !isNaN(Date.parse(orderDate));
+const validateOrderDate = (orderDate) => {
+    const isValid = !isNaN(Date.parse(orderDate));
+    if (!isValid) throw new Error('Ошибка валидации orderDate.');
 }
 
-const checkShipmentDate = (shipmentDate) => {
-    return shipmentDate === null || !isNaN(Date.parse(shipmentDate));
+const validateShipmentDate = (shipmentDate) => {
+    const isValid = shipmentDate === null || !isNaN(Date.parse(shipmentDate));
+    if (!isValid) throw new Error('Ошибка валидации shipmentDate.');
 }
 
-const checkOrderStatus = (status) => {
-    return status === 'new' || status === 'in progress' || status === 'completed';
+const validateOrderStatus = (status) => {
+    const isValid = status === 'new' || status === 'in progress' || status === 'completed';
+    if (!isValid) throw new Error('Ошибка валидации status.');
 }

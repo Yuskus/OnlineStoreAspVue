@@ -26,7 +26,7 @@
 </template>
 
 <script>
-  import usersApi from '../api/usersApi';
+  import { registerCustomer } from '../api/usersApi';
   
   export default {
     name: "Register",
@@ -56,7 +56,7 @@
       async register() {
         try {
           let newCustomer = this.makeRegisterCustomerRequest();
-          const response = await usersApi.registerCustomer(newCustomer);
+          const response = await registerCustomer(newCustomer);
           if (response) {
             this.toLoginPage();
           } else {
@@ -124,9 +124,6 @@
   }
 
   a, label, button {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
-    font-style: normal;
     font-size: 16px;
   }
 
@@ -135,11 +132,7 @@
     justify-self: center;
     padding-bottom: 20px;
   }
-
-  .accent {
-    background-color: rgba(0, 0, 50, 0.05);
-  }
-
+  
   a, button {
     font-weight: 400;
     padding: 15px 25px;
@@ -158,6 +151,10 @@
 
   a:hover {
     background-color: rgba(0, 0, 50, 0.1);
+  }
+
+  .accent {
+    background-color: rgba(0, 0, 50, 0.05);
   }
 
   .accent:hover {

@@ -8,7 +8,7 @@
       <div class="user" v-for="(user, index) in users" :key="index">
         <div class="user-desc">
           <label>ID Заказчика:</label>
-          <div>{{ user.customerId }}</div>
+          <div>{{ user.customer?.id ?? "Нет" }}</div>
         </div>
         <div class="user-desc">
           <label>Никнейм:</label>
@@ -16,23 +16,23 @@
         </div>
         <div class="user-desc">
           <label>Роль:</label>
-          <div>{{ user.role }}</div>
+          <div>{{ user.role == 1 ? "Менеджер" : "Заказчик" }}</div>
         </div>
         <div class="user-desc">
           <label>Полное имя:</label>
-          <div>{{ user.customer.name }}</div>
+          <div>{{ user.customer?.name ?? "Нет" }}</div>
         </div>
         <div class="user-desc">
           <label>Код заказчика:</label>
-          <div>{{ user.customer.code }}</div>
+          <div>{{ user.customer?.code ?? "Нет" }}</div>
         </div>
         <div class="user-desc">
           <label>Адрес:</label>
-          <div>{{ user.customer.address }}</div>
+          <div>{{ user.customer?.address ?? "Нет" }}</div>
         </div>
         <div class="user-desc">
           <label>Персональная скидка:</label>
-          <div>{{ user.customer.discount }}</div>
+          <div>{{ user.customer?.discount ?? "Нет" }}</div>
         </div>
         <div class="user-desc">
           <label>Опции:</label>
@@ -47,10 +47,10 @@
 </template>
 
 <script>
-  import usersApi from '../api/usersApi';
+  import { getPageOfUsers } from '../api/usersApi';
 
-  import Pagination from '../components/PaginationComponent.vue'
-  import UserEditWindow from '../components/UserEditWindow.vue';
+  import Pagination from '../components/pagination/PaginationComponent.vue'
+  import UserEditWindow from '../components/dialogs/UserEditWindow.vue';
 
   export default {
     name: 'Users',
@@ -70,10 +70,10 @@
       async getUsers(number = 1) {
         this.currentPage = number;
         try {
-          const response = await usersApi.getPageOfUsers(this.currentPage, this.pageSize);
+          const response = await getPageOfUsers(this.currentPage, this.pageSize);
           if (response) {
-            this.users = response.data.userResponses;
-            this.totalCount = response.data.totalCount;
+            this.users = response.userResponses;
+            this.totalCount = response.totalCount;
             this.totalPages = Math.ceil(this.totalCount / this.pageSize);
           } else {
             alert('Ошибка во время получения списка пользователей.');
@@ -119,20 +119,17 @@
   }
 
   div, label, h1, h3, p, a {
-    font-family: "Sofia Sans", serif;
-    font-optical-sizing: auto;
     font-weight: 500;
-    font-style: normal;
     color: #1c2633;
   }
 
-    .accent {
-      text-decoration: underline;
-    }
+  .accent {
+    text-decoration: underline;
+  }
 
-    .accent:hover {
-      color: #34547a;
-    }
+  .accent:hover {
+    color: #34547a;
+  }
 
   label {
     color: #9199a2;
@@ -145,6 +142,8 @@
     margin: 10px;
     border-radius: 20px 20px 20px 20px;
     background-color: #f0f5fa;
+    min-width: 300px;
+    max-width: 400px;
   }
 
   .user div {

@@ -122,7 +122,8 @@ namespace OnlineStore.Server.Repositories.Order
             if (order is null)
             {
                 // создание при отсутствии
-                order = new Entity.Order(customerId);
+                int max = await _context.Orders.MaxAsync(x => x.OrderNumber) ?? 0; //подумать чем лучше заменить
+                order = new Entity.Order(customerId, max + 1);
                 await _context.Orders.AddAsync(order);
                 await _context.SaveChangesAsync();
             }

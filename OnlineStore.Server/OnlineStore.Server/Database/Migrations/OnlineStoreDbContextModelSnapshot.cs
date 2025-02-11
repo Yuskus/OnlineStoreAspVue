@@ -114,12 +114,9 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("date")
                         .HasColumnName("order_date");
 
-                    b.Property<int>("OrderNumber")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int?>("OrderNumber")
                         .HasColumnType("integer")
                         .HasColumnName("order_number");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrderNumber"));
 
                     b.Property<string>("OrderStatus")
                         .HasMaxLength(100)
@@ -134,9 +131,6 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasName("id_order_pk");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("OrderNumber")
-                        .IsUnique();
 
                     b.ToTable("orders", (string)null);
                 });

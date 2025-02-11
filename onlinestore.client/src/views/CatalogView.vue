@@ -11,10 +11,12 @@
 
     <div v-if="items.length > 0" class="catalog">
       <div class="item" v-for="(item, index) in items" :key="index" @click="clickOnItem(index)" >
-        <div><img src="../assets/item.jpg" /></div>
-        <div class="item-desc">{{ item.name }}</div>
-        <div class="item-desc">{{ item.category }}</div>
-        <div class="item-desc">{{ item.price }}</div>
+        <div :class="{ bounce: isBouncing[index] }">
+          <div><img src="../assets/item.jpg" /></div>
+          <div class="item-desc">{{ item.name }}</div>
+          <div class="item-desc">{{ item.category }}</div>
+          <div class="item-desc">{{ item.price }}</div>
+        </div>
       </div>
     </div>
     <div v-else>
@@ -50,7 +52,8 @@
         totalCount: 0,
         pageSize: 12,
         selectedItem: null,
-        isOpenDialog: false
+        isOpenDialog: false,
+        isBouncing: []
       }
     },
     methods: {
@@ -137,6 +140,10 @@
           this.selectedItem = this.items[index];
           await this.clickWindowRedactor(true);
         } else {
+          this.isBouncing[index] = true;
+          setTimeout(() => {
+            this.isBouncing[index] = false;
+          }, 1000);
           await this.addInBasket(this.items[index]);
         }
       },
@@ -209,6 +216,18 @@
     border-radius: 20px 20px 0px 0px;
   }
 
+  @keyframes bounce {
+    0%, 20%, 60%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-20px);
+    }
+    80% {
+      transform: translateY(-10px);
+    }
+  }
+
   .item {
     background-color: #f0f5fa;
     align-items: center;
@@ -218,12 +237,16 @@
     border-radius: 20px 20px 20px 20px;
   }
 
-  .item div {
-    align-self: center;
-  }
-
   .item:hover {
     box-shadow: 4px 8px 16px rgba(0, 50, 100, 0.4);
+  }
+
+  .bounce {
+    animation: bounce 1s;
+  }
+
+  .item div {
+    align-self: center;
   }
 
   .item-desc {

@@ -40,7 +40,7 @@ export const getPageOfOrdersByCustomer = async (customerId, pageNumber, pageSize
 export const getBasket = async (customerId) => {
     try {
         validateGuid(customerId);
-
+        
         const response = await axios.get(`${API_URL}/api/orders/getbasket/${customerId}`, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`

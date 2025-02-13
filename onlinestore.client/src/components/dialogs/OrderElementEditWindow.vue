@@ -19,7 +19,7 @@ import { updateOrderElement, deleteOrderElement } from '../../api/orderElementsA
 
 import DialogLineForm from '../forms/DialogLineForm.vue';
 
-export default {
+export default { // DELETE and REPLACE
     components: { DialogLineForm },
     props: {
         item: {

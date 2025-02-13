@@ -1,12 +1,12 @@
-<template>
+<template> 
     <div>
         <label>{{ labelName }}</label>
-        <input :type="inputType" :value="inputText" :placeholder="placeholderText" :required="isRequired" @input="updateValue($event.target.value)"  />
+        <input :type="inputType" :placeholder="placeholderText" :required="isRequired" :value="text" @input="updateValue($event.target.value)" />
     </div>
 </template>
 
 <script>
-export default {
+export default { // F I X 
     props: {
         placeholderText: {
             type: String
@@ -22,12 +22,17 @@ export default {
         inputType: {
             type: String,
             default: 'text'
-        },
-        inputText: {}
+        }
+    },
+    data() {
+        return {
+            text: ''
+        }
     },
     methods: {
         updateValue(value) {
-            this.$emit('update:modelValue', value);
+            this.text = value;
+            this.$emit('update-value', value);
         }
     }
 }

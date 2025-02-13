@@ -19,7 +19,7 @@ import { getOrderElementByOrderId } from '../../api/orderElementsApi';
 
 import BasketComponent from '../elements/BasketComponent.vue';
 
-export default {
+export default { // F I X 
     components: { BasketComponent },
     props: {
         order: {

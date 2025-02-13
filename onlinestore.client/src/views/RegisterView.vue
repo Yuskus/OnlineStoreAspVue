@@ -23,7 +23,7 @@
   
   import AuthLineForm from '../components/forms/AuthLineForm.vue';
 
-  export default {
+  export default { // F I X 
     name: "Register",
     components: { AuthLineForm },
     data() {

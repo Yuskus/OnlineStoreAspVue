@@ -3,13 +3,13 @@
         <hr>
         <div class="form">
             <label>{{ this.labelName }}</label>
-            <input :type="inputType" :value="inputText" @input="updateValue($event.target.value)" />
+            <input :type="inputType" :value="text" @input="updateValue($event.target.value)" />
         </div>
     </div>
 </template>
 
 <script>
-export default {
+export default { // F I X 
     props: {
         labelName: {
             type: String,
@@ -18,8 +18,12 @@ export default {
         inputType: {
             type: String,
             default: 'text'
-        },
-        inputText: {}
+        }
+    },
+    data() {
+        return {
+            text: ''
+        }
     },
     methods: {
         updateValue(value) {

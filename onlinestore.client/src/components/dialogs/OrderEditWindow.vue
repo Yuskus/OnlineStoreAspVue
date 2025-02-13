@@ -1,22 +1,14 @@
 <template>
     <div class="dialog-over">
         <div class="dialog">
-            <h2>Редактировать заказ</h2>
+            <h2>{{ role === '1' ? 'Редактировать заказ' : 'Посмотреть заказ' }}</h2>
 
             <DialogLineForm v-model="localOrder.customerId" :labelName="'Заказчик'" :inputText="localOrder.customerId" />
             <DialogLineForm v-model="localOrder.orderDate" :labelName="'Дата заказа'" :inputText="localOrder.orderDate" />
             <DialogLineForm v-model="localOrder.shipmentDate" :labelName="'Дата доставки'" :inputText="localOrder.shipmentDate" />
 
-            <hr>
-            <div class="form">
-                <label>Статус</label>
-                <select v-model="localOrder.orderStatus">
-                    <option>new</option>
-                    <option>in progress</option>
-                    <option>completed</option>
-                </select>
-            </div>
-            
+            <DialogOptionsForm v-model="localOrder.orderStatus" :labelName="'Статус'" :options="['new', 'in progress', 'completed']" />
+
             <div class="buttons">
                 <button v-if="role === '1'" @click="applyChanges()">Изменить</button>
                 <button @click="deleteItem()">Удалить</button>
@@ -30,9 +22,10 @@
 import { updateOrder, deleteOrder } from '../../api/ordersApi';
 
 import DialogLineForm from '../forms/DialogLineForm.vue';
+import DialogOptionsForm from '../forms/DialogOptionsForm.vue';
 
 export default {
-    components: { DialogLineForm },
+    components: { DialogLineForm, DialogOptionsForm },
     props: {
         order: {
             type: Object,
@@ -84,7 +77,7 @@ export default {
         },
         warnInfo(message, error) {
             console.error(message, error);
-            alert('Проблемы с сервером!');
+            alert(error.message);
         },
         cancelDialog() {
             this.$emit('close-dialog', false);
@@ -121,19 +114,6 @@ export default {
     min-height: fit-content;
 }
 
-.form label {
-    width: 50%;
-    margin-right: 10px;
-    padding: 10px;
-}
-
-.form input {
-    width: 50%;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid rgba(0,0,80,0.5);
-}
-
 h2 {
     color: #212933;
 }
@@ -159,15 +139,5 @@ h2 {
 
 .buttons button:focus {
     background-color: rgba(0,0,30,0.4);
-}
-
-.form {
-    display: flex;
-    margin-bottom: 15px;
-}
-
-hr {
-    border: 1px dashed rgb(141, 169, 221, 0.5);
-    margin: 15px 0px;
 }
 </style>

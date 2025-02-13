@@ -2,13 +2,15 @@
 using OnlineStore.Server.Database.Context;
 using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.Mapping.Order;
+using OnlineStore.Server.Utilities.Order.Generators;
 using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Repositories.Order
 {
-    public class OrderRepository(OnlineStoreDbContext context) : IOrderRepository
+    public class OrderRepository(OnlineStoreDbContext context, OrderNumberGenerator orderNumberGenerator) : IOrderRepository
     {
         private readonly OnlineStoreDbContext _context = context;
+        private readonly OrderNumberGenerator _orderNumberGenerator = orderNumberGenerator;
 
         public async Task<Guid?> CreateOrder(OrderRequest order)
         {
@@ -122,8 +124,7 @@ namespace OnlineStore.Server.Repositories.Order
             if (order is null)
             {
                 // создание при отсутствии
-                int max = await _context.Orders.MaxAsync(x => x.OrderNumber) ?? 0; //подумать чем лучше заменить
-                order = new Entity.Order(customerId, max + 1);
+                order = new(customerId, _orderNumberGenerator.GeneratedNewOrderNumber);
                 await _context.Orders.AddAsync(order);
                 await _context.SaveChangesAsync();
             }

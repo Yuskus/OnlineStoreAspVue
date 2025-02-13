@@ -2,13 +2,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <div class="auth">
     <div class="input-fields">
-      <label class="to-center">Login Form</label>
+      <h1>Login Form</h1>
 
-      <label>Enter Username:</label>
-      <input type="text" v-model="username" placeholder="Username" required />
+      <AuthLineForm v-model="username" labelName="Enter Username:" :placeholderText="'Username'" :isRequired="true" />
+      <AuthLineForm v-model="password" labelName="Enter Password:" :inputType="'password'" :placeholderText="'Password'" :isRequired="true" />
 
-      <label>Enter Password:</label>
-      <input type="password" v-model="password" placeholder="Password" required />
     </div>
     <div class="btns">
       <button @click.prevent="login()" class="accent">Войти</button>
@@ -20,8 +18,11 @@
 <script>
   import { logIn } from '../api/usersApi';
 
+  import AuthLineForm from '../components/forms/AuthLineForm.vue';
+
   export default {
     name: "Login",
+    components: { AuthLineForm },
     data() {
       return {
         username: null,
@@ -59,7 +60,7 @@
       },
       warnInfo(message, error) {
         console.error(message, error);
-        alert('Непредвиденная ошибка!');
+        alert(error.message);
       }
     }
   }
@@ -79,40 +80,19 @@
   }
 
   .input-fields {
-    align-content: center;
-    justify-self: center;
-    padding-bottom: 30px;
+    padding: 30px 40px;
   }
 
-  input {
-    display: block;
-    min-width: 250px;
-    min-height: 40px;
-    justify-self: center;
-    border: none;
-    border-radius: 8px;
-    outline: 1px solid rgba(28,38,51,0.3);
-    padding: 4px;
-  }
-
-  .to-center {
-    justify-self: center;
+  h1 {
+    text-align: center;
     font-size: 20px;
     font-weight: 500;
-  }
-
-  label {
-    display: block;
-    line-height: 40px;
-    margin-top: 20px;
     color: #1c2633;
     text-shadow: 1px 1px rgba(0,0,0,0.1);
-    font-weight: 500;
-    font-size: 16px;
+    margin-top: 15px;
   }
 
   .btns {
-    align-content: center;
     justify-self: center;
     padding: 20px;
   }

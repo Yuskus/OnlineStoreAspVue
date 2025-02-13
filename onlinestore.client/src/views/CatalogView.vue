@@ -160,7 +160,7 @@
       },
       warnInfo(message, error) {
         console.error(message, error);
-        alert('Проблемы с сервером!');
+        alert(error.message);
       }
     },
     mounted() {
@@ -217,13 +217,13 @@
   }
 
   @keyframes bounce {
-    0%, 20%, 60%, 100% {
+    0%, 40%, 100% {
       transform: translateY(0);
     }
-    40% {
+    20% {
       transform: translateY(-20px);
     }
-    80% {
+    60% {
       transform: translateY(-10px);
     }
   }

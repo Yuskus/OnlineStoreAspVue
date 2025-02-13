@@ -1,7 +1,7 @@
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <OrderEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :order="selectedOrder" />
-  
+
   <div class="container">
     <h1 class="line">Заказы</h1>
 
@@ -16,14 +16,15 @@
         <div class="cell colored">Опции</div>
       </div>
       <div class="row" v-for="(record, index) in records" :key="index">
-        <div class="cell base">[ {{ record.id }} ]</div>
-        <div class="cell base">{{ record.customerName }} [ {{ record.customerId }} ]</div>
+        <div class="cell base" @click="copyText(record.id)" title="Копировать GUID">{{ record.id }}</div>
+        <div class="cell base">{{ record.customerName ?? record.customerId }}</div>
         <div class="cell base">{{ record.orderDate }}</div>
         <div class="cell base">{{ record.shipmentDate }}</div>
         <div class="cell base">{{ record.orderNumber }}</div>
         <div class="cell base">{{ record.orderStatus }}</div>
         <div class="cell base">
-          <a class="accent" v-if="role === '1' || record.orderStatus === 'new'" @click="clickOnItem(index)">Редактировать</a>
+          <a class="accent" v-if="role === '1'" @click="clickOnItem(index)">Редактировать</a>
+          <a class="accent" v-else-if="record.orderStatus === 'new'" @click="clickOnItem(index)">Просмотр</a>
           <a v-else>Нет</a>
         </div>
       </div>
@@ -81,6 +82,13 @@
           this.warnInfo('Ошибка при получении данных (Orders): ', error);
         }
       },
+      async copyText(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (error) {
+          this.warnInfo('Скопировать GUID не удалось. ', error);
+        }
+      },
       async clickOnItem(index) {
         this.selectedOrder = this.records[index];
         this.isOpenDialog = true;
@@ -93,7 +101,7 @@
       },
       warnInfo(message, error) {
         console.error(message, error);
-        alert('Проблемы с сервером!');
+        alert(error.message);
       }
     },
     mounted() {

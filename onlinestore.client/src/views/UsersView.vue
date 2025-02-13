@@ -8,7 +8,8 @@
       <div class="user" v-for="(user, index) in users" :key="index">
         <div class="user-desc">
           <label>ID Заказчика:</label>
-          <div>{{ user.customer?.id ?? "Нет" }}</div>
+          <div v-if="user.customer?.id" @click="copyText(record.id)" title="Копировать GUID">{{ user.customer.id }}</div>
+          <div v-else>Нет</div>
         </div>
         <div class="user-desc">
           <label>Никнейм:</label>
@@ -94,7 +95,7 @@
       },
       warnInfo(message, error) {
         console.error(message, error);
-        alert('Непредвиденная ошибка!');
+        alert(error.message);
       }
     },
     mounted() {

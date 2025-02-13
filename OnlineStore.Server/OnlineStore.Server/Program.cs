@@ -14,6 +14,7 @@ using OnlineStore.Server.Services.Order;
 using OnlineStore.Server.Services.OrderElement;
 using OnlineStore.Server.Services.User.RegistrationService;
 using OnlineStore.Server.Services.User;
+using OnlineStore.Server.Utilities.Order.Generators;
 
 namespace OnlineStore.Server
 {
@@ -109,6 +110,7 @@ namespace OnlineStore.Server
             builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<ICustomerRegistrationService, CustomerRegistrationService>();
+            builder.Services.AddSingleton<OrderNumberGenerator>();
 
             builder.Logging.AddDebug()
                            .AddConsole();

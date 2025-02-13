@@ -67,7 +67,7 @@ export default {
         },
         warnInfo(message, error) {
             console.error(message, error);
-            alert('Проблемы с сервером!');
+            alert(error.message);
         },
         cancelDialog() {
             this.$emit('close-dialog', false);

@@ -2,21 +2,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <div class="auth">
     <div class="input-fields">
-      <label class="to-center">Registration Form</label>
+      <h1>Registration Form</h1>
 
-      <label>Enter Username:</label>
-      <input type="text" v-model="customer.username" placeholder="Username" required />
+      <AuthLineForm v-model="customer.username" labelName="Enter Username:" :placeholderText="'Username'" :isRequired="true" />
+      <AuthLineForm v-model="customer.password" labelName="Enter Password:" :inputType="'password'" :placeholderText="'Password'" :isRequired="true" />
+      <AuthLineForm v-model="customer.name" labelName="Enter Customer Name:" :placeholderText="'Customer Name'" :isRequired="true" />
+      <AuthLineForm v-model="customer.code" labelName="Enter Customer Code:" :placeholderText="'Customer Code'" :isRequired="true" />
+      <AuthLineForm v-model="customer.address" labelName="Enter Customer Address:" :placeholderText="'Customer Address'" />
 
-      <label>Enter Password:</label>
-      <input type="password" v-model="customer.password" placeholder="Password" required />
-
-      <label>Enter Customer Name:</label>
-      <input type="text" v-model="customer.name" placeholder="Customer Name" required />
-
-      <label>Enter Customer Code:</label>
-      <input type="text" v-model="customer.code" placeholder="Customer Code" required />
-      <label>Enter Customer Address:</label>
-      <input type="text" v-model="customer.address" placeholder="Customer Address" />
     </div>
     <div class="btns">
       <button @click="register()" class="accent">Зарегистрироваться</button>
@@ -28,8 +21,11 @@
 <script>
   import { registerCustomer } from '../api/usersApi';
   
+  import AuthLineForm from '../components/forms/AuthLineForm.vue';
+
   export default {
     name: "Register",
+    components: { AuthLineForm },
     data() {
       return {
         customer: {
@@ -71,7 +67,7 @@
       },
       warnInfo(message, error) {
         console.error(message, error);
-        alert('Непредвиденная ошибка!');
+        alert(error.message);
       }
     }
   }
@@ -88,13 +84,11 @@
     justify-self: center;
     margin-top: 12vh;
     filter: drop-shadow(0 0.2rem 0.25rem rgba(0, 0, 0, 0.2));
-    padding: 30px;
+    padding: 20px;
   }
 
   .input-fields {
-    align-content: center;
-    justify-self: center;
-    padding-bottom: 50px;
+    padding: 30px 40px;
   }
 
   input {
@@ -108,23 +102,13 @@
     padding: 4px;
   }
 
-  .to-center {
-    justify-self: center;
+  h1 {
+    text-align: center;
     font-size: 20px;
     font-weight: 500;
-  }
-
-  label {
-    display: block;
-    line-height: 40px;
-    margin-top: 15px;
     color: #1c2633;
-    font-weight: 500;
     text-shadow: 1px 1px rgba(0,0,0,0.1);
-  }
-
-  a, label, button {
-    font-size: 16px;
+    margin-top: 15px;
   }
 
   .btns {
@@ -134,6 +118,7 @@
   }
   
   a, button {
+    font-size: 16px;
     font-weight: 400;
     padding: 15px 25px;
     border-radius: 8px;

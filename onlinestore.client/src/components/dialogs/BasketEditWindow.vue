@@ -6,8 +6,7 @@
             <BasketComponent :basket="basket" :isOpen="isOpenDialog" @update-values="updateFromBasket" />
     
             <div class="buttons">
-                <button @click="applyChanges()">Изменить</button>
-                <button @click="deleteItem()">Удалить</button>
+                <button @click="deleteThisOrder()">Удалить заказ</button>
                 <button @click="cancelDialog()">Отмена</button>
             </div>
         </div>
@@ -15,31 +14,65 @@
 </template>
 
 <script>
+import { deleteOrder } from '../../api/ordersApi';
+import { getOrderElementByOrderId } from '../../api/orderElementsApi';
+
 import BasketComponent from '../elements/BasketComponent.vue';
 
 export default {
     components: { BasketComponent },
     props: {
-        basket: {
-            type: Array,
+        order: {
+            type: Object,
             required: true
         }
     },
     data() {
         return {
+            basket: [],
+            selectedOrder: null,
             isOpenDialog: false
         }
     },
     methods: {
-        applyChanges() {
-
+        async deleteThisOrder() {
+            try {
+                const response = await deleteOrder(this.order.id);
+                if (!response) {
+                    alert('Ошибка при очистке корзины.');
+                }
+            } catch (error) {
+                this.warnInfo('Ошибка при удалении данных (BasketView): ', error);
+            } finally {
+                this.cancelDialog();
+            }
         },
-        deleteItem() {
-
+        async getBasket() {
+            try {
+                const response = await getOrderElementByOrderId(this.order.id);
+                if (response) {
+                    this.basket = response;
+                } else {
+                    alert('Ошибка при получении содержимого корзины.');
+                }
+            } catch (error) {
+                this.warnInfo('Ошибка при получении данных (BasketView): ', error);
+            }
+        },
+        async updateFromBasket({ item, isOpen }) {
+            this.selectedOrder = item;
+            this.isOpenDialog = isOpen;
+        },
+        warnInfo(message, error) {
+            console.error(message, error);
+            alert(error.message);
         },
         cancelDialog() {
             this.$emit('close-dialog', false);
         }
+    },
+    mounted() {
+        this.getBasket();
     }
 }
 </script>
@@ -67,5 +100,33 @@ export default {
     min-width: 400px;
     width: 50vw;
     min-height: fit-content;
+}
+
+h2 {
+    color: #212933;
+    margin-bottom: 20px;
+}
+
+.buttons {
+    width: fit-content;
+    margin-top: 20px;
+    right: 0px;
+    float: right;
+}
+
+.buttons button {
+    margin: 0 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: rgba(0,0,30,0.1);
+}
+
+.buttons button:hover {
+    background-color: rgba(0,0,30,0.25);
+}
+
+.buttons button:focus {
+    background-color: rgba(0,0,30,0.4);
 }
 </style>

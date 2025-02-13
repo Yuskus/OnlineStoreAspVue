@@ -1,6 +1,7 @@
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-  <OrderEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :order="selectedOrder" />
+  <OrderEditWindow v-if="role === '1' && isOpenDialog" @close-dialog="clickWindowRedactor" :order="selectedOrder" />
+  <BasketEditWindow v-if="role === '0' && isOpenDialog" @close-dialog="clickWindowRedactor" :order="selectedOrder" />
 
   <div class="container">
     <h1 class="line">Заказы</h1>
@@ -23,8 +24,8 @@
         <div class="cell base">{{ record.orderNumber }}</div>
         <div class="cell base">{{ record.orderStatus }}</div>
         <div class="cell base">
-          <a class="accent" v-if="role === '1'" @click="clickOnItem(index)">Редактировать</a>
-          <a class="accent" v-else-if="record.orderStatus === 'new'" @click="clickOnItem(index)">Просмотр</a>
+          <a class="accent" v-if="role === '1'" @click="clickAndEdit(index)">Редактировать</a>
+          <a class="accent" v-else-if="record.orderStatus === 'new'" @click="clickAndEdit(index)">Просмотр</a>
           <a v-else>Нет</a>
         </div>
       </div>
@@ -43,10 +44,11 @@
 
   import Pagination from '../components/pagination/PaginationComponent.vue'
   import OrderEditWindow from '../components/dialogs/OrderEditWindow.vue';
+  import BasketEditWindow from '../components/dialogs/BasketEditWindow.vue';
 
   export default {
     name: 'Orders',
-    components: { Pagination, OrderEditWindow },
+    components: { Pagination, OrderEditWindow, BasketEditWindow },
     data() {
       return {
         currentPage: 1,
@@ -89,9 +91,9 @@
           this.warnInfo('Скопировать GUID не удалось. ', error);
         }
       },
-      async clickOnItem(index) {
+      async clickAndEdit(index) {
         this.selectedOrder = this.records[index];
-        this.isOpenDialog = true;
+        await this.clickWindowRedactor(true);
       },
       async clickWindowRedactor(state) {
         this.isOpenDialog = state;

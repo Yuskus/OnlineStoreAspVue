@@ -1,7 +1,7 @@
 <template>
     <div class="dialog-over">
         <div class="dialog">
-            <h2>{{ role === '1' ? 'Редактировать заказ' : 'Посмотреть заказ' }}</h2>
+            <h2>Редактировать заказ</h2>
 
             <DialogLineForm v-model="localOrder.customerId" :labelName="'Заказчик'" :inputText="localOrder.customerId" />
             <DialogLineForm v-model="localOrder.orderDate" :labelName="'Дата заказа'" :inputText="localOrder.orderDate" />

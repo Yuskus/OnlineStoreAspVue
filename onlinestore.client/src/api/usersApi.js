@@ -82,7 +82,7 @@ export const updateUser = async (username, newUser) => {
 
 export const deleteUser = async (username) => {
     try {
-        validateUsername(user.username);
+        validateUsername(username);
 
         const response = await axios.delete(`${API_URL}/api/users/delete/${username}`, {
             headers: {

@@ -4,12 +4,12 @@
     <div class="input-fields">
       <h1>Login Form</h1>
 
-      <AuthLineForm v-model="username" labelName="Enter Username:" :placeholderText="'Username'" :isRequired="true" />
-      <AuthLineForm v-model="password" labelName="Enter Password:" :inputType="'password'" :placeholderText="'Password'" :isRequired="true" />
+      <AuthLineForm v-model="username" labelName="Enter Username:" placeholderText="Username" isRequired="true" />
+      <AuthLineForm v-model="password" labelName="Enter Password:" inputType="password" placeholderText="Password" isRequired="true" />
 
     </div>
     <div class="btns">
-      <button @click.prevent="login()" class="accent">Войти</button>
+      <button @click="login()" class="accent">Войти</button>
       <a href="/auth/new">Зарегистрироваться</a>
     </div>
   </div>
@@ -20,7 +20,7 @@
 
   import AuthLineForm from '../components/forms/AuthLineForm.vue';
 
-  export default {  // F I X 
+  export default {
     name: "Login",
     components: { AuthLineForm },
     data() {

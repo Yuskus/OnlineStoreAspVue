@@ -3,14 +3,14 @@
         <div class="dialog">
             <h2>Редактировать заказ</h2>
 
-            <DialogLineForm v-model="localOrder.customerId" :labelName="'Заказчик'" :inputText="localOrder.customerId" />
-            <DialogLineForm v-model="localOrder.orderDate" :labelName="'Дата заказа'" :inputText="localOrder.orderDate" />
-            <DialogLineForm v-model="localOrder.shipmentDate" :labelName="'Дата доставки'" :inputText="localOrder.shipmentDate" />
+            <DialogLineForm v-model="localOrder.customerId" labelName="Заказчик" inputType="text" />
+            <DialogLineForm v-model="localOrder.orderDate" labelName="Дата заказа" inputType="text" />
+            <DialogLineForm v-model="localOrder.shipmentDate" labelName="Дата доставки" inputType="text" />
 
-            <DialogOptionsForm v-model="localOrder.orderStatus" :labelName="'Статус'" :options="['new', 'in progress', 'completed']" />
+            <DialogOptionsForm v-model="localOrder.orderStatus" labelName="Статус" :options="options" />
 
             <div class="buttons">
-                <button v-if="role === '1'" @click="applyChanges()">Изменить</button>
+                <button @click="applyChanges()">Изменить</button>
                 <button @click="deleteItem()">Удалить</button>
                 <button @click="cancelDialog()">Отмена</button>
             </div>
@@ -35,6 +35,7 @@ export default {
     data() {
         return {
             localOrder: { ...this.order },
+            options: ['new', 'in progress', 'completed'],
             role: ''
         }
     },
@@ -42,18 +43,9 @@ export default {
         getRole() {
             this.role = localStorage.getItem('role');
         },
-        makeOrderRequestBody() {
-            return {
-                customerId: this.localOrder.customerId,
-                orderDate: this.localOrder.orderDate,
-                shipmentDate: this.localOrder.shipmentDate,
-                orderStatus: this.localOrder.orderStatus
-            };
-        },
         async applyChanges() {
             try {
-                let newOrder = this.makeOrderRequestBody();
-                const response = await updateOrder(this.localOrder.id, newOrder);
+                const response = await updateOrder(this.localOrder.id, this.localOrder);
                 if (!response) {
                     alert('Ошибка при изменении заказа (Order).');
                 }

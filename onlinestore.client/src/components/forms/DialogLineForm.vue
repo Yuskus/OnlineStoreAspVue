@@ -3,28 +3,19 @@
         <hr>
         <div class="form">
             <label>{{ this.labelName }}</label>
-            <input :type="inputType" :value="text" @input="updateValue($event.target.value)" />
+            <input :type="inputType" :value="modelValue" @input="updateValue($event.target.value)" />
         </div>
     </div>
 </template>
 
 <script>
-export default { // F I X 
-    props: {
-        labelName: {
-            type: String,
-            required: true
-        },
-        inputType: {
-            type: String,
-            default: 'text'
-        }
-    },
-    data() {
-        return {
-            text: ''
-        }
-    },
+export default {
+    props: [
+        'labelName',
+        'inputType',
+        'modelValue'
+    ],
+    emits: ['update:modelValue'],
     methods: {
         updateValue(value) {
             this.$emit('update:modelValue', value);

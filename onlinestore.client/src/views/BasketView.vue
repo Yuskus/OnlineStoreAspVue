@@ -1,12 +1,11 @@
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-  <OrderElementEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :item="selectedItem" />
   
   <div class="container">
     <h1 class="line">Корзина</h1>
 
     <div v-if="basket.length > 0">
-      <BasketComponent :basket="basket" :isOpen="isOpenDialog" @update-values="updateFromBasket" />
+      <BasketComponent :basket="basket" @refresh-basket="refreshBasket" />
     </div>
     <div v-else>
       <h2>В корзине пусто.</h2>
@@ -26,18 +25,15 @@
   import { getOrderElementByOrderId } from '../api/orderElementsApi';
 
   import BasketComponent from '../components/elements/BasketComponent.vue';
-  import OrderElementEditWindow from '../components/dialogs/OrderElementEditWindow.vue';
 
   export default {
     name: 'Basket',
-    components: { BasketComponent, OrderElementEditWindow },
+    components: { BasketComponent },
     data() {
       return {
         myId: null,
         basketOrder: null,
-        basket: [],
-        selectedItem: null,
-        isOpenDialog: false
+        basket: []
       }
     },
     methods: {
@@ -93,16 +89,6 @@
       async refreshBasket() {
         await this.getBasketNumber();
         await this.getBasketElements();
-      },
-      async updateFromBasket({ item, isOpen }) {
-        this.selectedItem = item;
-        await this.clickWindowRedactor(isOpen);
-      },
-      async clickWindowRedactor(state) {
-        this.isOpenDialog = state;
-        if (!state) {
-          await this.refreshBasket();
-        }
       },
       warnInfo(message, error) {
         console.error(message, error);

@@ -2,49 +2,70 @@
     <div>
         <div class="table">
             <div class="row colored">
-                <div class="cell">Миниатюра</div>
-                <div class="cell">Название</div>
-                <div class="cell">Категория</div>
-                <div class="cell">Количество</div>
-                <div class="cell">Цена за шт.</div>
-                <div class="cell">Опции</div>
+                <div v-for="(name, index) in columnsNames" :key="index" class="cell">{{ name }}</div>
             </div>
             <div class="row" v-for="(item, index) in basket" :key="index" >
                 <div class="cell"><img src="../../assets/item.jpg" width="80" height="80" /></div>
                 <div class="cell">{{ item.itemResponse.name }}</div>
                 <div class="cell">{{ item.itemResponse.category }}</div>
-                <div class="cell">{{ item.itemsCount }}</div>
+                <div class="cell">
+                  <QuantityRegulator v-model="item.itemsCount" :index="index" @update-request="updateQuantity" />
+                </div>
                 <div class="cell">{{ item.itemResponse.price }}</div>
-                <div class="cell"><a class="accent" @click="clickOnItem(index)">Редактировать</a></div>
+                <div class="cell"><a class="accent" @click="deleteItem(index)">Удалить</a></div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-export default {
+  import { updateOrderElement, deleteOrderElement } from '../../api/orderElementsApi';
+
+  import QuantityRegulator from '../forms/QuantityRegulator.vue';
+
+  export default {
+    components: { QuantityRegulator },
     props: {
         basket: {
             type: Array,
             required: true
-        },
-        isOpen: {
-            type: Boolean,
-            required: true
         }
     },
     data() {
-        return {
-            selectedItem: null
-        }
+      return {
+        columnsNames: [ 'Миниатюра', 'Название', 'Категория', 'Количество', 'Цена за шт.', 'Опции' ]
+      }
     },
     methods: {
-        async clickOnItem(index) {
-            this.selectedItem = this.basket[index];
-            this.$emit('update-values', { item: this.selectedItem, isOpen: !this.isOpen });
+      async deleteItem(index) {
+        try {
+          const response = await deleteOrderElement(this.basket[index].id);
+          if (!response) {
+            alert('Ошибка при удалении элемента заказа (OrderElement).');
+          }
+        } catch (error) {
+          this.warnInfo('Ошибка при удалении данных (BasketComponent): ', error);
+        } finally {
+          this.$emit('refresh-basket');
         }
+      },
+      async updateQuantity(index) {
+        try {
+          const orderElement = this.basket[index];
+          const response = await updateOrderElement(orderElement.id, orderElement);
+          if (!response) {
+            alert('Ошибка при изменении элемента заказа (OrderElement).');
+          }
+        } catch (error) {
+          this.warnInfo('Ошибка при изменении данных (BasketComponent): ', error);
+        }
+      },
+      warnInfo(message, error) {
+        console.error(message, error);
+        alert(error.message);
+      }
     }
-}
+  }
 </script>
 
 <style scoped>

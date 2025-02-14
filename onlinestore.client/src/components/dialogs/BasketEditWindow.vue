@@ -3,7 +3,7 @@
         <div class="dialog">
             <h2>Редактировать список товаров</h2>
 
-            <BasketComponent :basket="basket" :isOpen="isOpenDialog" @update-values="updateFromBasket" />
+            <BasketComponent :basket="basket" @refresh-basket="getBasket" />
     
             <div class="buttons">
                 <button @click="deleteThisOrder()">Удалить заказ</button>
@@ -19,7 +19,7 @@ import { getOrderElementByOrderId } from '../../api/orderElementsApi';
 
 import BasketComponent from '../elements/BasketComponent.vue';
 
-export default { // F I X 
+export default {
     components: { BasketComponent },
     props: {
         order: {
@@ -29,9 +29,7 @@ export default { // F I X
     },
     data() {
         return {
-            basket: [],
-            selectedOrder: null,
-            isOpenDialog: false
+            basket: []
         }
     },
     methods: {
@@ -58,10 +56,6 @@ export default { // F I X
             } catch (error) {
                 this.warnInfo('Ошибка при получении данных (BasketView): ', error);
             }
-        },
-        async updateFromBasket({ item, isOpen }) {
-            this.selectedOrder = item;
-            this.isOpenDialog = isOpen;
         },
         warnInfo(message, error) {
             console.error(message, error);

@@ -3,16 +3,14 @@
         <div class="dialog">
             <h2>Редактировать пользователя</h2>
 
-            <DialogLineForm v-model="localUser.username" :labelName="'Никнейм'" :inputText="localUser.username" />
-            <DialogLineForm v-model="localUser.role" :labelName="'Роль'" :inputType="'number'" :inputText="localUser.role" />
+            <DialogLineForm v-model="localUser.username" labelName="Никнейм" inputType="text" />
+            <DialogLineForm v-model="localUser.role" labelName="Роль" inputType="number" />
 
-            <div v-if="localUser.customer">
-                <DialogLineForm v-model="localUser.customer.id" :labelName="'ID Заказчика'" :inputText="localUser.customer.id" />
-                <DialogLineForm v-model="localUser.customer.name" :labelName="'Имя'" :inputText="localUser.customer.name" />
-                <DialogLineForm v-model="localUser.customer.code" :labelName="'Код'" :inputText="localUser.customer.code" />
-                <DialogLineForm v-model="localUser.customer.address" :labelName="'Адрес'" :inputText="localUser.customer.address" />
-                <DialogLineForm v-model="localUser.customer.discount" :labelName="'Скидка'" :inputType="'number'" :inputText="localUser.customer.discount" />
-            </div>
+            <DialogLineForm v-model="this.localUser.customer.id" labelName="ID Заказчика" inputType="text" />
+            <DialogLineForm v-model="this.localUser.customer.name" labelName="Имя" inputType="text" />
+            <DialogLineForm v-model="this.localUser.customer.code" labelName="Код" inputType="text" />
+            <DialogLineForm v-model="this.localUser.customer.address" labelName="Адрес" inputType="text" />
+            <DialogLineForm v-model="this.localUser.customer.discount" labelName="Скидка" inputType="number" />
 
             <div class="buttons">
                 <button @click="applyChanges()">Изменить</button>
@@ -42,31 +40,18 @@ export default {
         }
     },
     methods: {
-        makeCustomerRequestBody() {
-            return {
-                name: this.localUser.customer.name,
-                code: this.localUser.customer.code,
-                address: this.localUser.customer.address,
-                discount: this.localUser.customer.discount
-            };
-        },
-        makeUserRequestBody() {
-            return {
-                username: this.localUser.username,
-                role: parseInt(this.localUser.role)
-            };
-        },
         async applyChanges() {
             try {
                 if (this.localUser.customer) {
-                    let newCustomer = this.makeCustomerRequestBody();
-                    const responseCustomer = await updateCustomer(this.localUser.customer.id, newCustomer);
+                    const responseCustomer = await updateCustomer(this.localUser.customer.id, this.localUser.customer);
                     if (!responseCustomer) {
                         alert('Ошибка при изменении пользователя (Customer part).');
                     }
                 }
-                let newUser = this.makeUserRequestBody();
-                const responseUser = await updateUser(this.localUser.username, newUser);
+                const responseUser = await updateUser(this.localUser.username, {
+                    username: this.localUser.username,
+                    role: parseInt(this.localUser.role)
+                });
                 if (!responseUser) {
                     alert('Ошибка при изменении пользователя (User part).');
                 }

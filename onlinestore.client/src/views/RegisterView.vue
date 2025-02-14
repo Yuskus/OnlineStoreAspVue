@@ -4,11 +4,11 @@
     <div class="input-fields">
       <h1>Registration Form</h1>
 
-      <AuthLineForm v-model="customer.username" labelName="Enter Username:" :placeholderText="'Username'" :isRequired="true" />
-      <AuthLineForm v-model="customer.password" labelName="Enter Password:" :inputType="'password'" :placeholderText="'Password'" :isRequired="true" />
-      <AuthLineForm v-model="customer.name" labelName="Enter Customer Name:" :placeholderText="'Customer Name'" :isRequired="true" />
-      <AuthLineForm v-model="customer.code" labelName="Enter Customer Code:" :placeholderText="'Customer Code'" :isRequired="true" />
-      <AuthLineForm v-model="customer.address" labelName="Enter Customer Address:" :placeholderText="'Customer Address'" />
+      <AuthLineForm v-model="username" labelName="Enter Username:" placeholderText="Username" isRequired="true" />
+      <AuthLineForm v-model="password" labelName="Enter Password:" inputType="password" placeholderText="Password" isRequired="true" />
+      <AuthLineForm v-model="name" labelName="Enter Customer Name:" placeholderText="Customer Name" isRequired="true" />
+      <AuthLineForm v-model="code" labelName="Enter Customer Code:" placeholderText="Customer Code" isRequired="true" />
+      <AuthLineForm v-model="address" labelName="Enter Customer Address:" placeholderText="Customer Address" />
 
     </div>
     <div class="btns">
@@ -23,35 +23,34 @@
   
   import AuthLineForm from '../components/forms/AuthLineForm.vue';
 
-  export default { // F I X 
+  export default {
     name: "Register",
     components: { AuthLineForm },
     data() {
       return {
-        customer: {
-          name: "",
-          code: "",
-          address: null,
-          username: "",
-          password: ""
-        }
+        name: "",
+        code: "",
+        address: null,
+        username: "",
+        password: ""
       }
     },
     methods: {
       makeRegisterCustomerRequest() {
         return {
-          customerRequest: {
-            name: this.customer.name,
-            code: this.customer.code,
-            address: this.customer.address
+          customerInfo: {
+            name: this.name,
+            code: this.code,
+            address: this.address
           },
-          username: this.customer.username,
-          password: this.customer.password
+          username: this.username,
+          password: this.password
         };
       },
       async register() {
         try {
           let newCustomer = this.makeRegisterCustomerRequest();
+          console.log(newCustomer);
           const response = await registerCustomer(newCustomer);
           if (response) {
             this.toLoginPage();

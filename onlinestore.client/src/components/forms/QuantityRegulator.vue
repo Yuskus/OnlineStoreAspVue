@@ -30,6 +30,11 @@ export default {
             this.$emit('update:modelValue', newValue);
             this.$emit('update-request', this.index);
         }
+    },
+    mounted() {
+        if (this.modelValue === 1) {
+            this.isBlocked = true;
+        }
     }
 }
 </script>

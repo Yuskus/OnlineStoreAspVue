@@ -7,7 +7,7 @@
     
             <div class="buttons">
                 <button @click="deleteThisOrder()">Удалить заказ</button>
-                <button @click="cancelDialog()">Отмена</button>
+                <button @click="cancelDialog()">Назад</button>
             </div>
         </div>
     </div>

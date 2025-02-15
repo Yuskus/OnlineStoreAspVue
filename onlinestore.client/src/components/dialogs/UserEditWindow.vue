@@ -15,7 +15,7 @@
             <div class="buttons">
                 <button @click="applyChanges()">Изменить</button>
                 <button @click="deleteUser()">Удалить</button>
-                <button @click="cancelDialog()">Отмена</button>
+                <button @click="cancelDialog()">Назад</button>
             </div>
         </div>
     </div>

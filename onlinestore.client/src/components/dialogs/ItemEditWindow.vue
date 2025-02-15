@@ -12,7 +12,7 @@
                 <button @click="addItem()">Добавление</button>
                 <button @click="applyChanges()">Изменить</button>
                 <button @click="deleteItem()">Удалить</button>
-                <button @click="cancelDialog()">Отмена</button>
+                <button @click="cancelDialog()">Назад</button>
             </div>
         </div>
     </div>

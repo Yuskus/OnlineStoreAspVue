@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="table">
-            <div class="row colored">
-                <div v-for="(name, index) in columnsNames" :key="index" class="cell">{{ name }}</div>
+            <div class="row">
+                <div v-for="(name, index) in columnsNames" :key="index" class="cell colored">{{ name }}</div>
             </div>
             <div class="row" v-for="(item, index) in basket" :key="index" >
                 <div class="cell"><img src="../../assets/item.jpg" width="80" height="80" /></div>

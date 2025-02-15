@@ -124,13 +124,9 @@
   }
 
   p {
-    font-size: 18px;
+    font-size: 16px;
     line-height: 28px;
     padding: 0px 10px;
-  }
-
-  button p {
-    font-size: 16px;
   }
 
   .line {

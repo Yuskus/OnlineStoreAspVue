@@ -4,11 +4,11 @@
     <div class="input-fields">
       <h1>Registration Form</h1>
 
-      <AuthLineForm v-model="username" labelName="Enter Username:" placeholderText="Username" isRequired="true" />
-      <AuthLineForm v-model="password" labelName="Enter Password:" inputType="password" placeholderText="Password" isRequired="true" />
-      <AuthLineForm v-model="name" labelName="Enter Customer Name:" placeholderText="Customer Name" isRequired="true" />
-      <AuthLineForm v-model="code" labelName="Enter Customer Code:" placeholderText="Customer Code" isRequired="true" />
-      <AuthLineForm v-model="address" labelName="Enter Customer Address:" placeholderText="Customer Address" />
+      <AuthLineForm v-model="username" labelName="Enter Username:" placeholderText="Username" :isRequired="true" />
+      <AuthLineForm v-model="password" labelName="Enter Password:" inputType="password" placeholderText="Password" :isRequired="true" />
+      <AuthLineForm v-model="name" labelName="Enter Customer Name:" placeholderText="Customer Name" :isRequired="true" />
+      <AuthLineForm v-model="code" labelName="Enter Customer Code:" placeholderText="Customer Code" :isRequired="true" />
+      <AuthLineForm v-model="address" labelName="Enter Customer Address:" placeholderText="Customer Address" :isRequired="false" />
 
     </div>
     <div class="btns">

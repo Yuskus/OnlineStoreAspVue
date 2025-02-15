@@ -8,13 +8,7 @@
 
     <div v-if="records.length > 0" class="table">
       <div class="row">
-        <div class="cell colored">Заказ</div>
-        <div class="cell colored">Заказчик</div>
-        <div class="cell colored">Дата заказа</div>
-        <div class="cell colored">Дата доставки</div>
-        <div class="cell colored">Номер</div>
-        <div class="cell colored">Статус</div>
-        <div class="cell colored">Опции</div>
+        <div class="cell colored" v-for="(name, index) in columnsNames" :key="index">{{ name }}</div>
       </div>
       <div class="row" v-for="(record, index) in records" :key="index">
         <div class="cell base" @click="copyText(record.id)" title="Копировать GUID">{{ record.id }}</div>
@@ -51,6 +45,7 @@
     components: { Pagination, OrderEditWindow, BasketEditWindow },
     data() {
       return {
+        columnsNames: [ 'Заказ', 'Заказчик', 'Дата заказа', 'Дата доставки', 'Номер', 'Статус', 'Опции' ],
         currentPage: 1,
         totalPages: 1,
         pageSize: 24,

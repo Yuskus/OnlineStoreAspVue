@@ -1,46 +1,20 @@
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <UserEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :user="selectedUser" />
+
   <div class="container">
     <h1 class="line">Пользователи</h1>
-    
     <div class="catalog">
-      <div class="user" v-for="(user, index) in users" :key="index">
-        <div class="user-desc">
-          <label>ID Заказчика:</label>
-          <div v-if="user.customer?.id" @click="copyText(record.id)" title="Копировать GUID">{{ user.customer.id }}</div>
-          <div v-else>Нет</div>
-        </div>
-        <div class="user-desc">
-          <label>Никнейм:</label>
-          <div>{{ user.username }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Роль:</label>
-          <div>{{ user.role == 1 ? "Менеджер" : "Заказчик" }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Полное имя:</label>
-          <div>{{ user.customer?.name ?? "Нет" }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Код заказчика:</label>
-          <div>{{ user.customer?.code ?? "Нет" }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Адрес:</label>
-          <div>{{ user.customer?.address ?? "Нет" }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Персональная скидка:</label>
-          <div>{{ user.customer?.discount ?? "Нет" }}</div>
-        </div>
-        <div class="user-desc">
-          <label>Опции:</label>
-          <div><a class="accent" @click="clickOnItem(index)">Редактирование</a></div>
-        </div>
-        </div>
+      <div class="user" v-for="(user, index) in users" :key="index" @click="clickOnItem(index)">
+        <UserInfoBlock :modelValue="user.customer?.id" labelName="ID Заказчика:" :isGuid="user.customer?.id !== undefined" />
+        <UserInfoBlock :modelValue="user.username" labelName="Никнейм:" :isGuid="false" />
+        <UserInfoBlock :modelValue="user.role == 1 ? 'Менеджер' : 'Заказчик'" labelName="Роль:" :isGuid="false" />
+        <UserInfoBlock :modelValue="user.customer?.name" labelName="Полное имя:" :isGuid="false" />
+        <UserInfoBlock :modelValue="user.customer?.code" labelName="Код заказчика:" :isGuid="false" />
+        <UserInfoBlock :modelValue="user.customer?.address" labelName="Адрес:" :isGuid="false" />
+        <UserInfoBlock :modelValue="user.customer?.discount" labelName="Персональная скидка:" :isGuid="false" />
       </div>
+    </div>
 
     <Pagination @page-changed="getUsers" :current="currentPage" :totalPages="totalPages" />
 
@@ -51,11 +25,12 @@
   import { getPageOfUsers } from '../api/usersApi';
 
   import Pagination from '../components/pagination/PaginationComponent.vue'
+  import UserInfoBlock from '../components/blocks/UserInfoBlock.vue';
   import UserEditWindow from '../components/dialogs/UserEditWindow.vue';
 
   export default {
     name: 'Users',
-    components: { Pagination, UserEditWindow },
+    components: { Pagination, UserInfoBlock, UserEditWindow },
     data() {
       return {
         currentPage: 1,
@@ -119,23 +94,6 @@
     justify-content: space-evenly;
   }
 
-  div, label, h1, h3, p, a {
-    font-weight: 500;
-    color: #1c2633;
-  }
-
-  .accent {
-    text-decoration: underline;
-  }
-
-  .accent:hover {
-    color: #34547a;
-  }
-
-  label {
-    color: #9199a2;
-  }
-
   .user {
     align-items: center;
     box-shadow: 1px 2px 4px rgba(0, 50, 100, 0.2);
@@ -147,14 +105,6 @@
     max-width: 400px;
   }
 
-  .user div {
-    align-self: center;
-  }
-
-  .user-desc {
-    padding: 10px;
-  }
-
   .user:hover {
     box-shadow: 4px 8px 16px rgba(0, 50, 100, 0.4);
   }
@@ -163,27 +113,11 @@
     font-size: 26px;
     line-height: 36px;
     padding: 20px 10px;
-  }
-
-  h3 {
-    font-size: 22px;
-    line-height: 30px;
-    padding: 15px 10px;
-  }
-
-  p {
-    font-size: 18px;
-    line-height: 28px;
-    padding: 0px 10px;
+    font-weight: 500;
+    color: #1c2633;
   }
 
   .line {
     background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
-  }
-
-  hr {
-    border: none;
-    border-top: 1px solid rgba(0,0,0,0.08);
-    margin-top: 20px;
   }
 </style>

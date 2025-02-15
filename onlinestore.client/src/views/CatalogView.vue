@@ -4,20 +4,17 @@
 
   <div class="filters">
       <div class="button" @click="getItems()">Все категории</div>
-      <div class="button" v-for="(category, index) in categories" @click="getByCategory(category)" :key="index">{{ category }}</div>
+      <div class="button" v-for="(category, index) in categories" :key="index" @click="getByCategory(category)">{{ category }}</div>
     </div>
 
   <div class="container">
 
     <div v-if="items.length > 0" class="catalog">
-      <div class="item" v-for="(item, index) in items" :key="index" @click="clickOnItem(index)" >
-        <div :class="{ bounce: isBouncing[index] }">
-          <div><img src="../assets/item.jpg" /></div>
-          <div class="item-desc">{{ item.name }}</div>
-          <div class="item-desc">{{ item.category }}</div>
-          <div class="item-desc">{{ item.price }}</div>
-        </div>
-      </div>
+      <ItemComponent v-for="(item, index) in items" 
+                    :key="index" 
+                    :item="item" 
+                    :isBounce="isBouncing[index]" 
+                    @item-click="clickOnItem(index)" />
     </div>
     <div v-else>
       <h2>Товаров нет.</h2>
@@ -33,19 +30,19 @@
   import { addOrderElement } from '../api/orderElementsApi';
   import { getCategories, getPageOfItemsByCategory, getPageOfItems } from '../api/itemsApi';
 
-  import ItemEditWindow from '../components/dialogs/ItemEditWindow.vue';
   import Pagination from '../components/pagination/PaginationComponent.vue';
+  import ItemComponent from '../components/elements/ItemComponent.vue';
+  import ItemEditWindow from '../components/dialogs/ItemEditWindow.vue';
 
   export default {
     name: 'Catalog',
-    components: { Pagination, ItemEditWindow },
+    components: { Pagination, ItemComponent, ItemEditWindow },
     data() {
       return {
         myId: null,
         role: '',
         items: [],
         categories: [],
-        selectedCategory: '',
         basketOrder: null,
         currentPage: 1,
         totalPages: 1,
@@ -171,6 +168,11 @@
 </script>
 
 <style scoped>
+  * {
+      font-weight: 500;
+      color: #1c2633;
+  }
+
   .container {
     max-width: 70vw;
     width: fit-content;
@@ -205,52 +207,6 @@
 
   .button:hover {
     background-color: #dce1f0;
-  }
-
-  a, h1, h2, h3, p, .cell, div {
-      font-weight: 500;
-      color: #1c2633;
-  }
-
-  img {
-    border-radius: 20px 20px 0px 0px;
-  }
-
-  @keyframes bounce {
-    0%, 40%, 100% {
-      transform: translateY(0);
-    }
-    20% {
-      transform: translateY(-20px);
-    }
-    60% {
-      transform: translateY(-10px);
-    }
-  }
-
-  .item {
-    background-color: #f0f5fa;
-    align-items: center;
-    box-shadow: 1px 2px 4px rgba(0, 50, 100, 0.2);
-    align-content: space-around;
-    margin: 10px;
-    border-radius: 20px 20px 20px 20px;
-  }
-
-  .item:hover {
-    box-shadow: 4px 8px 16px rgba(0, 50, 100, 0.4);
-  }
-
-  .bounce {
-    animation: bounce 1s;
-  }
-
-  .item div {
-    align-self: center;
-  }
-
-  .item-desc {
-    padding: 10px;
   }
 </style>
 

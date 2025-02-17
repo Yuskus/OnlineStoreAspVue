@@ -2,10 +2,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <div class="auth">
     <div class="input-fields">
-      <h1>Login Form</h1>
+      <h1>Форма входа</h1>
 
-      <AuthLineForm v-model="username" labelName="Enter Username:" placeholderText="Username" isRequired="true" />
-      <AuthLineForm v-model="password" labelName="Enter Password:" inputType="password" placeholderText="Password" isRequired="true" />
+      <AuthLineForm v-model="user.username" labelName="Введите логин:" inputType="text" placeholderText="Логин" :isRequired="true" />
+      <AuthLineForm v-model="user.password" labelName="Введите пароль:" inputType="password" placeholderText="Пароль" :isRequired="true" />
 
     </div>
     <div class="btns">
@@ -25,26 +25,18 @@
     components: { AuthLineForm },
     data() {
       return {
-        username: null,
-        password: null
+        user: {
+          username: null,
+          password: null
+        }
       }
     },
     methods: {
-      makeLoginRequest() {
-        return {
-          username: this.username,
-          password: this.password
-        };
-      },
       async login() {
         try {
-          let loginForm = this.makeLoginRequest();
-          const response = await logIn(loginForm);
+          const response = await logIn(this.user);
           if (response) {
-            localStorage.setItem('jwt', response.token);
-            localStorage.setItem('username', response.username);
-            localStorage.setItem('guid', response.customerId);
-            localStorage.setItem('role', response.role);
+            this.fillLocalStorage(response);
             this.toMainPage();
           } else {
             localStorage.clear();
@@ -54,6 +46,12 @@
           localStorage.clear();
           this.warnInfo('Ошибка при аутентификации (Login): ', error);
         }
+      },
+      fillLocalStorage(response) {
+        localStorage.setItem('jwt', response.token);
+        localStorage.setItem('username', response.username);
+        localStorage.setItem('guid', response.customerId);
+        localStorage.setItem('role', response.role);
       },
       toMainPage() {
         this.$router.push('/');

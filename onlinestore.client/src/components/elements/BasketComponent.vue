@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="table">
+        <div class="table" v-if="basket.length > 0">
             <div class="row">
                 <div v-for="(name, index) in columnsNames" :key="index" class="cell colored">{{ name }}</div>
             </div>
@@ -12,8 +12,12 @@
                   <QuantityRegulator v-model="item.itemsCount" :index="index" @update-request="updateQuantity" />
                 </div>
                 <div class="cell">{{ item.itemResponse.price }}</div>
+                <div class="cell">{{ item.itemResponse.price * item.itemsCount }}</div>
                 <div class="cell"><a class="accent" @click="deleteItem(index)">Удалить</a></div>
             </div>
+        </div>
+        <div v-else>
+          <h2>В корзине пусто.</h2>
         </div>
     </div>
 </template>
@@ -33,7 +37,7 @@
     },
     data() {
       return {
-        columnsNames: [ 'Миниатюра', 'Название', 'Категория', 'Количество', 'Цена за шт.', 'Опции' ]
+        columnsNames: [ 'Миниатюра', 'Название', 'Категория', 'Количество', 'Цена за шт.', 'Суммарно', 'Опции' ]
       }
     },
     methods: {
@@ -72,6 +76,13 @@
   * {
     font-weight: 500;
     color: #1c2633;
+  }
+
+  h2 {
+    font-size: 24px;
+    line-height: 32px;
+    padding: 20px 10px;
+    text-align: center;
   }
 
   .table {

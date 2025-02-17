@@ -4,12 +4,7 @@
   <div class="container">
     <h1 class="line">Корзина</h1>
 
-    <div v-if="basket.length > 0">
-      <BasketComponent :basket="basket" @refresh-basket="refreshBasket" />
-    </div>
-    <div v-else>
-      <h2>В корзине пусто.</h2>
-    </div>
+    <BasketComponent :basket="basket" @refresh-basket="refreshBasket" />
 
     <div class="options">
       <button @click="clearBasket()" ><p>Очистить корзину</p></button>
@@ -83,7 +78,7 @@
           }
           await this.refreshBasket();
         } catch (error) {
-          this.warnInfo('Ошибка при изменении данных (Basket): ', error);
+          this.warnInfo('Ошибка при изменении данных (BasketView): ', error);
         }
       },
       async refreshBasket() {
@@ -114,12 +109,6 @@
   h1 {
     font-size: 26px;
     line-height: 36px;
-    padding: 20px 10px;
-  }
-
-  h2 {
-    font-size: 24px;
-    line-height: 32px;
     padding: 20px 10px;
   }
 

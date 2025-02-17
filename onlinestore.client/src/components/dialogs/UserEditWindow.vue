@@ -3,14 +3,14 @@
         <div class="dialog">
             <h2>Редактировать пользователя</h2>
 
-            <DialogLineForm v-model="localUser.username" labelName="Никнейм" inputType="text" />
-            <DialogLineForm v-model="localUser.role" labelName="Роль" inputType="number" />
+            <DialogLineForm v-model="localUser.username" labelName="Никнейм" inputType="text" placeholderText="user1234" />
+            <DialogLineForm v-model="localUser.role" labelName="Роль" inputType="number" placeholderText="Роль пользователя" />
 
-            <DialogLineForm v-model="this.localUser.customer.id" labelName="ID Заказчика" inputType="text" />
-            <DialogLineForm v-model="this.localUser.customer.name" labelName="Имя" inputType="text" />
-            <DialogLineForm v-model="this.localUser.customer.code" labelName="Код" inputType="text" />
-            <DialogLineForm v-model="this.localUser.customer.address" labelName="Адрес" inputType="text" />
-            <DialogLineForm v-model="this.localUser.customer.discount" labelName="Скидка" inputType="number" />
+            <DialogLineForm v-model="this.localUser.customer.id" labelName="ID Заказчика" inputType="text" placeholderText="6F9619FF-8B86-D011-B42D-00CF4FC964FF" />
+            <DialogLineForm v-model="this.localUser.customer.name" labelName="Имя" inputType="text" placeholderText="Имя заказчика" />
+            <DialogLineForm v-model="this.localUser.customer.code" labelName="Код" inputType="text" placeholderText="1234-2000" />
+            <DialogLineForm v-model="this.localUser.customer.address" labelName="Адрес" inputType="text" placeholderText="Адрес заказчика" />
+            <DialogLineForm v-model="this.localUser.customer.discount" labelName="Скидка" inputType="number" placeholderText="Процент скидки (целое число)" />
 
             <div class="buttons">
                 <button @click="applyChanges()">Изменить</button>

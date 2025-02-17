@@ -3,10 +3,10 @@
         <div class="dialog">
             <h2>Редактировать товар</h2>
 
-            <DialogLineForm v-model="localItem.code" :labelName="'Код'" :inputText="localItem.code" />
-            <DialogLineForm v-model="localItem.name" :labelName="'Имя'" :inputText="localItem.name" />
-            <DialogLineForm v-model="localItem.category" :labelName="'Категория'" :inputText="localItem.category" />
-            <DialogLineForm v-model="localItem.price" :labelName="'Цена'" :inputType="'number'" :inputText="localItem.price" />
+            <DialogLineForm v-model="localItem.code" :labelName="'Код'" :inputText="localItem.code" placeholderText="12-3456-AZ78" />
+            <DialogLineForm v-model="localItem.name" :labelName="'Имя'" :inputText="localItem.name" placeholderText="Название товара" />
+            <DialogLineForm v-model="localItem.category" :labelName="'Категория'" :inputText="localItem.category" placeholderText="Категория товара" />
+            <DialogLineForm v-model="localItem.price" :labelName="'Цена'" :inputType="'number'" :inputText="localItem.price" placeholderText="9999.99" />
     
             <div class="buttons">
                 <button @click="addItem()">Добавление</button>
@@ -36,22 +36,13 @@ export default {
         }
     },
     methods: {
-        makeItemRequestBody() {
-            return {
-                code: this.localItem.code,
-                name: this.localItem.name,
-                price: this.localItem.price,
-                category: this.localItem.category
-            };
-        },
         async addItem() {
             if (this.localItem.code === this.item.code) {
                 alert("Для добавления нового товара нужно изменить его код!");
                 return;
             }
             try {
-                let newItem = this.makeItemRequestBody();
-                const response = await addItem(newItem);
+                const response = await addItem(this.localItem);
                 if (!response) {
                     alert('Ошибка при добавлении товара (Item).');
                 }
@@ -63,8 +54,7 @@ export default {
         },
         async applyChanges() {
             try {
-                let newItem = this.makeItemRequestBody();
-                const response = await updateItem(this.localItem.id, newItem);
+                const response = await updateItem(this.localItem.id, this.localItem);
                 if (!response) {
                     alert('Ошибка при изменении товара (Item).');
                 }

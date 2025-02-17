@@ -3,7 +3,7 @@
         <hr>
         <div class="form">
             <label>{{ this.labelName }}</label>
-            <input :type="inputType" :value="modelValue" @input="updateValue($event.target.value)" />
+            <input :type="inputType" :value="modelValue" @input="updateValue($event.target.value)" :placeholder="placeholderText" />
         </div>
     </div>
 </template>
@@ -13,7 +13,8 @@ export default {
     props: [
         'labelName',
         'inputType',
-        'modelValue'
+        'modelValue',
+        'placeholderText'
     ],
     emits: ['update:modelValue'],
     methods: {

@@ -3,27 +3,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
     <div class="panel">
       <div class="sitename">
-        <h1>{{ sitename }}</h1>
+        <h1>Online Store</h1>
       </div>
       <div class="userinfo">
         <h2>{{ username }}</h2>
-        <h3>{{ globalRole }}</h3>
+        <h3>{{ this.role === '1' ? 'Manager' : 'Customer' }}</h3>
         <a href="/auth" @click="logout()" class="button"><p>Выход</p></a>
       </div>
     </div>
-    <div class="menu" v-if="role === '1'">
-      <div><router-link @click="refreshPage()" class="link" to="/">Главная</router-link></div>
-      <div><router-link class="link" to="/catalog">Каталог</router-link></div>
-      <div><router-link class="link" to="/orders">Заказы</router-link></div>
-      <div><router-link class="link" to="/users">Пользователи</router-link></div>
-      <div><router-link class="link" to="/about">О компании</router-link></div>
-    </div>
-    <div class="menu" v-else>
-      <div><router-link @click="refreshPage('hui')" class="link" to="/">Главная</router-link></div>
-      <div><router-link class="link" to="/catalog">Каталог</router-link></div>
-      <div><router-link class="link" to="/basket">Корзина</router-link></div>
-      <div><router-link class="link" to="/orders">Заказы</router-link></div>
-      <div><router-link class="link" to="/about">О компании</router-link></div>
+    <div class="menu">
+      <div>
+        <router-link @click="refreshPage()" class="link" to="/">Главная</router-link>
+      </div>
+      <div>
+        <router-link class="link" to="/catalog">Каталог</router-link>
+      </div>
+      <div v-if="role === '0'">
+        <router-link class="link" to="/basket">Корзина</router-link>
+      </div>
+      <div>
+        <router-link class="link" to="/orders">Заказы</router-link>
+      </div>
+      <div v-if="role === '1'">
+        <router-link class="link" to="/users">Пользователи</router-link>
+      </div>
+      <div>
+        <router-link class="link" to="/about">О компании</router-link>
+      </div>
     </div>
   </header>
 
@@ -41,27 +47,21 @@
     name: "OnlineStore",
     data() {
       return {
-        sitename: 'Online Shop',
-        myId: null,
         username: '',
-        role: '',
-        globalRole: '',
-        fullPath: ''
+        role: ''
       }
     },
     methods: {
       getMyData() {
-        this.myId = localStorage.getItem('guid');
         this.username = localStorage.getItem('username');
         this.role = localStorage.getItem('role');
-        this.globalRole = this.role === '1' ? 'Manager' : 'Customer';
       },
       logout() {
-        localStorage.removeItem('jwt');
+        localStorage.clear();
       },
       refreshPage() {
-        this.fullPath = this.$route.fullPath;
-        if (this.fullPath.endsWith('/') || this.fullPath.endsWith('/catalog')) {
+        const fullPath = this.$route.fullPath;
+        if (fullPath.endsWith('/') || fullPath.endsWith('/catalog')) {
           window.location.reload();
         }
       }

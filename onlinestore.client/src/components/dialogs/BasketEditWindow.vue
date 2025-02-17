@@ -2,7 +2,7 @@
     <div class="dialog-over">
         <div class="dialog">
             <h2>Редактировать список товаров</h2>
-
+            
             <BasketComponent :basket="basket" @refresh-basket="getBasket" />
     
             <div class="buttons">

@@ -3,9 +3,9 @@
         <div class="dialog">
             <h2>Редактировать заказ</h2>
 
-            <DialogLineForm v-model="localOrder.customerId" labelName="Заказчик" inputType="text" />
-            <DialogLineForm v-model="localOrder.orderDate" labelName="Дата заказа" inputType="text" />
-            <DialogLineForm v-model="localOrder.shipmentDate" labelName="Дата доставки" inputType="text" />
+            <DialogLineForm v-model="localOrder.customerId" labelName="Заказчик" inputType="text" placeholderText="6F9619FF-8B86-D011-B42D-00CF4FC964FF" />
+            <DialogLineForm v-model="localOrder.orderDate" labelName="Дата заказа" inputType="text" placeholderText="YYYY-MM-DD" />
+            <DialogLineForm v-model="localOrder.shipmentDate" labelName="Дата доставки" inputType="text" placeholderText="YYYY-MM-DD" />
 
             <DialogOptionsForm v-model="localOrder.orderStatus" labelName="Статус" :options="options" />
 

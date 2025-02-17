@@ -2,13 +2,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <div class="auth">
     <div class="input-fields">
-      <h1>Registration Form</h1>
+      <h1>Форма регистрации</h1>
 
-      <AuthLineForm v-model="username" labelName="Enter Username:" placeholderText="Username" :isRequired="true" />
-      <AuthLineForm v-model="password" labelName="Enter Password:" inputType="password" placeholderText="Password" :isRequired="true" />
-      <AuthLineForm v-model="name" labelName="Enter Customer Name:" placeholderText="Customer Name" :isRequired="true" />
-      <AuthLineForm v-model="code" labelName="Enter Customer Code:" placeholderText="Customer Code" :isRequired="true" />
-      <AuthLineForm v-model="address" labelName="Enter Customer Address:" placeholderText="Customer Address" :isRequired="false" />
+      <AuthLineForm v-model="customer.username" labelName="Введите логин:" inputType="text" placeholderText="Логин" :isRequired="true" />
+      <AuthLineForm v-model="customer.password" labelName="Введите пароль:" inputType="password" placeholderText="Пароль" :isRequired="true" />
+
+      <AuthLineForm v-model="customer.customerInfo.name" labelName="Введите имя заказчика:" inputType="text" placeholderText="Имя заказчика" :isRequired="true" />
+      <AuthLineForm v-model="customer.customerInfo.code" labelName="Введите код заказчика:" inputType="text" placeholderText="1234-2000" :isRequired="true" />
+      <AuthLineForm v-model="customer.customerInfo.address" labelName="Введите адрес заказчика:" inputType="text" placeholderText="Адрес заказчика" :isRequired="false" />
 
     </div>
     <div class="btns">
@@ -28,30 +29,21 @@
     components: { AuthLineForm },
     data() {
       return {
-        name: "",
-        code: "",
-        address: null,
-        username: "",
-        password: ""
+        customer: {
+          customerInfo: {
+            name: "",
+            code: "",
+            address: null
+          },
+          username: "",
+          password: ""
+        }
       }
     },
     methods: {
-      makeRegisterCustomerRequest() {
-        return {
-          customerInfo: {
-            name: this.name,
-            code: this.code,
-            address: this.address
-          },
-          username: this.username,
-          password: this.password
-        };
-      },
       async register() {
         try {
-          let newCustomer = this.makeRegisterCustomerRequest();
-          console.log(newCustomer);
-          const response = await registerCustomer(newCustomer);
+          const response = await registerCustomer(this.customer);
           if (response) {
             this.toLoginPage();
           } else {

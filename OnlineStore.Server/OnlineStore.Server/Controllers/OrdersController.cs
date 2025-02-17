@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.Item;
 using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.Services.Order;
 
@@ -14,11 +16,11 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize]
         [HttpGet(template: "getpage")]
-        public async Task<ActionResult<OrderResponseList>> GetPageOfOrders([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPageOfOrders([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                OrderResponseList result = await _orderService.GetPageOfOrders(pageNumber, pageSize);
+                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrders(pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -31,11 +33,11 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize]
         [HttpGet(template: "getpagebycustomer/{id}")]
-        public async Task<ActionResult<OrderResponseList>> GetPageOfOrdersByCustomerId(Guid id, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPageOfOrdersByCustomerId(Guid id, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                OrderResponseList result = await _orderService.GetPageOfOrdersByCustomerId(id, pageNumber, pageSize);
+                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrdersByCustomerId(id, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             } 
@@ -48,11 +50,11 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize]
         [HttpGet(template: "getpagebystatus/{status}")]
-        public async Task<ActionResult<OrderResponseList>> GetPageOfOrdersByStatus(string status, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPageOfOrdersByStatus(string status, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                OrderResponseList result = await _orderService.GetPageOfOrdersByStatus(status, pageNumber, pageSize);
+                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrdersByStatus(status, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }

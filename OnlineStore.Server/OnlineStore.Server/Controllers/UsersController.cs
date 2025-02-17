@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.DTO.User;
 using OnlineStore.Server.Services.User;
 using OnlineStore.Server.Services.User.RegistrationService;
@@ -16,11 +18,11 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize(Roles = "Manager")]
         [HttpGet(template: "getpage")]
-        public async Task<ActionResult<UserResponseList>> GetPageOfUsersInfo([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<ResponseList<UserResponse>>> GetPageOfUsersInfo([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                UserResponseList result = await _userService.GetPageOfUsersInfo(pageNumber, pageSize);
+                ResponseList<UserResponse> result = await _userService.GetPageOfUsersInfo(pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }

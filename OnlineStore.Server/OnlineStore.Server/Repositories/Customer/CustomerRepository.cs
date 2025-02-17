@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineStore.Server.Database.Context;
+using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.Customer;
 using OnlineStore.Server.Mapping.Customer;
 using Entity = OnlineStore.Server.Database.Entities;
@@ -58,14 +59,14 @@ namespace OnlineStore.Server.Repositories.Customer
             return result;
         }
 
-        public async Task<CustomerResponseList> GetPageOfCustomers(int pageNumber, int pageSize)
+        public async Task<ResponseList<CustomerResponse>> GetPageOfCustomers(int pageNumber, int pageSize)
         {
             List<CustomerResponse> response = await _context.Customers.Skip((pageNumber - 1) * pageSize)
                                                                       .Take(pageSize)
                                                                       .Select(x => x.MapFromDb()).ToListAsync();
             int totalCount = await _context.Customers.CountAsync();
 
-            CustomerResponseList result = new(response, totalCount);
+            ResponseList<CustomerResponse> result = new(response, totalCount);
 
             return result;
         }

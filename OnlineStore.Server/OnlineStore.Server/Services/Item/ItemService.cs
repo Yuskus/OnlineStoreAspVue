@@ -1,4 +1,5 @@
-﻿using OnlineStore.Server.DTO.Item;
+﻿using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.Item;
 using OnlineStore.Server.Repositories.Item;
 using OnlineStore.Server.Validation.Item;
 using System.Collections.Immutable;
@@ -77,7 +78,7 @@ namespace OnlineStore.Server.Services.Item
             return await _itemRepository.GetItemByName(name);
         }
 
-        public async Task<ItemResponseList> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize)
+        public async Task<ResponseList<ItemResponse>> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize)
         {
             bool isValid = ItemValidator.CheckPages(pageNumber, pageSize);
 
@@ -86,10 +87,10 @@ namespace OnlineStore.Server.Services.Item
                 return await _itemRepository.GetPageOfItemsByCategory(category, pageNumber, pageSize);
             }
 
-            return new ItemResponseList();
+            return new ResponseList<ItemResponse>();
         }
 
-        public async Task<ItemResponseList> GetPageOfItems(int pageNumber, int pageSize)
+        public async Task<ResponseList<ItemResponse>> GetPageOfItems(int pageNumber, int pageSize)
         {
             bool isValid = ItemValidator.CheckPages(pageNumber, pageSize);
 
@@ -98,7 +99,7 @@ namespace OnlineStore.Server.Services.Item
                 return await _itemRepository.GetPageOfItems(pageNumber, pageSize);
             }
 
-            return new ItemResponseList();
+            return new ResponseList<ItemResponse>();
         }
 
         public ImmutableSortedSet<string> GetAllCategories()

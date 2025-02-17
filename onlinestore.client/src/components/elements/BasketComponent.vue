@@ -9,11 +9,17 @@
                 <div class="cell">{{ item.itemResponse.name }}</div>
                 <div class="cell">{{ item.itemResponse.category }}</div>
                 <div class="cell">
-                  <QuantityRegulator v-model="item.itemsCount" :index="index" @update-request="updateQuantity" />
+                  <div v-if="immutable">
+                    {{ item.itemsCount }}
+                  </div>
+                  <div v-else>
+                    <QuantityRegulator v-model="item.itemsCount" :index="index" @update-request="updateQuantity" />
+                  </div>
                 </div>
                 <div class="cell">{{ item.itemResponse.price }}</div>
                 <div class="cell">{{ item.itemResponse.price * item.itemsCount }}</div>
-                <div class="cell"><a class="accent" @click="deleteItem(index)">Удалить</a></div>
+                <div v-if="immutable" class="cell">Нет</div>
+                <div v-else class="cell"><a class="accent" @click="deleteItem(index)">Удалить</a></div>
             </div>
         </div>
         <div v-else>
@@ -31,8 +37,12 @@
     components: { QuantityRegulator },
     props: {
         basket: {
-            type: Array,
-            required: true
+          type: Array,
+          required: true
+        },
+        immutable: {
+          type: Boolean,
+          default: false
         }
     },
     data() {

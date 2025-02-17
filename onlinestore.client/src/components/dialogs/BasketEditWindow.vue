@@ -3,10 +3,10 @@
         <div class="dialog">
             <h2>Редактировать список товаров</h2>
             
-            <BasketComponent :basket="basket" @refresh-basket="getBasket" />
+            <BasketComponent :basket="basket" @refresh-basket="getBasket" :immutable="immutable" />
     
             <div class="buttons">
-                <button @click="deleteThisOrder()">Удалить заказ</button>
+                <button v-if="!immutable" @click="deleteThisOrder()">Удалить заказ</button>
                 <button @click="cancelDialog()">Назад</button>
             </div>
         </div>
@@ -25,6 +25,10 @@ export default {
         order: {
             type: Object,
             required: true
+        },
+        immutable: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -98,7 +102,7 @@ export default {
 
 h2 {
     color: #212933;
-    margin-bottom: 20px;
+    padding-bottom: 20px;
 }
 
 .buttons {

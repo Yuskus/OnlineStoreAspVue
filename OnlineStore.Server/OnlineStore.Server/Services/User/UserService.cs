@@ -1,4 +1,5 @@
-﻿using OnlineStore.Server.DTO.User;
+﻿using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.User;
 using OnlineStore.Server.Repositories.User;
 using OnlineStore.Server.Validation.User;
 
@@ -46,7 +47,7 @@ namespace OnlineStore.Server.Services.User
             return false;
         }
 
-        public async Task<UserResponseList> GetPageOfUsersInfo(int pageNumber, int pageSize)
+        public async Task<ResponseList<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize)
         {
             bool isValid = UserValidator.CheckPages(pageNumber, pageSize);
 
@@ -55,7 +56,7 @@ namespace OnlineStore.Server.Services.User
                 return await _userRepository.GetPageOfUsersInfo(pageNumber, pageSize);
             }
 
-            return new UserResponseList();
+            return new ResponseList<UserResponse>();
         }
 
         public async Task<bool> RegisterManager(ManagerRegisterRequest managerRegisterRequest)

@@ -5,13 +5,13 @@
 
             <DialogLineForm v-model="localUser.username" labelName="Никнейм" inputType="text" placeholderText="user1234" />
             <DialogLineForm v-model="localUser.role" labelName="Роль" inputType="number" placeholderText="Роль пользователя" />
-
-            <DialogLineForm v-model="this.localUser.customer.id" labelName="ID Заказчика" inputType="text" placeholderText="6F9619FF-8B86-D011-B42D-00CF4FC964FF" />
-            <DialogLineForm v-model="this.localUser.customer.name" labelName="Имя" inputType="text" placeholderText="Имя заказчика" />
-            <DialogLineForm v-model="this.localUser.customer.code" labelName="Код" inputType="text" placeholderText="1234-2000" />
-            <DialogLineForm v-model="this.localUser.customer.address" labelName="Адрес" inputType="text" placeholderText="Адрес заказчика" />
-            <DialogLineForm v-model="this.localUser.customer.discount" labelName="Скидка" inputType="number" placeholderText="Процент скидки (целое число)" />
-
+            <div v-if="this.localUser.customer">
+                <DialogLineForm v-model="this.localUser.customer.id" labelName="ID Заказчика" inputType="text" placeholderText="6F9619FF-8B86-D011-B42D-00CF4FC964FF" />
+                <DialogLineForm v-model="this.localUser.customer.name" labelName="Имя" inputType="text" placeholderText="Имя заказчика" />
+                <DialogLineForm v-model="this.localUser.customer.code" labelName="Код" inputType="text" placeholderText="1234-2000" />
+                <DialogLineForm v-model="this.localUser.customer.address" labelName="Адрес" inputType="text" placeholderText="Адрес заказчика" />
+                <DialogLineForm v-model="this.localUser.customer.discount" labelName="Скидка" inputType="number" placeholderText="Процент скидки (целое число)" />
+            </div>
             <div class="buttons">
                 <button @click="applyChanges()">Изменить</button>
                 <button @click="deleteUser()">Удалить</button>
@@ -106,11 +106,13 @@ export default {
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     min-width: 400px;
     width: 50vw;
-    min-height: fit-content;
+    max-height: 65vh;
+    overflow-y: scroll;
 }
 
 h2 {
     color: #212933;
+    padding-bottom: 20px;
 }
 
 .buttons {
@@ -134,5 +136,21 @@ button:hover {
 
 button:focus {
     background-color: rgba(0,0,30,0.4);
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #9098a3;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: white;
+    border-radius: 0px 5px 5px 0px;
 }
 </style>

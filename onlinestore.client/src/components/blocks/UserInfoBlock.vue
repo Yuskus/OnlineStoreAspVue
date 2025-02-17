@@ -39,6 +39,9 @@ export default {
     div {
         font-weight: 500;
         color: #1c2633;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     label {

@@ -48,7 +48,7 @@
         try {
           const response = await getPageOfUsers(this.currentPage, this.pageSize);
           if (response) {
-            this.users = response.userResponses;
+            this.users = response.responses;
             this.totalCount = response.totalCount;
             this.totalPages = Math.ceil(this.totalCount / this.pageSize);
           } else {
@@ -101,8 +101,8 @@
     margin: 10px;
     border-radius: 20px 20px 20px 20px;
     background-color: #f0f5fa;
-    min-width: 300px;
-    max-width: 400px;
+    min-width: 250px;
+    max-width: 300px;
   }
 
   .user:hover {

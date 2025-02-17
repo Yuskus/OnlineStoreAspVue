@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineStore.Server.Authorization.Utilities;
 using OnlineStore.Server.Database.Context;
+using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.User;
 using OnlineStore.Server.Mapping.User;
 using Entity = OnlineStore.Server.Database.Entities;
@@ -85,7 +86,7 @@ namespace OnlineStore.Server.Repositories.User
             return true;
         }
 
-        public async Task<UserResponseList> GetPageOfUsersInfo(int pageNumber, int pageSize)
+        public async Task<ResponseList<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize)
         {
             List<UserResponse> response = await _context.Users.Skip((pageNumber - 1) * pageSize)
                                                               .Take(pageSize)
@@ -95,7 +96,7 @@ namespace OnlineStore.Server.Repositories.User
 
             int totalCount = await _context.Users.CountAsync();
 
-            UserResponseList result = new(response, totalCount);
+            ResponseList<UserResponse> result = new(response, totalCount);
 
             return result;
         }

@@ -1,4 +1,5 @@
-﻿using OnlineStore.Server.DTO.Customer;
+﻿using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.Customer;
 using OnlineStore.Server.Repositories.Customer;
 using OnlineStore.Server.Validation.Customer;
 
@@ -47,7 +48,7 @@ namespace OnlineStore.Server.Services.Customer
             return null;
         }
 
-        public async Task<CustomerResponseList> GetPageOfCustomers(int pageNumber, int pageSize)
+        public async Task<ResponseList<CustomerResponse>> GetPageOfCustomers(int pageNumber, int pageSize)
         {
             bool isValid = CustomerValidator.CheckPages(pageNumber, pageSize);
 
@@ -56,7 +57,7 @@ namespace OnlineStore.Server.Services.Customer
                 return await _customerRepository.GetPageOfCustomers(pageNumber, pageSize);
             }
 
-            return new CustomerResponseList();
+            return new ResponseList<CustomerResponse>();
         }
     }
 }

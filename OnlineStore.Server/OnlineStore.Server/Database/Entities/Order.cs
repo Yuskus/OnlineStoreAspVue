@@ -18,7 +18,7 @@
             CustomerId = customerId;
             OrderDate = DateOnly.FromDateTime(DateTime.Now);
             OrderNumber = orderNumber;
-            OrderStatus = "new";
+            OrderStatus = "basket";
         }
     }
 }

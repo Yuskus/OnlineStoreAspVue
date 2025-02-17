@@ -1,12 +1,13 @@
-﻿using OnlineStore.Server.DTO.Item;
+﻿using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.Item;
 using System.Collections.Immutable;
 
 namespace OnlineStore.Server.Services.Item
 {
     public interface IItemService
     {
-        Task<ItemResponseList> GetPageOfItems(int pageNumber, int pageSize);
-        Task<ItemResponseList> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize);
+        Task<ResponseList<ItemResponse>> GetPageOfItems(int pageNumber, int pageSize);
+        Task<ResponseList<ItemResponse>> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize);
         ImmutableSortedSet<string> GetAllCategories();
         Task<ItemResponse?> GetItemById(Guid id);
         Task<ItemResponse?> GetItemByCode(string code);

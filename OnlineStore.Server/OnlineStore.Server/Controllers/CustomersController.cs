@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.Customer;
 using OnlineStore.Server.Services.Customer;
 
@@ -14,11 +15,11 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize(Roles = "Manager")]
         [HttpGet(template: "getpage")]
-        public async Task<ActionResult<CustomerResponseList>> GetPageOfCustomers([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<ResponseList<CustomerResponse>>> GetPageOfCustomers([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                CustomerResponseList result = await _customerService.GetPageOfCustomers(pageNumber, pageSize);
+                ResponseList<CustomerResponse> result = await _customerService.GetPageOfCustomers(pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }

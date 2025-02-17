@@ -83,7 +83,7 @@
         try {
           const response = await getPageOfItemsByCategory(category, this.currentPage, this.pageSize);
           if (response) {
-            this.items = response.itemResponses;
+            this.items = response.responses;
             this.totalCount = response.totalCount;
             this.totalPages = Math.ceil(this.totalCount / this.pageSize);
           } else {
@@ -98,7 +98,7 @@
         try {
           const response = await getPageOfItems(this.currentPage, this.pageSize);
           if (response) {
-            this.items = response.itemResponses;
+            this.items = response.responses;
             this.totalCount = response.totalCount;
             this.totalPages = Math.ceil(this.totalCount / this.pageSize);
           } else {

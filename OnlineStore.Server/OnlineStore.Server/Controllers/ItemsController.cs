@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.Customer;
 using OnlineStore.Server.DTO.Item;
 using OnlineStore.Server.Services.Item;
 using System.Collections.Immutable;
@@ -15,11 +17,11 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize]
         [HttpGet(template: "getpage")]
-        public async Task<ActionResult<ItemResponseList>> GetPageOfItems([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<ResponseList<ItemResponse>>> GetPageOfItems([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                ItemResponseList result = await _itemService.GetPageOfItems(pageNumber, pageSize);
+                ResponseList<ItemResponse> result = await _itemService.GetPageOfItems(pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -32,11 +34,11 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize]
         [HttpGet(template: "getpagebycategory/{category}")]
-        public async Task<ActionResult<ItemResponseList>> GetPageOfItemsByCategory(string category, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<ResponseList<ItemResponse>>> GetPageOfItemsByCategory(string category, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                ItemResponseList result = await _itemService.GetPageOfItemsByCategory(category, pageNumber, pageSize);
+                ResponseList<ItemResponse> result = await _itemService.GetPageOfItemsByCategory(category, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }

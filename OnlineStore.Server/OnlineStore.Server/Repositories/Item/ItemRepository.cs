@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineStore.Server.Database.Context;
+using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.Item;
 using OnlineStore.Server.Mapping.Item;
 using System.Collections.Immutable;
@@ -82,7 +83,7 @@ namespace OnlineStore.Server.Repositories.Item
             return result;
         }
 
-        public async Task<ItemResponseList> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize)
+        public async Task<ResponseList<ItemResponse>> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize)
         {
             List<ItemResponse> response = await _context.Items.Where(x => x.Category != null && x.Category.ToLower() == category.ToLower())
                                                               .Skip((pageNumber - 1) * pageSize)
@@ -91,12 +92,12 @@ namespace OnlineStore.Server.Repositories.Item
 
             int totalCount = await _context.Items.CountAsync(x => x.Category != null && x.Category.ToLower() == category.ToLower());
 
-            ItemResponseList result = new(response, totalCount);
+            ResponseList<ItemResponse> result = new(response, totalCount);
 
             return result;
         }
 
-        public async Task<ItemResponseList> GetPageOfItems(int pageNumber, int pageSize)
+        public async Task<ResponseList<ItemResponse>> GetPageOfItems(int pageNumber, int pageSize)
         {
             List<ItemResponse> response = await _context.Items.Skip((pageNumber - 1) * pageSize)
                                                               .Take(pageSize)
@@ -104,7 +105,7 @@ namespace OnlineStore.Server.Repositories.Item
 
             int totalCount = await _context.Items.CountAsync();
 
-            ItemResponseList result = new(response, totalCount);
+            ResponseList<ItemResponse> result = new(response, totalCount);
 
             return result;
         }

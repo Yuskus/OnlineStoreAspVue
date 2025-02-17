@@ -1,7 +1,7 @@
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <OrderEditWindow v-if="role === '1' && isOpenDialog" @close-dialog="clickWindowRedactor" :order="selectedOrder" />
-  <BasketEditWindow v-if="role === '0' && isOpenDialog" @close-dialog="clickWindowRedactor" :order="selectedOrder" />
+  <BasketEditWindow v-if="role === '0' && isOpenDialog" @close-dialog="clickWindowRedactor" :order="selectedOrder" :immutable="basketImmutable" />
 
   <div class="container">
     <h1 class="line">Заказы</h1>
@@ -19,8 +19,7 @@
         <div class="cell base">{{ record.orderStatus }}</div>
         <div class="cell base">
           <a class="accent" v-if="role === '1'" @click="clickAndEdit(index)">Редактировать</a>
-          <a class="accent" v-else-if="record.orderStatus === 'new'" @click="clickAndEdit(index)">Просмотр</a>
-          <a v-else>Нет</a>
+          <a class="accent" v-else @click="clickAndEdit(index)">Просмотр</a>
         </div>
       </div>
     </div>
@@ -54,7 +53,8 @@
         role: null,
         records: [],
         selectedOrder: null,
-        isOpenDialog: false
+        isOpenDialog: false,
+        basketImmutable: false
       }
     },
     methods: {
@@ -69,7 +69,7 @@
                         ? await getPageOfOrders(this.currentPage, this.pageSize)
                         : await getPageOfOrdersByCustomer(this.myId, this.currentPage, this.pageSize);
           if (response) {
-            this.records = response.orderResponses;
+            this.records = response.responses;
             this.totalCount = response.totalCount;
             this.totalPages = Math.ceil(this.totalCount / this.pageSize);
           } else {
@@ -88,6 +88,7 @@
       },
       async clickAndEdit(index) {
         this.selectedOrder = this.records[index];
+        this.basketImmutable = this.selectedOrder.orderStatus === 'in progress' || this.selectedOrder.orderStatus === 'completed';
         await this.clickWindowRedactor(true);
       },
       async clickWindowRedactor(state) {

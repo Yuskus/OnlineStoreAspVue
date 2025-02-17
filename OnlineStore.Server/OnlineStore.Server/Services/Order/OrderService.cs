@@ -1,4 +1,5 @@
-﻿using OnlineStore.Server.DTO.Order;
+﻿using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.Repositories.Order;
 using OnlineStore.Server.Validation.Customer;
 using OnlineStore.Server.Validation.Order;
@@ -63,7 +64,7 @@ namespace OnlineStore.Server.Services.Order
             return false;
         }
 
-        public async Task<OrderResponseList> GetPageOfOrders(int pageNumber, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPageOfOrders(int pageNumber, int pageSize)
         {
             bool isValid = OrderValidator.CheckPages(pageNumber, pageSize);
 
@@ -72,10 +73,10 @@ namespace OnlineStore.Server.Services.Order
                 return await _orderRepository.GetPageOfOrders(pageNumber, pageSize);
             }
 
-            return new OrderResponseList();
+            return new ResponseList<OrderResponse>();
         }
 
-        public async Task<OrderResponseList> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
         {
             bool isValid = OrderValidator.CheckPages(pageNumber, pageSize)
                         && CustomerValidator.CheckGuid(id);
@@ -85,10 +86,10 @@ namespace OnlineStore.Server.Services.Order
                 return await _orderRepository.GetPageOfOrdersByCustomerId(id, pageNumber, pageSize);
             }
             
-            return new OrderResponseList();
+            return new ResponseList<OrderResponse>();
         }
 
-        public async Task<OrderResponseList> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
         {
             bool isValid = OrderValidator.CheckStatus(status)
                         && OrderValidator.CheckPages(pageNumber, pageSize);
@@ -98,7 +99,7 @@ namespace OnlineStore.Server.Services.Order
                 return await _orderRepository.GetPageOfOrdersByStatus(status, pageNumber, pageSize);
             }
 
-            return new OrderResponseList();
+            return new ResponseList<OrderResponse>();
         }
 
         public async Task<OrderResponse?> GetBasketOrder(Guid customerId)

@@ -143,6 +143,9 @@ const validateShipmentDate = (shipmentDate) => {
 }
 
 const validateOrderStatus = (status) => {
-    const isValid = status === 'new' || status === 'in progress' || status === 'completed';
+    const isValid = status === 'basket' || 
+                    status === 'new' || 
+                    status === 'in progress' || 
+                    status === 'completed';
     if (!isValid) throw new Error('Ошибка валидации status.');
 }

@@ -1,12 +1,13 @@
-﻿using OnlineStore.Server.DTO.Order;
+﻿using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.Order;
 
 namespace OnlineStore.Server.Services.Order
 {
     public interface IOrderService
     {
-        Task<OrderResponseList> GetPageOfOrders(int pageNumber, int pageSize);
-        Task<OrderResponseList> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize);
-        Task<OrderResponseList> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize);
+        Task<ResponseList<OrderResponse>> GetPageOfOrders(int pageNumber, int pageSize);
+        Task<ResponseList<OrderResponse>> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize);
+        Task<ResponseList<OrderResponse>> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize);
         Task<OrderResponse?> GetOrderByNumber(int number);
         Task<OrderResponse?> GetBasketOrder(Guid customerId);
         Task<bool> PlaceAnOrder(Guid orderId);

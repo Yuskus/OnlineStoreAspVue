@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineStore.Server.Database.Context;
+using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.Mapping.Order;
 using OnlineStore.Server.Utilities.Order.Generators;
@@ -42,7 +43,7 @@ namespace OnlineStore.Server.Repositories.Order
 
             if (orderEntity is null) return false;
 
-            orderEntity.OrderStatus = "in progress";
+            orderEntity.OrderStatus = "new";
             await _context.SaveChangesAsync();
 
             return true;
@@ -72,7 +73,7 @@ namespace OnlineStore.Server.Repositories.Order
             return result;
         }
 
-        public async Task<OrderResponseList> GetPageOfOrders(int pageNumber, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPageOfOrders(int pageNumber, int pageSize)
         {
             List<OrderResponse> response = await _context.Orders.Include(x => x.Customer)
                                                                 .Skip((pageNumber - 1) * pageSize)
@@ -81,12 +82,12 @@ namespace OnlineStore.Server.Repositories.Order
 
             int totalCount = await _context.Orders.CountAsync();
 
-            OrderResponseList result = new(response, totalCount);
+            ResponseList<OrderResponse> result = new(response, totalCount);
 
             return result;
         }
 
-        public async Task<OrderResponseList> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
         {
             List<OrderResponse> response = await _context.Orders.Include(x => x.Customer)
                                                                 .Where(x => x.CustomerId == id)
@@ -96,12 +97,12 @@ namespace OnlineStore.Server.Repositories.Order
 
             int totalCount = await _context.Orders.CountAsync(x => x.CustomerId == id);
 
-            OrderResponseList result = new(response, totalCount);
+            ResponseList<OrderResponse> result = new(response, totalCount);
 
             return result;
         }
 
-        public async Task<OrderResponseList> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
         {
             List<OrderResponse> response = await _context.Orders.Include(x => x.Customer)
                                                                 .Where(x => x.OrderStatus == status)
@@ -111,15 +112,15 @@ namespace OnlineStore.Server.Repositories.Order
 
             int totalCount = await _context.Orders.CountAsync(x => x.OrderStatus == status);
 
-            OrderResponseList result = new(response, totalCount);
+            ResponseList<OrderResponse> result = new(response, totalCount);
 
             return result;
         }
 
         public async Task<OrderResponse?> GetBasketOrder(Guid customerId)
         {
-            // поиск корзины (заказ со статусом new)
-            Entity.Order? order = await _context.Orders.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.OrderStatus == "new");
+            // поиск корзины (заказ со статусом basket)
+            Entity.Order? order = await _context.Orders.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.OrderStatus == "basket");
 
             if (order is null)
             {

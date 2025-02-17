@@ -1,4 +1,5 @@
-﻿using OnlineStore.Server.DTO.User;
+﻿using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.User;
 
 namespace OnlineStore.Server.Services.User
 {
@@ -8,6 +9,6 @@ namespace OnlineStore.Server.Services.User
         Task<bool> RegisterManager(ManagerRegisterRequest managerRegisterRequest);
         Task<bool> UpdateUser(string username, UserRequest userRequest);
         Task<bool> DeleteUser(string name);
-        Task<UserResponseList> GetPageOfUsersInfo(int pageNumber, int pageSize);
+        Task<ResponseList<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize);
     }
 }

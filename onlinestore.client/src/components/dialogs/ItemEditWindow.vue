@@ -127,6 +127,7 @@ export default {
 
 h2 {
     color: #212933;
+    padding-bottom: 20px;
 }
 
 .buttons {

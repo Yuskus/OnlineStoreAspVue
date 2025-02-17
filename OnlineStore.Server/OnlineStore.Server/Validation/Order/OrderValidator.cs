@@ -31,7 +31,7 @@
 
         public static bool CheckStatus(string status)
         {
-            return status == "completed" || status == "in progress" || status == "new";
+            return status == "completed" || status == "in progress" || status == "new" || status == "basket";
         }
     }
 }

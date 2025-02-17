@@ -2,14 +2,19 @@
     <div class="dialog-over">
         <div class="dialog">
             <h2>Редактировать заказ</h2>
+            <div v-if="isEditOrderContent">
+                <BasketComponent :basket="basket" @refresh-basket="getOrderElements" />
+            </div>
+            <div v-else>
+                <DialogLineForm v-model="localOrder.customerId" labelName="Заказчик" inputType="text" placeholderText="6F9619FF-8B86-D011-B42D-00CF4FC964FF" />
+                <DialogLineForm v-model="localOrder.orderDate" labelName="Дата заказа" inputType="text" placeholderText="YYYY-MM-DD" />
+                <DialogLineForm v-model="localOrder.shipmentDate" labelName="Дата доставки" inputType="text" placeholderText="YYYY-MM-DD" />
 
-            <DialogLineForm v-model="localOrder.customerId" labelName="Заказчик" inputType="text" placeholderText="6F9619FF-8B86-D011-B42D-00CF4FC964FF" />
-            <DialogLineForm v-model="localOrder.orderDate" labelName="Дата заказа" inputType="text" placeholderText="YYYY-MM-DD" />
-            <DialogLineForm v-model="localOrder.shipmentDate" labelName="Дата доставки" inputType="text" placeholderText="YYYY-MM-DD" />
-
-            <DialogOptionsForm v-model="localOrder.orderStatus" labelName="Статус" :options="options" />
+                <DialogOptionsForm v-model="localOrder.orderStatus" labelName="Статус" :options="options" />
+            </div>
 
             <div class="buttons">
+                <button @click="switchEditFormat()">{{ switcherButtonText }}</button>
                 <button @click="applyChanges()">Изменить</button>
                 <button @click="deleteItem()">Удалить</button>
                 <button @click="cancelDialog()">Назад</button>
@@ -20,12 +25,14 @@
 
 <script>
 import { updateOrder, deleteOrder } from '../../api/ordersApi';
+import { getOrderElementByOrderId } from '../../api/orderElementsApi';
 
 import DialogLineForm from '../forms/DialogLineForm.vue';
 import DialogOptionsForm from '../forms/DialogOptionsForm.vue';
+import BasketComponent from '../elements/BasketComponent.vue';
 
 export default {
-    components: { DialogLineForm, DialogOptionsForm },
+    components: { DialogLineForm, DialogOptionsForm, BasketComponent },
     props: {
         order: {
             type: Object,
@@ -35,13 +42,28 @@ export default {
     data() {
         return {
             localOrder: { ...this.order },
-            options: ['new', 'in progress', 'completed'],
-            role: ''
+            options: ['basket', 'new', 'in progress', 'completed'],
+            role: '',
+            basket: [],
+            isEditOrderContent: false,
+            switcherButtonText: 'Редактировать содержимое'
         }
     },
     methods: {
         getRole() {
             this.role = localStorage.getItem('role');
+        },
+        async getOrderElements() {
+            try {
+                const response = await getOrderElementByOrderId(this.order.id);
+                if (response) {
+                    this.basket = response;
+                } else {
+                    alert('Ошибка при получении содержимого заказа.');
+                }
+            } catch (error) {
+                this.warnInfo('Ошибка при получении данных (OrderView): ', error);
+            }
         },
         async applyChanges() {
             try {
@@ -67,6 +89,15 @@ export default {
                 this.cancelDialog();
             }
         },
+        switchEditFormat() {
+            if (this.isEditOrderContent) {
+                this.switcherButtonText = 'Редактировать содержимое';
+                this.isEditOrderContent = false;
+            } else {
+                this.switcherButtonText = 'Редактировать информацию';
+                this.isEditOrderContent = true;
+            }
+        },
         warnInfo(message, error) {
             console.error(message, error);
             alert(error.message);
@@ -77,6 +108,7 @@ export default {
     },
     mounted() {
         this.getRole();
+        this.getOrderElements();
     }
 }
 </script>
@@ -108,6 +140,7 @@ export default {
 
 h2 {
     color: #212933;
+    padding-bottom: 20px;
 }
 
 .buttons {
@@ -117,7 +150,7 @@ h2 {
     float: right;
 }
 
-.buttons button {
+button {
     margin: 0 10px;
     padding: 10px;
     border-radius: 10px;
@@ -125,11 +158,11 @@ h2 {
     background-color: rgba(0,0,30,0.1);
 }
 
-.buttons button:hover {
+button:hover {
     background-color: rgba(0,0,30,0.25);
 }
 
-.buttons button:focus {
+button:active {
     background-color: rgba(0,0,30,0.4);
 }
 </style>

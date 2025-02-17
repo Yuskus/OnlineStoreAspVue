@@ -1,6 +1,7 @@
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
   <ItemEditWindow v-if="role === '1' && isOpenDialog === true" @close-dialog="clickWindowRedactor" :item="selectedItem" />
+  <FixedAddButton v-if="role === '1' && isOpenDialog === false" @button-pressed="fixedAddClicked" />
 
   <div class="filters">
       <div class="button" @click="getItems()">Все категории</div>
@@ -33,10 +34,11 @@
   import Pagination from '../components/pagination/PaginationComponent.vue';
   import ItemComponent from '../components/elements/ItemComponent.vue';
   import ItemEditWindow from '../components/dialogs/ItemEditWindow.vue';
+  import FixedAddButton from '../components/buttons/FixedAddButton.vue';
 
   export default {
     name: 'Catalog',
-    components: { Pagination, ItemComponent, ItemEditWindow },
+    components: { Pagination, ItemComponent, ItemEditWindow, FixedAddButton },
     data() {
       return {
         myId: null,
@@ -143,6 +145,10 @@
           }, 1000);
           await this.addInBasket(this.items[index]);
         }
+      },
+      fixedAddClicked() {
+        this.selectedItem = null
+        this.isOpenDialog = true;
       },
       async clickWindowRedactor(state) {
         this.isOpenDialog = state;

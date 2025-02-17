@@ -9,9 +9,13 @@
             <DialogLineForm v-model="localItem.price" :labelName="'Цена'" :inputType="'number'" :inputText="localItem.price" placeholderText="9999.99" />
     
             <div class="buttons">
-                <button @click="addItem()">Добавление</button>
-                <button @click="applyChanges()">Изменить</button>
-                <button @click="deleteItem()">Удалить</button>
+                <div v-if="!item">
+                    <button @click="addItem()">Добавить</button>
+                </div>
+                <div v-else>
+                    <button @click="applyChanges()">Изменить</button>
+                    <button @click="deleteItem()">Удалить</button>
+                </div>
                 <button @click="cancelDialog()">Назад</button>
             </div>
         </div>
@@ -27,7 +31,8 @@ export default {
     components: { DialogLineForm },
     props: {
         item: {
-            type: Object
+            type: Object,
+            default: null
         }
     },
     data() {
@@ -37,10 +42,6 @@ export default {
     },
     methods: {
         async addItem() {
-            if (this.localItem.code === this.item.code) {
-                alert("Для добавления нового товара нужно изменить его код!");
-                return;
-            }
             try {
                 const response = await addItem(this.localItem);
                 if (!response) {
@@ -134,10 +135,11 @@ h2 {
     width: fit-content;
     margin-top: 20px;
     right: 0px;
+    display: flex;
     float: right;
 }
 
-.buttons button {
+button {
     margin: 0 10px;
     padding: 10px;
     border-radius: 10px;
@@ -145,11 +147,11 @@ h2 {
     background-color: rgba(0,0,30,0.1);
 }
 
-.buttons button:hover {
+button:hover {
     background-color: rgba(0,0,30,0.25);
 }
 
-.buttons button:focus {
+button:focus {
     background-color: rgba(0,0,30,0.4);
 }
 

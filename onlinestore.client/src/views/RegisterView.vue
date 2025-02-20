@@ -4,12 +4,7 @@
     <div class="input-fields">
       <h1>Форма регистрации</h1>
 
-      <AuthLineForm v-model="customer.username" labelName="Введите логин:" inputType="text" placeholderText="Логин" :isRequired="true" />
-      <AuthLineForm v-model="customer.password" labelName="Введите пароль:" inputType="password" placeholderText="Пароль" :isRequired="true" />
-
-      <AuthLineForm v-model="customer.customerInfo.name" labelName="Введите имя заказчика:" inputType="text" placeholderText="Имя заказчика" :isRequired="true" />
-      <AuthLineForm v-model="customer.customerInfo.code" labelName="Введите код заказчика:" inputType="text" placeholderText="1234-2000" :isRequired="true" />
-      <AuthLineForm v-model="customer.customerInfo.address" labelName="Введите адрес заказчика:" inputType="text" placeholderText="Адрес заказчика" :isRequired="false" />
+      <RegistrationForm v-model="customer" :isCustomer="true"/>
 
     </div>
     <div class="btns">
@@ -22,11 +17,11 @@
 <script>
   import { registerCustomer } from '../api/usersApi';
   
-  import AuthLineForm from '../components/forms/AuthLineForm.vue';
+  import RegistrationForm from '../components/forms/RegistrationForm.vue';
 
   export default {
     name: "Register",
-    components: { AuthLineForm },
+    components: { RegistrationForm },
     data() {
       return {
         customer: {
@@ -80,17 +75,6 @@
 
   .input-fields {
     padding: 30px 40px;
-  }
-
-  input {
-    display: block;
-    min-width: 15vw;
-    min-height: 40px;
-    justify-self: center;
-    border: none;
-    border-radius: 8px;
-    outline: 1px solid rgba(28,38,51,0.3);
-    padding: 4px;
   }
 
   h1 {

@@ -124,7 +124,7 @@ h2 {
     background-color: rgba(0,0,30,0.25);
 }
 
-.buttons button:focus {
+.buttons button:active {
     background-color: rgba(0,0,30,0.4);
 }
 </style>

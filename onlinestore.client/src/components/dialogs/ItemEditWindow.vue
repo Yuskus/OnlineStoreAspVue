@@ -9,13 +9,9 @@
             <DialogLineForm v-model="localItem.price" :labelName="'Цена'" :inputType="'number'" :inputText="localItem.price" placeholderText="9999.99" />
     
             <div class="buttons">
-                <div v-if="!item">
-                    <button @click="addItem()">Добавить</button>
-                </div>
-                <div v-else>
-                    <button @click="applyChanges()">Изменить</button>
-                    <button @click="deleteItem()">Удалить</button>
-                </div>
+                <button v-show="!item" @click="addItem()">Добавить</button>
+                <button v-show="item" @click="applyChanges()">Изменить</button>
+                <button v-show="item" @click="deleteItem()">Удалить</button>
                 <button @click="cancelDialog()">Назад</button>
             </div>
         </div>
@@ -151,7 +147,7 @@ button:hover {
     background-color: rgba(0,0,30,0.25);
 }
 
-button:focus {
+button:active {
     background-color: rgba(0,0,30,0.4);
 }
 

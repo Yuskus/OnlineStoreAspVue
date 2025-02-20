@@ -1,19 +1,37 @@
 <template> 
     <div>
         <label>{{ labelName }}</label>
-        <input :type="inputType" :placeholder="placeholderText" :required="isRequired" :value="modelValue" @input="updateValue($event.target.value)" />
+        <input  :type="inputType" 
+                :placeholder="placeholderText" 
+                :required="isRequired" 
+                :value="modelValue" 
+                @input="updateValue($event.target.value)" 
+                :autocomplete="autocomplete" />
     </div>
 </template>
 
 <script>
 export default {
-    props: [
-        'placeholderText',
-        'isRequired',
-        'labelName',
-        'inputType',
-        'modelValue'
-    ],
+    props: {
+      placeholderText: {
+        type: String
+      },
+      isRequired: {
+        default: false
+      },
+      labelName: {
+        type: String
+      },
+      inputType: {
+        default: 'text'
+      },
+      modelValue: {
+        default: null
+      },
+      autocomplete: {
+        default: 'on'
+      }
+    },
     emits: ['update:modelValue'],
     methods: {
         updateValue(value) {

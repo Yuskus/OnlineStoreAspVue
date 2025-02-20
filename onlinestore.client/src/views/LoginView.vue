@@ -4,7 +4,7 @@
     <div class="input-fields">
       <h1>Форма входа</h1>
 
-      <AuthLineForm v-model="user.username" labelName="Введите логин:" inputType="text" placeholderText="Логин" :isRequired="true" />
+      <AuthLineForm v-model="user.username" labelName="Введите логин:" inputType="text" placeholderText="Логин" :isRequired="true" autocomplete="new-password" />
       <AuthLineForm v-model="user.password" labelName="Введите пароль:" inputType="password" placeholderText="Пароль" :isRequired="true" />
 
     </div>

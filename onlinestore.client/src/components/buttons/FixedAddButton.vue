@@ -25,6 +25,7 @@ export default {
     right: 10vw;
     padding: 20px;
     box-shadow: 2px 2px 4px rgba(0, 10, 20, 0.4);
+    z-index: 1000;
 }
 
 .fixed-add-bttn:hover {

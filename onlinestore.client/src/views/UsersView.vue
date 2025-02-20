@@ -1,6 +1,7 @@
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-  <UserEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :user="selectedUser" />
+  <UserEditWindow v-if="isOpenDialog" @close-dialog="clickWindowRedactor" :user="selectedUser" :isCreate="isCreate" />
+  <FixedAddButton v-if="!isOpenDialog" @button-pressed="fixedAddClicked" />
 
   <div class="container">
     <h1 class="line">Пользователи</h1>
@@ -27,10 +28,16 @@
   import Pagination from '../components/pagination/PaginationComponent.vue'
   import UserInfoBlock from '../components/blocks/UserInfoBlock.vue';
   import UserEditWindow from '../components/dialogs/UserEditWindow.vue';
+  import FixedAddButton from '../components/buttons/FixedAddButton.vue';
 
   export default {
     name: 'Users',
-    components: { Pagination, UserInfoBlock, UserEditWindow },
+    components: {
+      Pagination, 
+      UserInfoBlock, 
+      UserEditWindow, 
+      FixedAddButton 
+    },
     data() {
       return {
         currentPage: 1,
@@ -39,7 +46,17 @@
         totalCount: 0,
         users: [],
         selectedUser: null,
-        isOpenDialog: false
+        isOpenDialog: false,
+        newUser: {
+          customerInfo: {
+            name: "",
+            code: "",
+            address: null
+          },
+          username: "",
+          password: ""
+        },
+        isCreate: false
       }
     },
     methods: {
@@ -64,9 +81,15 @@
       },
       async clickWindowRedactor(state) {
         this.isOpenDialog = state;
+        this.isCreate = false;
         if (!state) {
           await this.getUsers();
         }
+      },
+      fixedAddClicked() {
+        this.selectedUser = { ...this.newUser };
+        this.isCreate = true;
+        this.isOpenDialog = true;
       },
       warnInfo(message, error) {
         console.error(message, error);
@@ -91,11 +114,10 @@
   .catalog {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: center;
   }
 
   .user {
-    align-items: center;
     box-shadow: 1px 2px 4px rgba(0, 50, 100, 0.2);
     align-content: space-around;
     margin: 10px;
@@ -103,6 +125,7 @@
     background-color: #f0f5fa;
     min-width: 250px;
     max-width: 300px;
+    flex: 0.25;
   }
 
   .user:hover {

@@ -1,20 +1,26 @@
 <template>
     <div class="dialog-over">
         <div class="dialog">
-            <h2>Редактировать пользователя</h2>
-
-            <DialogLineForm v-model="localUser.username" labelName="Никнейм" inputType="text" placeholderText="user1234" />
-            <DialogLineForm v-model="localUser.role" labelName="Роль" inputType="number" placeholderText="Роль пользователя" />
-            <div v-if="this.localUser.customer">
-                <DialogLineForm v-model="this.localUser.customer.id" labelName="ID Заказчика" inputType="text" placeholderText="6F9619FF-8B86-D011-B42D-00CF4FC964FF" />
-                <DialogLineForm v-model="this.localUser.customer.name" labelName="Имя" inputType="text" placeholderText="Имя заказчика" />
-                <DialogLineForm v-model="this.localUser.customer.code" labelName="Код" inputType="text" placeholderText="1234-2000" />
-                <DialogLineForm v-model="this.localUser.customer.address" labelName="Адрес" inputType="text" placeholderText="Адрес заказчика" />
-                <DialogLineForm v-model="this.localUser.customer.discount" labelName="Скидка" inputType="number" placeholderText="Процент скидки (целое число)" />
+            <h2>{{ windowName }}</h2>
+            <div v-if="isCreate">
+                <RegistrationForm v-model="localUser" :isCustomer="isCustomer"/>
+            </div>
+            <div v-else>
+                <DialogLineForm v-model="localUser.username" labelName="Никнейм" inputType="text" placeholderText="user1234" />
+                <DialogLineForm v-model="localUser.role" labelName="Роль" inputType="number" placeholderText="Роль пользователя" />
+                <div v-if="localUser.customer">
+                    <DialogLineForm v-model="localUser.customer.id" labelName="ID Заказчика" inputType="text" placeholderText="6F9619FF-8B86-D011-B42D-00CF4FC964FF" />
+                    <DialogLineForm v-model="localUser.customer.name" labelName="Имя" inputType="text" placeholderText="Имя заказчика" />
+                    <DialogLineForm v-model="localUser.customer.code" labelName="Код" inputType="text" placeholderText="1234-2000" />
+                    <DialogLineForm v-model="localUser.customer.address" labelName="Адрес" inputType="text" placeholderText="Адрес заказчика" />
+                    <DialogLineForm v-model="localUser.customer.discount" labelName="Скидка" inputType="number" placeholderText="Процент скидки (целое число)" />
+                </div>
             </div>
             <div class="buttons">
-                <button @click="applyChanges()">Изменить</button>
-                <button @click="deleteUser()">Удалить</button>
+                <button v-show="isCreate" @click="changeRole()">Переключить на {{ isCustomer ? 'менеджера' : 'заказчика' }}</button>
+                <button v-show="isCreate" @click="addUser()">Добавить {{ isCustomer ? 'заказчика' : 'менеджера' }}</button>
+                <button v-show="!isCreate" @click="applyChanges()">Изменить</button>
+                <button v-show="!isCreate" @click="deleteUser()">Удалить</button>
                 <button @click="cancelDialog()">Назад</button>
             </div>
         </div>
@@ -22,24 +28,47 @@
 </template>
 
 <script>
-import { updateUser, deleteUser } from '../../api/usersApi';
+import { updateUser, deleteUser, registerCustomer, registerManager } from '../../api/usersApi';
 import { updateCustomer } from '../../api/customersApi';
 
 import DialogLineForm from '../forms/DialogLineForm.vue';
+import RegistrationForm from '../forms/RegistrationForm.vue';
 
 export default {
-    components: { DialogLineForm },
+    components: { DialogLineForm, RegistrationForm },
     props: {
         user: {
-            type: Object
+            type: Object,
+            required: true
+        },
+        isCreate: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
         return {
-            localUser: { ...this.user }
+            windowName: this.isCreate ? 'Добавить пользователя' : 'Редактировать пользователя',
+            localUser: { ...this.user },
+            isCustomer: true
         }
     },
     methods: {
+        changeRole() {
+            this.isCustomer = !this.isCustomer;
+        },
+        async addUser() {
+            try {
+                const response = this.isCustomer ? await registerCustomer(this.localUser) : await registerManager(this.localUser);
+                if (!response) {
+                    alert('Ошибка при добавлении пользователя.');
+                }
+            } catch (error) {
+                this.warnInfo('Ошибка при добавлении данных (UserEdit): ', error);
+            } finally {
+                this.cancelDialog();
+            }
+        },
         async applyChanges() {
             try {
                 if (this.localUser.customer) {
@@ -118,7 +147,6 @@ h2 {
 .buttons {
     width: fit-content;
     margin-top: 20px;
-    right: 0px;
     float: right;
 }
 
@@ -134,7 +162,7 @@ button:hover {
     background-color: rgba(0,0,30,0.25);
 }
 
-button:focus {
+button:active {
     background-color: rgba(0,0,30,0.4);
 }
 

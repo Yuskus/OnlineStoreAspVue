@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Server.DTO.Common;
-using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.DTO.User;
 using OnlineStore.Server.Services.User;
 using OnlineStore.Server.Services.User.RegistrationService;

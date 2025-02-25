@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Server.DTO.Common;
-using OnlineStore.Server.DTO.Customer;
 using OnlineStore.Server.DTO.Item;
 using OnlineStore.Server.Services.Item;
 using System.Collections.Immutable;

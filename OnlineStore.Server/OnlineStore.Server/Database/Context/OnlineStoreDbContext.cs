@@ -14,6 +14,7 @@ namespace OnlineStore.Server.Database.Context
         public virtual DbSet<User> Users { get; set; }
 
         public OnlineStoreDbContext() { }
+        public OnlineStoreDbContext(DbContextOptions<OnlineStoreDbContext> options) : base(options) { }
         public OnlineStoreDbContext(string connectionString)
         {
             _connectionString = connectionString;

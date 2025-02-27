@@ -8,10 +8,11 @@ using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Repositories.User
 {
-    public class UserRepository(OnlineStoreDbContext context, IConfiguration configuration) : IUserRepository
+    public class UserRepository(OnlineStoreDbContext context, IConfiguration configuration, ILogger<UserRepository> logger) : IUserRepository
     {
         private readonly OnlineStoreDbContext _context = context;
         private readonly IConfiguration _configuration = configuration;
+        private readonly ILogger<UserRepository> _logger = logger;
 
         public async Task<LoginResponse?> Authenticate(LoginRequest loginRequest)
         {
@@ -29,6 +30,8 @@ namespace OnlineStore.Server.Repositories.User
 
                     return response;
                 }
+
+                _logger.LogWarning("Неудачная попытка входа!");
             }
 
             return null;

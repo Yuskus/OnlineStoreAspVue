@@ -18,12 +18,12 @@ namespace OnlineStore.Server.Services.User.RegistrationService
         private readonly ILogger<CustomerRegistrationService> _logger;
         private bool disposed = false;
 
-        public CustomerRegistrationService(OnlineStoreDbContext context, IConfiguration configuration, ILogger<CustomerRegistrationService> logger)
+        public CustomerRegistrationService(OnlineStoreDbContext context, IConfiguration configuration, ILogger<CustomerRegistrationService> loggerCustomer, ILogger<UserRepository> loggerUser)
         {
             _context = context;
-            _userRepository = new UserRepository(_context, configuration);
+            _userRepository = new UserRepository(_context, configuration, loggerUser);
             _customerRepository = new CustomerRepository(_context);
-            _logger = logger;
+            _logger = loggerCustomer;
         }
         public void Commit()
         {

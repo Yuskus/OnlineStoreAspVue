@@ -2,7 +2,7 @@
 
 namespace OnlineStore.Server.Utilities.Order.Generators
 {
-    public class OrderNumberGenerator
+    public class OrderNumberGenerator : INumberGenerator
     {
         private int _maxNumber = -1;
         private readonly object _lock = new();
@@ -31,7 +31,7 @@ namespace OnlineStore.Server.Utilities.Order.Generators
             }
         }
 
-        public int GeneratedNewOrderNumber
+        public int GenerateNewNumber
         {
             get
             {

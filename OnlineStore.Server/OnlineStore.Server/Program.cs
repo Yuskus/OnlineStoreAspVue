@@ -110,7 +110,7 @@ namespace OnlineStore.Server
             builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<ICustomerRegistrationService, CustomerRegistrationService>();
-            builder.Services.AddSingleton<OrderNumberGenerator>();
+            builder.Services.AddSingleton<INumberGenerator, OrderNumberGenerator>();
 
             builder.Logging.AddDebug()
                            .AddConsole();

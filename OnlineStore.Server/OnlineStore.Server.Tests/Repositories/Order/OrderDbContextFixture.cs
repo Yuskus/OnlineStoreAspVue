@@ -1,33 +1,44 @@
 ﻿using OnlineStore.Server.Tests.Common;
-using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Tests.Repositories.Order
 {
     public class OrderDbContextFixture : DbContextFixture
     {
+        public Guid CustomerId_SampleA { get; private set; }
+        public Guid CustomerId_SampleB { get; private set; }
+        public Guid Guid_Unexists { get; private set; } = Guid.NewGuid();
+        public string Status_New { get; private set; } = "new";
+        public string Status_Basket { get; private set; } = "basket";
+        public string Status_Unexists { get; private set; } = "Unexists";
+        public int OrderNumber_Exists { get; private set; } = 0;
+        public int OrderNumber_Unexists { get; private set; } = int.MaxValue;
+        public Guid OrderId_StatusBasket { get; private set; }
+        public Guid OrderId_StatusNew { get; private set; }
+        public int OrdersTotalCount { get; private set; }
+        public Guid OrderId_ForUpdate { get; private set; }
+        public Guid OrderId_ForDelete { get; private set; }
+
         public OrderDbContextFixture()
         {
             Initialize();
         }
 
-        public void Initialize()
+        public void Initialize(int capacity = 30)
         {
-            var orders = new Entity.Order[30];
+            OrdersTotalCount = capacity;
 
-            Guid[] guids = [.. Context.Customers.Take(5).Select(x => x.Id)];
+            Guid[] customerGuids = AddCustomers(5);
 
-            for (int i = 0; i < orders.Length; i++)
-            {
-                orders[i] = new()
-                {
-                    CustomerId = guids[i % 5],
-                    OrderDate = DateOnly.FromDateTime(DateTime.Now),
-                    OrderNumber = i
-                };
-            }
+            Guid[] ordersGuids = AddOrders(capacity, customerGuids);
 
-            Context.Orders.AddRange(orders);
-            Context.SaveChanges();
+            CustomerId_SampleA = customerGuids[0];
+            CustomerId_SampleB = customerGuids[^1];
+
+            OrderId_StatusNew = ordersGuids[0];
+            OrderId_StatusBasket = ordersGuids[1];
+
+            OrderId_ForUpdate = ordersGuids[^1];
+            OrderId_ForDelete = ordersGuids[^2];
         }
     }
 }

@@ -8,14 +8,14 @@ using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Repositories.Order
 {
-    public class OrderRepository(OnlineStoreDbContext context, OrderNumberGenerator orderNumberGenerator) : IOrderRepository
+    public class OrderRepository(OnlineStoreDbContext context, INumberGenerator orderNumberGenerator) : IOrderRepository
     {
         private readonly OnlineStoreDbContext _context = context;
-        private readonly OrderNumberGenerator _orderNumberGenerator = orderNumberGenerator;
+        private readonly INumberGenerator _orderNumberGenerator = orderNumberGenerator;
 
         public async Task<Guid?> CreateOrder(OrderRequest order)
         {
-            int total = _context.Orders.Count() + 1;
+            int total = _orderNumberGenerator.GenerateNewNumber;
 
             Entity.Order orderEntity = order.MapToDb(total);
 
@@ -39,7 +39,7 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<bool> PlaceAnOrder(Guid orderId)
         {
-            Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
+            Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId && x.OrderStatus == "basket");
 
             if (orderEntity is null) return false;
 
@@ -120,12 +120,16 @@ namespace OnlineStore.Server.Repositories.Order
         public async Task<OrderResponse?> GetBasketOrder(Guid customerId)
         {
             // поиск корзины (заказ со статусом basket)
-            Entity.Order? order = await _context.Orders.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.OrderStatus == "basket");
+            var ordersOfCustomer = _context.Orders.Where(x => x.CustomerId == customerId);
+
+            if (!ordersOfCustomer.Any()) return null;
+
+            Entity.Order? order = await ordersOfCustomer.FirstOrDefaultAsync(x => x.OrderStatus == "basket");
 
             if (order is null)
             {
                 // создание при отсутствии
-                order = new(customerId, _orderNumberGenerator.GeneratedNewOrderNumber);
+                order = new(customerId, _orderNumberGenerator.GenerateNewNumber);
                 await _context.Orders.AddAsync(order);
                 await _context.SaveChangesAsync();
             }

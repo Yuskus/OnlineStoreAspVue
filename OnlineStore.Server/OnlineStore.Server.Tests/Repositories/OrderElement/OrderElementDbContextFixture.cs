@@ -1,36 +1,26 @@
 ﻿using OnlineStore.Server.Tests.Common;
-using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Tests.Repositories.OrderElement
 {
     public class OrderElementDbContextFixture : DbContextFixture
     {
+        public int OrderElementsTotalCount { get; private set; }
         public OrderElementDbContextFixture()
         {
             Initialize();
         }
 
-        public void Initialize()
+        public void Initialize(int capacity = 30)
         {
-            var elements = new Entity.OrderElement[30];
+            OrderElementsTotalCount = capacity;
 
-            Guid[] ordersGuids = [.. Context.Orders.Take(7).Select(x => x.Id)];
-            Guid[] itemsGuids = [.. Context.Items.Take(10).Select(x => x.Id)];
-            double?[] itemsPrices = [.. Context.Items.Take(10).Select(x => x.Price)];
+            Guid[] customersGuids = AddCustomers(capacity / 2);
 
-            for (int i = 0; i < elements.Length; i++)
-            {
-                elements[i] = new()
-                {
-                    OrderId = ordersGuids[i % 7],
-                    ItemId = itemsGuids[i % 10],
-                    ItemsCount = i % 3,
-                    ItemPrice = 100 + i
-                };
-            }
+            Guid[] ordersGuids = AddOrders(capacity / 2, customersGuids);
 
-            Context.OrderElements.AddRange(elements);
-            Context.SaveChanges();
+            Guid[] itemsGuids = AddItems(capacity / 2);
+
+            Guid[] _ = AddOrderElements(capacity, ordersGuids, itemsGuids);
         }
     }
 }

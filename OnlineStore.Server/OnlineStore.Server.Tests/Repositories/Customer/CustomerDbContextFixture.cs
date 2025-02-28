@@ -1,5 +1,4 @@
 ﻿using OnlineStore.Server.Tests.Common;
-using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Tests.Repositories.Customer
 {
@@ -19,34 +18,20 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
 
         private void Initialize(int capacity = 30)
         {
-            // заполнение БД (customers)
-
-            var customers = new Entity.Customer[capacity];
-
-            static string getCode(int i) => $"{1000 + i}-2000";
-
-            for (int i = 0; i < capacity; i++)
-            {
-                customers[i] = new()
-                {
-                    Name = $"TestName{i}",
-                    Code = getCode(i),
-                    Discount = i
-                };
-            }
-
-            Context.Customers.AddRange(customers);
-            Context.SaveChanges();
-
-            // инициализация переменных для тестов
-
-            CustomerCode_ForGetByCode = getCode(capacity / 2); // некоторый код от пользователя из середины
-            CustomerCode_Unexists = "9999-2000"; // явно несуществующий код
-
-            CustomerId_ForGetById = Context.Customers.First().Id; // некоторый случайный Id (номер в discount будет "0")
-            CustomerId_ForUpdate = Context.Customers.Last().Id; // некоторый случайный Id (номер п/п в discount будет "capacity - 1")
-
             CustomersTotalCount = capacity;
+
+            Guid[] guids = AddCustomers(capacity);
+
+            // some random guids for getbyid и update methods
+            CustomerId_ForGetById = guids[0];
+            CustomerId_ForUpdate = guids[^1];
+
+            CustomerCode_Unexists = "9999-2000";
+
+            // some code from user who is in the middle of the list (or unexist code if errors)
+            CustomerCode_ForGetByCode = Context.Customers 
+                                               .FirstOrDefault(x => x.Id == guids[capacity / 2])?
+                                               .Code ?? CustomerCode_Unexists; 
         }
     }
 }

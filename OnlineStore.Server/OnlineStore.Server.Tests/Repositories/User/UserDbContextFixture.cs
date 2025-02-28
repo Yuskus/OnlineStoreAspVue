@@ -1,5 +1,4 @@
 ﻿using OnlineStore.Server.Authorization.Utilities;
-using OnlineStore.Server.Database.Entities;
 using OnlineStore.Server.Tests.Common;
 using Entity = OnlineStore.Server.Database.Entities;
 
@@ -24,68 +23,37 @@ namespace OnlineStore.Server.Tests.Repositories.User
 
         public void Initialize(int capacity = 30)
         {
-            // заполнение БД (customers for users)
+            UsersTotalCount = capacity;
 
-            var customers = new Entity.Customer[capacity / 2];
+            Guid[] guids = AddCustomers(capacity / 2); // fk for users
+            string[] _ = AddUsers(guids); // fill table for tests
 
-            for (int i = 0; i < capacity / 2; i++)
-            {
-                customers[i] = new() { Name = $"TestName{i}", Code = $"{2000 + i}-2000" };
-            }
+            // add users for update and delete methods
+            AddOneUser(ManagerUsername_ForUpdate, "testPassword_UPD1");
+            AddOneUser(CustomerUsername_ForUpdate, "testPassword_UPD2");
+            AddOneUser(ManagerUsername_ForDelete, "testPassword_DEL1");
+            AddOneUser(CustomerUsername_ForDelete, "testPassword_DEL2");
 
-            Context.Customers.AddRange(customers);
             Context.SaveChanges();
 
-            // заполнение БД (users)
-
-            var users = new Entity.User[capacity];
-
-            byte[] hash, salt;
-
-            for (int i = 0; i < capacity; i++)
+            // customer for register method
+            var customerForRegister = new Entity.Customer
             {
-                (hash, salt) = Hasher.CreatePasswordHash($"testPassword{i}");
+                Name = CustomerName_ForRegister,
+                Code = CustomerCode_ForRegister
+            };
 
-                users[i] = new Entity.User { Username = $"TestUsername{i}", Password = hash, Salt = salt };
-
-                if (i < capacity / 2) // then manager
-                {
-                    users[i].Role = (int)UserRole.Manager;
-                }
-                else // then customer
-                {
-                    users[i].CustomerId = customers[i - capacity / 2].Id;
-                }
-            }
-
-            Context.Users.AddRange(users);
-
-            var customerForRegister = new Entity.Customer { Name = CustomerName_ForRegister, Code = CustomerCode_ForRegister };
             Context.Customers.Add(customerForRegister);
             Context.SaveChanges();
+
             CustomerId_ForRegister = customerForRegister.Id;
+        }
 
-            (hash, salt) = Hasher.CreatePasswordHash($"testPassword_UPD1");
-            Context.Users.Add(new() { Username = ManagerUsername_ForUpdate, Password = hash, Salt = salt, Role = (int)UserRole.Manager });
+        private void AddOneUser(string username, string password)
+        {
+            (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(password);
+            Context.Users.Add(new() { Username = username, Password = hash, Salt = salt });
             UsersTotalCount++;
-
-            (hash, salt) = Hasher.CreatePasswordHash($"testPassword_UPD2");
-            Context.Users.Add(new() { Username = CustomerUsername_ForUpdate, Password = hash, Salt = salt });
-            UsersTotalCount++;
-
-            (hash, salt) = Hasher.CreatePasswordHash($"testPassword_DEL1");
-            Context.Users.Add(new() { Username = ManagerUsername_ForDelete, Password = hash, Salt = salt, Role = (int)UserRole.Manager });
-            UsersTotalCount++;
-
-            (hash, salt) = Hasher.CreatePasswordHash($"testPassword_DEL2");
-            Context.Users.Add(new() { Username = CustomerUsername_ForDelete, Password = hash, Salt = salt });
-            UsersTotalCount++;
-
-            Context.SaveChanges();
-
-            // инициализация переменных для тестов
-
-            UsersTotalCount += capacity;
         }
     }
 }

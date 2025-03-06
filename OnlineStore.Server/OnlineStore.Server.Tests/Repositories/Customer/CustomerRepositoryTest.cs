@@ -86,8 +86,8 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
             var repository = new CustomerRepository(_context);
 
             // Act
-            var getByCode_Fail = await repository.GetCustomerByCode(_fixture.CustomerCode_Unexists);
-            var getByCode_Seccess = await repository.GetCustomerByCode(_fixture.CustomerCode_ForGetByCode);
+            var getByCode_Fail = await repository.GetOneByCriteria(new() { Code = _fixture.CustomerCode_Unexists });
+            var getByCode_Seccess = await repository.GetOneByCriteria(new() { Code = _fixture.CustomerCode_ForGetByCode });
 
             // Assert
             Assert.Null(getByCode_Fail);
@@ -103,8 +103,8 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
             var repository = new CustomerRepository(_context);
 
             // Act
-            var getById_Fail = await repository.GetCustomerById(_fixture.CustomerId_Unexist);
-            var getById_Success = await repository.GetCustomerById(_fixture.CustomerId_ForGetById);
+            var getById_Fail = await repository.GetOneByCriteria(new() { Id = _fixture.CustomerId_Unexist });
+            var getById_Success = await repository.GetOneByCriteria(new() { Id = _fixture.CustomerId_ForGetById });
 
             // Assert
             Assert.Null(getById_Fail);
@@ -120,31 +120,12 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
             var repository = new CustomerRepository(_context);
 
             // Act
-            var test1 = await repository.GetPageOfCustomers(1, 5);
-            var test2 = await repository.GetPageOfCustomers(2, 5);
-            var test3 = await repository.GetPageOfCustomers(3, 3);
-            var test4 = await repository.GetPageOfCustomers(1, 20);
-            var test5 = await repository.GetPageOfCustomers(5, 1);
+            var test = await repository.GetAllCustomers();
 
             // Assert
-            Assert.Equal(_fixture.CustomersTotalCount, test1.TotalCount);
-            Assert.Equal(_fixture.CustomersTotalCount, test2.TotalCount);
-            Assert.Equal(_fixture.CustomersTotalCount, test3.TotalCount);
-            Assert.Equal(_fixture.CustomersTotalCount, test4.TotalCount);
-            Assert.Equal(_fixture.CustomersTotalCount, test5.TotalCount);
-
             // there may be range of values because of "create customer" test
-            Assert.InRange(test1.TotalCount, _fixture.CustomersTotalCount, _fixture.CustomersTotalCount + 2);
-            Assert.InRange(test2.TotalCount, _fixture.CustomersTotalCount, _fixture.CustomersTotalCount + 2);
-            Assert.InRange(test3.TotalCount, _fixture.CustomersTotalCount, _fixture.CustomersTotalCount + 2);
-            Assert.InRange(test4.TotalCount, _fixture.CustomersTotalCount, _fixture.CustomersTotalCount + 2);
-            Assert.InRange(test5.TotalCount, _fixture.CustomersTotalCount, _fixture.CustomersTotalCount + 2);
-
-            Assert.Equal(5, test1.Responses.Count());
-            Assert.Equal(5, test2.Responses.Count());
-            Assert.Equal(3, test3.Responses.Count());
-            Assert.Equal(20, test4.Responses.Count());
-            Assert.Single(test5.Responses);
+            Assert.InRange(test.TotalCount, _fixture.CustomersTotalCount, _fixture.CustomersTotalCount + 2);
+            Assert.InRange(test.Responses.Count(), _fixture.CustomersTotalCount, _fixture.CustomersTotalCount + 2);
         }
     }
 }

@@ -16,9 +16,7 @@ namespace OnlineStore.Server.Repositories.User
 
         public async Task<LoginResponse?> Authenticate(UserCredentialsRequest loginRequest)
         {
-            Entity.User? user = await _context.Users.FirstOrDefaultAsync(x => x.Username == loginRequest.Username);
-
-            if (user is not null)
+            if (await _context.Users.FirstOrDefaultAsync(x => x.Username == loginRequest.Username) is Entity.User user)
             {
                 bool isValid = Hasher.IsPasswordValid(loginRequest.Password, user.Password, user.Salt);
 
@@ -53,41 +51,37 @@ namespace OnlineStore.Server.Repositories.User
 
         public async Task<bool> UpdateUser(string username, UserRequest userRequest)
         {
-            Entity.User? userEntity = await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
+            if (await _context.Users.FirstOrDefaultAsync(x => x.Username == username) is Entity.User user)
+            {
+                user.UpdateInDb(userRequest); // меняем только роль и логин (логика смены пароля не добавлена)
+                await _context.SaveChangesAsync();
 
-            if (userEntity is null) return false;
+                return true;
+            }
 
-            userEntity.UpdateInDb(userRequest); // меняем только роль и логин (логика смены пароля не добавлена)
-            await _context.SaveChangesAsync();
-
-            return true;
+            return false;
         }
 
         public async Task<bool> DeleteUser(string username)
         {
-            Entity.User? user = await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
+            if (await _context.Users.FirstOrDefaultAsync(x => x.Username == username) is Entity.User user)
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                
+                return true;
+            }
 
-            if (user is null) return false;
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return true;
+            return false;
         }
 
-        public async Task<ResponseList<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize)
+        public async Task<ResponseList<UserResponse>> GetAllUsers()
         {
-            List<UserResponse> response = await _context.Users.Skip((pageNumber - 1) * pageSize)
-                                                              .Take(pageSize)
-                                                              .Include(x => x.Customer)
-                                                              .Select(x => x.MapFromDb())
-                                                              .ToListAsync();
-
-            int totalCount = await _context.Users.CountAsync();
-
-            ResponseList<UserResponse> result = new(response, totalCount);
-
-            return result;
+            return new()
+            {
+                Responses = await _context.Users.Include(x => x.Customer).Select(x => x.MapFromDb()).ToListAsync(), //??
+                TotalCount = await _context.Users.CountAsync()
+            };
         }
     }
 }

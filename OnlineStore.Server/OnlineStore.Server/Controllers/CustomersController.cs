@@ -36,7 +36,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                CustomerResponse? result = await _customerService.GetCustomerById(id);
+                CustomerResponse? result = await _customerService.GetOneByCriteria(new() { Id = id });
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -53,7 +53,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                CustomerResponse? result = await _customerService.GetCustomerByCode(code);
+                CustomerResponse? result = await _customerService.GetOneByCriteria(new() { Code = code });
                 if (result is null) return BadRequest();
                 return Ok(result);
             }

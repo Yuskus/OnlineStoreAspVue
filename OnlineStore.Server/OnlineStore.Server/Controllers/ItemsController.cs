@@ -37,7 +37,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ResponseList<ItemResponse> result = await _itemService.GetPageOfItemsByCategory(category, pageNumber, pageSize);
+                ResponseList<ItemResponse> result = await _itemService.GetPageOfItemsByCriteria(new() { Category = category }, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -71,7 +71,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ItemResponse? result = await _itemService.GetItemById(id);
+                ItemResponse? result = await _itemService.GetOneByCriteria(new() { Id = id });
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -88,7 +88,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ItemResponse? result = await _itemService.GetItemByCode(code);
+                ItemResponse? result = await _itemService.GetOneByCriteria(new() { Code = code });
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -105,7 +105,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ItemResponse? result = await _itemService.GetItemByName(name);
+                ItemResponse? result = await _itemService.GetOneByCriteria(new() { Name = name });
                 if (result is null) return BadRequest();
                 return Ok(result);
             }

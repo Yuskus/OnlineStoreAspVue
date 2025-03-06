@@ -10,6 +10,7 @@ namespace OnlineStore.Server.Repositories.Customer
     public class CustomerRepository(OnlineStoreDbContext context) : ICustomerRepository
     {
         private readonly OnlineStoreDbContext _context = context;
+
         public async Task<Guid?> CreateCustomer(CustomerBaseRequest customer)
         {
             Entity.Customer? customerEntity = await _context.Customers.FirstOrDefaultAsync(x => x.Code == customer.Code);
@@ -37,38 +38,29 @@ namespace OnlineStore.Server.Repositories.Customer
             return true;
         }
 
-        public async Task<CustomerResponse?> GetCustomerByCode(string code)
+        public async Task<ResponseList<CustomerResponse>> GetAllCustomers()
         {
-            Entity.Customer? customerEntity = await _context.Customers.FirstOrDefaultAsync(x => x.Code == code);
-
-            if (customerEntity is null) return null;
-
-            CustomerResponse result = customerEntity.MapFromDb();
-
-            return result;
+            return new()
+            {
+                Responses = await _context.Customers.Select(x => x.MapFromDb()).ToListAsync(),
+                TotalCount = await _context.Customers.CountAsync()
+            };
         }
 
-        public async Task<CustomerResponse?> GetCustomerById(Guid id)
+        public async Task<CustomerResponse?> GetOneByCriteria(CustomerFilterCriteria criteria)
         {
-            Entity.Customer? customerEntity = await _context.Customers.FirstOrDefaultAsync(x => x.Id == id);
+            Entity.Customer? result = null;
 
-            if (customerEntity is null) return null;
+            if (criteria.Id is not null)
+            {
+                result = await _context.Customers.FirstOrDefaultAsync(x => x.Id == criteria.Id);
+            }
+            else if (criteria.Code is not null)
+            {
+                result = await _context.Customers.FirstOrDefaultAsync(x => x.Code == criteria.Code);
+            }
 
-            CustomerResponse result = customerEntity.MapFromDb();
-
-            return result;
-        }
-
-        public async Task<ResponseList<CustomerResponse>> GetPageOfCustomers(int pageNumber, int pageSize)
-        {
-            List<CustomerResponse> response = await _context.Customers.Skip((pageNumber - 1) * pageSize)
-                                                                      .Take(pageSize)
-                                                                      .Select(x => x.MapFromDb()).ToListAsync();
-            int totalCount = await _context.Customers.CountAsync();
-
-            ResponseList<CustomerResponse> result = new(response, totalCount);
-
-            return result;
+            return result?.MapFromDb();
         }
     }
 }

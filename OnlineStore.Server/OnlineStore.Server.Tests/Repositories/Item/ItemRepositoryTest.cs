@@ -23,8 +23,8 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             var repository = new ItemRepository(_context);
 
             // Act
-            var getById_Success = await repository.GetItemById(_fixture.ItemId_Exists);
-            var getById_Fail = await repository.GetItemById(_fixture.ItemId_Unexists);
+            var getById_Success = await repository.GetOneByCriteria(new() { Id = _fixture.ItemId_Exists });
+            var getById_Fail = await repository.GetOneByCriteria(new() { Id = _fixture.ItemId_Unexists });
 
             // Assert
             Assert.NotNull(getById_Success);
@@ -38,8 +38,8 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             var repository = new ItemRepository(_context);
 
             // Act
-            var getByName_Success = await repository.GetItemByName(_fixture.ItemName_Exists);
-            var getByName_Fail = await repository.GetItemByName(_fixture.ItemName_Unexists);
+            var getByName_Success = await repository.GetOneByCriteria(new() { Name = _fixture.ItemName_Exists });
+            var getByName_Fail = await repository.GetOneByCriteria(new() { Name = _fixture.ItemName_Unexists });
 
             // Assert
             Assert.NotNull(getByName_Success);
@@ -53,8 +53,8 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             var repository = new ItemRepository(_context);
 
             // Act
-            var getByCode_Success = await repository.GetItemByCode(_fixture.ItemCode_Exists);
-            var getByCode_Fail = await repository.GetItemByCode(_fixture.ItemCode_Unexists);
+            var getByCode_Success = await repository.GetOneByCriteria(new() { Code = _fixture.ItemCode_Exists });
+            var getByCode_Fail = await repository.GetOneByCriteria(new() { Code = _fixture.ItemCode_Unexists });
 
             // Assert
             Assert.NotNull(getByCode_Success);
@@ -68,25 +68,12 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             var repository = new ItemRepository(_context);
 
             // Act
-            var test1 = await repository.GetPageOfItems(1, 5);
-            var test2 = await repository.GetPageOfItems(2, 5);
-            var test3 = await repository.GetPageOfItems(3, 3);
-            var test4 = await repository.GetPageOfItems(1, 20);
-            var test5 = await repository.GetPageOfItems(5, 1);
+            var test = await repository.GetAllItems();
 
             // Assert
             // there may be range of values because of "create item" test
-            Assert.InRange(test1.TotalCount, _fixture.ItemsTotalCount - 1, _fixture.ItemsTotalCount + 1);
-            Assert.InRange(test2.TotalCount, _fixture.ItemsTotalCount - 1, _fixture.ItemsTotalCount + 1);
-            Assert.InRange(test3.TotalCount, _fixture.ItemsTotalCount - 1, _fixture.ItemsTotalCount + 1);
-            Assert.InRange(test4.TotalCount, _fixture.ItemsTotalCount - 1, _fixture.ItemsTotalCount + 1);
-            Assert.InRange(test5.TotalCount, _fixture.ItemsTotalCount - 1, _fixture.ItemsTotalCount + 1);
-
-            Assert.Equal(5, test1.Responses.Count());
-            Assert.Equal(5, test2.Responses.Count());
-            Assert.Equal(3, test3.Responses.Count());
-            Assert.Equal(20, test4.Responses.Count());
-            Assert.Single(test5.Responses);
+            Assert.InRange(test.TotalCount, _fixture.ItemsTotalCount - 1, _fixture.ItemsTotalCount + 1);
+            Assert.InRange(test.Responses.Count(), _fixture.ItemsTotalCount - 1, _fixture.ItemsTotalCount + 1);
         }
 
         [Fact]
@@ -96,10 +83,10 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             var repository = new ItemRepository(_context);
 
             // Act
-            var unexist = await repository.GetPageOfItemsByCategory(_fixture.Category_Unexists, 1, 5);
+            var unexist = await repository.GetItemsByCriteria(new() { Category = _fixture.Category_Unexists });
 
-            var categoryA = await repository.GetPageOfItemsByCategory(_fixture.Category_SampleA, 1, 5);
-            var categoryB = await repository.GetPageOfItemsByCategory(_fixture.Category_SampleB, 1, 7);
+            var categoryA = await repository.GetItemsByCriteria(new() { Category = _fixture.Category_SampleA });
+            var categoryB = await repository.GetItemsByCriteria(new() { Category = _fixture.Category_SampleB });
 
             // Assert
             Assert.NotNull(unexist);
@@ -111,8 +98,8 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             Assert.InRange(categoryB.TotalCount, 1, _fixture.ItemsTotalCount);
 
             Assert.Empty(unexist.Responses);
-            Assert.InRange(categoryA.Responses.Count(), 1, 5);
-            Assert.InRange(categoryB.Responses.Count(), 1, 7);
+            Assert.InRange(categoryA.Responses.Count(), 1, _fixture.ItemsTotalCount);
+            Assert.InRange(categoryB.Responses.Count(), 1, _fixture.ItemsTotalCount);
         }
 
         [Fact]

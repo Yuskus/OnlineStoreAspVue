@@ -37,7 +37,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrdersByCustomerId(id, pageNumber, pageSize);
+                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrdersByCriteria(new() {  Id = id }, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             } 
@@ -54,7 +54,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrdersByStatus(status, pageNumber, pageSize);
+                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrdersByCriteria(new() { OrderStatus = status }, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -71,7 +71,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                OrderResponse? result = await _orderService.GetOrderByNumber(number);
+                OrderResponse? result = await _orderService.GetOneByCriteria(new() { OrderNumber = number });
                 if (result is null) return BadRequest();
                 return Ok(result);
             }

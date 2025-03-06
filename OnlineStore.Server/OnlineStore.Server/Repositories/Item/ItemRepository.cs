@@ -15,6 +15,7 @@ namespace OnlineStore.Server.Repositories.Item
         public async Task<Guid?> CreateItem(ItemRequest item)
         {
             Entity.Item? itemEntity = await _context.Items.FirstOrDefaultAsync(x => x.Code == item.Code);
+
             if (itemEntity is null)
             {
                 itemEntity = item.MapToDb();
@@ -28,91 +29,84 @@ namespace OnlineStore.Server.Repositories.Item
 
         public async Task<bool> UpdateItem(Guid id, ItemRequest item)
         {
-            Entity.Item? itemEntity = await _context.Items.FirstOrDefaultAsync(x => x.Id == id);
+            if (await _context.Items.FirstOrDefaultAsync(x => x.Id == id) is Entity.Item itemEntity)
+            {
+                itemEntity.UpdateInDb(item);
+                await _context.SaveChangesAsync();
 
-            if (itemEntity is null) return false;
+                return true;
+            }
 
-            itemEntity.UpdateInDb(item);
-            await _context.SaveChangesAsync();
-
-            return true;
+            return false;
         }
 
         public async Task<bool> DeleteItem(Guid id)
         {
-            Entity.Item? itemEntity = await _context.Items.FirstOrDefaultAsync(x => x.Id == id);
+            if (await _context.Items.FirstOrDefaultAsync(x => x.Id == id) is Entity.Item item)
+            {
+                _context.Items.Remove(item);
+                await _context.SaveChangesAsync();
 
-            if (itemEntity is null) return false;
+                return true;
+            }
 
-            _context.Items.Remove(itemEntity);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<ItemResponse?> GetItemByCode(string code)
-        {
-            Entity.Item? itemEntity = await _context.Items.FirstOrDefaultAsync(x => x.Code == code);
-
-            if (itemEntity is null) return null;
-
-            ItemResponse result = itemEntity.MapFromDb();
-
-            return result;
-        }
-
-        public async Task<ItemResponse?> GetItemById(Guid id)
-        {
-            Entity.Item? itemEntity = await _context.Items.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (itemEntity is null) return null;
-
-            ItemResponse result = itemEntity.MapFromDb();
-
-            return result;
-        }
-
-        public async Task<ItemResponse?> GetItemByName(string name)
-        {
-            Entity.Item? itemEntity = await _context.Items.FirstOrDefaultAsync(x => x.Name.ToLower() == name.ToLower());
-
-            if (itemEntity is null) return null;
-
-            ItemResponse result = itemEntity.MapFromDb();
-
-            return result;
-        }
-
-        public async Task<ResponseList<ItemResponse>> GetPageOfItemsByCategory(string category, int pageNumber, int pageSize)
-        {
-            List<ItemResponse> response = await _context.Items.Where(x => x.Category != null && x.Category.ToLower() == category.ToLower())
-                                                              .Skip((pageNumber - 1) * pageSize)
-                                                              .Take(pageSize)
-                                                              .Select(x => x.MapFromDb()).ToListAsync();
-
-            int totalCount = await _context.Items.CountAsync(x => x.Category != null && x.Category.ToLower() == category.ToLower());
-
-            ResponseList<ItemResponse> result = new(response, totalCount);
-
-            return result;
-        }
-
-        public async Task<ResponseList<ItemResponse>> GetPageOfItems(int pageNumber, int pageSize)
-        {
-            List<ItemResponse> response = await _context.Items.Skip((pageNumber - 1) * pageSize)
-                                                              .Take(pageSize)
-                                                              .Select(x => x.MapFromDb()).ToListAsync();
-
-            int totalCount = await _context.Items.CountAsync();
-
-            ResponseList<ItemResponse> result = new(response, totalCount);
-
-            return result;
+            return false;
         }
 
         public ImmutableSortedSet<string> GetAllCategories()
         {
             return [.. _context.Items.Select(x => x.Category ?? "") ];
+        }
+
+        public async Task<ResponseList<ItemResponse>> GetAllItems()
+        {
+            return new()
+            {
+                Responses = await _context.Items.Select(x => x.MapFromDb()).ToListAsync(),
+                TotalCount = await _context.Items.CountAsync()
+            };
+        }
+
+        public async Task<ResponseList<ItemResponse>> GetItemsByCriteria(ItemFilterCriteria criteria)
+        {
+            IEnumerable<ItemResponse> filtred = await FilteringItems(criteria);
+
+            return new()
+            {
+                Responses = filtred,
+                TotalCount = filtred.Count()
+            };
+        }
+
+        public async Task<ItemResponse?> GetOneByCriteria(ItemFilterCriteria criteria)
+        {
+            IEnumerable<ItemResponse> filtred = await FilteringItems(criteria);
+
+            return filtred.FirstOrDefault();
+        }
+
+        private async Task<IEnumerable<ItemResponse>> FilteringItems(ItemFilterCriteria criteria)
+        {
+            IQueryable<Entity.Item> items = _context.Items;
+
+            if (criteria.Id is not null)
+            {
+                items = items.Where(x => x.Id == criteria.Id);
+            }
+            if (criteria.Code is not null)
+            {
+                items = items.Where(x => x.Code == criteria.Code);
+            }
+            if (criteria.Category is not null)
+            {
+                items = items.Where(x => x.Category == criteria.Category);
+            }
+            if (criteria.Name is not null)
+            {
+                items = items.Where(x => x.Name.ToLower().Contains(criteria.Name.ToLower()));
+            }
+
+            return await items.Select(x => x.MapFromDb()).ToListAsync();
         }
     }
 }

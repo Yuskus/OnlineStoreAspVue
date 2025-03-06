@@ -1,9 +1,29 @@
-﻿using System.Text.RegularExpressions;
+﻿using OnlineStore.Server.DTO.Customer;
+using System.Text.RegularExpressions;
 
 namespace OnlineStore.Server.Validation.Customer
 {
     public class CustomerValidator
     {
+        public static bool CheckCriteria(CustomerFilterCriteria criteria)
+        {
+            return criteria.Id != Guid.Empty && (criteria.Code is null || CheckCode(criteria.Code));
+        }
+
+        public static bool CheckRequest(CustomerBaseRequest customer)
+        {
+            bool isValid = CheckName(customer.Name) 
+                        && CheckCode(customer.Code) 
+                        && CheckAddress(customer.Address);
+
+            if (customer is CustomerRequest derivedRequest)
+            {
+                isValid &= CheckDiscount(derivedRequest.Discount);
+            }
+
+            return isValid;
+        }
+
         public static bool CheckGuid(Guid? guid)
         {
             return guid != null && guid != Guid.Empty;

@@ -9,6 +9,6 @@ namespace OnlineStore.Server.Repositories.User
         Task<bool> RegisterUser(UserCredentialsRequest registerRequest);
         Task<bool> UpdateUser(string username, UserRequest userRequest);
         Task<bool> DeleteUser(string name);
-        Task<ResponseList<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize);
+        Task<ResponseList<UserResponse>> GetAllUsers();
     }
 }

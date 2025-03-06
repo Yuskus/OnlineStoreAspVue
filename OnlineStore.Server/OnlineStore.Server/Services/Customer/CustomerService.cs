@@ -12,10 +12,7 @@ namespace OnlineStore.Server.Services.Customer
         public async Task<bool> UpdateCustomer(Guid id, CustomerRequest customer)
         {
             bool isValid = CustomerValidator.CheckGuid(id)
-                        && CustomerValidator.CheckName(customer.Name) 
-                        && CustomerValidator.CheckCode(customer.Code) 
-                        && CustomerValidator.CheckDiscount(customer.Discount) 
-                        && CustomerValidator.CheckAddress(customer.Address);
+                        && CustomerValidator.CheckRequest(customer);
 
             if (isValid)
             {
@@ -25,40 +22,34 @@ namespace OnlineStore.Server.Services.Customer
             return false;
         }
 
-        public async Task<CustomerResponse?> GetCustomerByCode(string code)
-        {
-            bool isValid = CustomerValidator.CheckCode(code);
-
-            if (isValid)
-            {
-                return await _customerRepository.GetCustomerByCode(code);
-            }
-            
-            return null;
-        }
-
-        public async Task<CustomerResponse?> GetCustomerById(Guid id)
-        {
-            bool isValid = CustomerValidator.CheckGuid(id);
-
-            if (isValid)
-            {
-                return await _customerRepository.GetCustomerById(id);
-            }
-
-            return null;
-        }
-
         public async Task<ResponseList<CustomerResponse>> GetPageOfCustomers(int pageNumber, int pageSize)
         {
             bool isValid = CustomerValidator.CheckPages(pageNumber, pageSize);
 
             if (isValid)
             {
-                return await _customerRepository.GetPageOfCustomers(pageNumber, pageSize);
+                var response = await _customerRepository.GetAllCustomers();
+
+                response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
+                                                       .Take(pageSize)
+                                                       .ToList();
+
+                return response;
             }
 
             return new ResponseList<CustomerResponse>();
+        }
+
+        public async Task<CustomerResponse?> GetOneByCriteria(CustomerFilterCriteria criteria)
+        {
+            bool isValid = CustomerValidator.CheckCriteria(criteria);
+
+            if (isValid)
+            {
+                return await _customerRepository.GetOneByCriteria(criteria);
+            }
+
+            return null;
         }
     }
 }

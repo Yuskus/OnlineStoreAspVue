@@ -37,16 +37,13 @@ namespace OnlineStore.Server.Services.User.RegistrationService
 
         public async Task<bool> RegisterUser(CustomerRegisterRequest registerRequest)
         {
-            bool isValid = CustomerValidator.CheckName(registerRequest.CustomerInfo.Name) 
-                        && CustomerValidator.CheckCode(registerRequest.CustomerInfo.Code);
-
-            if (!isValid) return false;
+            if (!CustomerValidator.CheckRequest(registerRequest.CustomerInfo)) return false;
 
             registerRequest.Id = await _customerRepository.CreateCustomer(registerRequest.CustomerInfo);
 
-            isValid &= CustomerValidator.CheckGuid(registerRequest.Id)
-                    && UserValidator.CheckUsername(registerRequest.Username)
-                    && UserValidator.CheckPassword(registerRequest.Password);
+            bool isValid = CustomerValidator.CheckGuid(registerRequest.Id)
+                        && UserValidator.CheckUsername(registerRequest.Username)
+                        && UserValidator.CheckPassword(registerRequest.Password);
 
             if (isValid)
             {

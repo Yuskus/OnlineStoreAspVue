@@ -6,9 +6,8 @@ namespace OnlineStore.Server.Services.Order
     public interface IOrderService
     {
         Task<ResponseList<OrderResponse>> GetPageOfOrders(int pageNumber, int pageSize);
-        Task<ResponseList<OrderResponse>> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize);
-        Task<ResponseList<OrderResponse>> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize);
-        Task<OrderResponse?> GetOrderByNumber(int number);
+        Task<ResponseList<OrderResponse>> GetPageOfOrdersByCriteria(OrderFilterCriteria criteria, int pageNumber, int pageSize);
+        Task<OrderResponse?> GetOneByCriteria(OrderFilterCriteria criteria);
         Task<OrderResponse?> GetBasketOrder(Guid customerId);
         Task<bool> PlaceAnOrder(Guid orderId);
         Task<Guid?> CreateOrder(OrderRequest order);

@@ -15,11 +15,10 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<Guid?> CreateOrder(OrderRequest order)
         {
-            int total = _orderNumberGenerator.GenerateNewNumber;
-
-            Entity.Order orderEntity = order.MapToDb(total);
+            Entity.Order orderEntity = order.MapToDb();
 
             await _context.Orders.AddAsync(orderEntity);
+            orderEntity.OrderNumber = _orderNumberGenerator.GenerateNewNumber;
             await _context.SaveChangesAsync();
 
             return orderEntity.Id;
@@ -27,124 +26,81 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<bool> UpdateOrder(Guid id, OrderRequest order)
         {
-            Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.Id == id);
+            if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == id) is Entity.Order orderEntity)
+            {
+                orderEntity.UpdateInDb(order);
+                await _context.SaveChangesAsync();
 
-            if (orderEntity is null) return false;
+                return true;
+            }
 
-            orderEntity.UpdateInDb(order);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<bool> PlaceAnOrder(Guid orderId)
-        {
-            Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId && x.OrderStatus == "basket");
-
-            if (orderEntity is null) return false;
-
-            orderEntity.OrderStatus = "new";
-            await _context.SaveChangesAsync();
-
-            return true;
+            return false;
         }
 
         public async Task<bool> DeleteOrder(Guid id)
         {
-            Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (orderEntity is null) return false;
-
-            _context.Orders.Remove(orderEntity);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<OrderResponse?> GetOrderByNumber(int number)
-        {
-            Entity.Order? orderEntity = await _context.Orders.FirstOrDefaultAsync(x => x.OrderNumber == number);
-
-            if (orderEntity is null) return null;
-
-            OrderResponse result = orderEntity.MapFromDb();
-            result.CustomerName = orderEntity.Customer?.Name;
-
-            return result;
-        }
-
-        public async Task<ResponseList<OrderResponse>> GetPageOfOrders(int pageNumber, int pageSize)
-        {
-            List<OrderResponse> response = await _context.Orders.Include(x => x.Customer)
-                                                                .Skip((pageNumber - 1) * pageSize)
-                                                                .Take(pageSize)
-                                                                .Select(x => x.MapFromDb()).ToListAsync();
-
-            int totalCount = await _context.Orders.CountAsync();
-
-            ResponseList<OrderResponse> result = new(response, totalCount);
-
-            return result;
-        }
-
-        public async Task<ResponseList<OrderResponse>> GetPageOfOrdersByCustomerId(Guid id, int pageNumber, int pageSize)
-        {
-            List<OrderResponse> response = await _context.Orders.Include(x => x.Customer)
-                                                                .Where(x => x.CustomerId == id)
-                                                                .Skip((pageNumber - 1) * pageSize)
-                                                                .Take(pageSize)
-                                                                .Select(x => x.MapFromDb()).ToListAsync();
-
-            int totalCount = await _context.Orders.CountAsync(x => x.CustomerId == id);
-
-            ResponseList<OrderResponse> result = new(response, totalCount);
-
-            return result;
-        }
-
-        public async Task<ResponseList<OrderResponse>> GetPageOfOrdersByStatus(string status, int pageNumber, int pageSize)
-        {
-            List<OrderResponse> response = await _context.Orders.Include(x => x.Customer)
-                                                                .Where(x => x.OrderStatus == status)
-                                                                .Skip((pageNumber - 1) * pageSize)
-                                                                .Take(pageSize)
-                                                                .Select(x => x.MapFromDb()).ToListAsync();
-
-            int totalCount = await _context.Orders.CountAsync(x => x.OrderStatus == status);
-
-            ResponseList<OrderResponse> result = new(response, totalCount);
-
-            return result;
-        }
-
-        public async Task<OrderResponse?> GetBasketOrder(Guid customerId)
-        {
-            // поиск корзины (заказ со статусом basket)
-            var ordersOfCustomer = _context.Orders.Where(x => x.CustomerId == customerId);
-
-            if (!ordersOfCustomer.Any()) return null;
-
-            Entity.Order? order = await ordersOfCustomer.FirstOrDefaultAsync(x => x.OrderStatus == "basket");
-
-            if (order is null)
+            if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == id) is Entity.Order orderEntity)
             {
-                // создание при отсутствии
-                order = new Entity.Order
-                {
-                    Id = Guid.NewGuid(),
-                    CustomerId = customerId,
-                    OrderDate = DateOnly.FromDateTime(DateTime.Now),
-                    OrderNumber = _orderNumberGenerator.GenerateNewNumber,
-                    OrderStatus = "basket"
-                };
-
-                await _context.Orders.AddAsync(order);
+                _context.Orders.Remove(orderEntity);
                 await _context.SaveChangesAsync();
+
+                return true;
             }
 
-            OrderResponse orderResponse = order.MapFromDb();
+            return false;
+        }
 
-            return orderResponse;
+        public async Task<ResponseList<OrderResponse>> GetAllOrders()
+        {
+            return new()
+            {
+                Responses = await _context.Orders.Select(x => x.MapFromDb()).ToListAsync(),
+                TotalCount = await _context.Orders.CountAsync()
+            };
+        }
+
+        public async Task<ResponseList<OrderResponse>> GetOrdersByCriteria(OrderFilterCriteria criteria)
+        {
+            IEnumerable<OrderResponse> filtred = await FilteringOrders(criteria);
+
+            return new()
+            {
+                Responses = filtred,
+                TotalCount = filtred.Count()
+            };
+        }
+
+        public async Task<OrderResponse?> GetOneByCriteria(OrderFilterCriteria criteria)
+        {
+            IEnumerable<OrderResponse> filtred = await FilteringOrders(criteria);
+
+            return filtred.FirstOrDefault();
+        }
+
+        private async Task<IEnumerable<OrderResponse>> FilteringOrders(OrderFilterCriteria criteria)
+        {
+            IQueryable<Entity.Order> orders = _context.Orders;
+
+            if (criteria.Id is not null)
+            {
+                orders = orders.Where(x => x.Id == criteria.Id);
+            }
+            if (criteria.OrderNumber is not null)
+            {
+                orders = orders.Where(x => x.OrderNumber == criteria.OrderNumber);
+            }
+            if (criteria.CustomerId is not null)
+            {
+                orders = orders.Where(x => x.CustomerId == criteria.CustomerId);
+            }
+            if (criteria.OrderStatus is not null)
+            {
+                orders = orders.Where(x => x.OrderStatus == criteria.OrderStatus);
+            }
+
+            return await orders.Include(x => x.Customer)
+                               .Select(x => x.MapFromDb())
+                               .ToListAsync(); //возвращает ли customer name?
         }
     }
 }

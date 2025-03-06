@@ -5,7 +5,7 @@ namespace OnlineStore.Server.Mapping.Order
 {
     public static class OrderMapper
     {
-        public static Entity.Order MapToDb(this OrderRequest order, int orderNumber)
+        public static Entity.Order MapToDb(this OrderRequest order)
         {
             return new()
             {
@@ -13,8 +13,18 @@ namespace OnlineStore.Server.Mapping.Order
                 CustomerId = order.CustomerId,
                 OrderDate = DateOnly.Parse(order.OrderDate),
                 ShipmentDate = ParseDateOrNull(order.ShipmentDate),
-                OrderNumber = orderNumber,
                 OrderStatus = order.OrderStatus
+            };
+        }
+
+        public static OrderRequest MapToRequest(this OrderResponse response)
+        {
+            return new()
+            {
+                CustomerId = response.CustomerId,
+                OrderDate = response.OrderDate.ToString(),
+                ShipmentDate = response.ShipmentDate?.ToString(),
+                OrderStatus = response.OrderStatus
             };
         }
 

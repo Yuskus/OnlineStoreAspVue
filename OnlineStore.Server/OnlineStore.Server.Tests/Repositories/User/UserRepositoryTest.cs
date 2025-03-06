@@ -83,25 +83,12 @@ namespace OnlineStore.Server.Tests.Repositories.User
             var repository = new UserRepository(_context, _configuration, _logger);
 
             // Act
-            var test1 = await repository.GetPageOfUsersInfo(1, 5);
-            var test2 = await repository.GetPageOfUsersInfo(2, 5);
-            var test3 = await repository.GetPageOfUsersInfo(3, 3);
-            var test4 = await repository.GetPageOfUsersInfo(1, 20);
-            var test5 = await repository.GetPageOfUsersInfo(5, 1);
+            var test = await repository.GetAllUsers();
 
             // Assert
             // there may be range of values because of "register customer/manager" tests
-            Assert.InRange(test1.TotalCount, _fixture.UsersTotalCount, _fixture.UsersTotalCount + 2);
-            Assert.InRange(test2.TotalCount, _fixture.UsersTotalCount, _fixture.UsersTotalCount + 2);
-            Assert.InRange(test3.TotalCount, _fixture.UsersTotalCount, _fixture.UsersTotalCount + 2);
-            Assert.InRange(test4.TotalCount, _fixture.UsersTotalCount, _fixture.UsersTotalCount + 2);
-            Assert.InRange(test5.TotalCount, _fixture.UsersTotalCount, _fixture.UsersTotalCount + 2);
-
-            Assert.Equal(5, test1.Responses.Count());
-            Assert.Equal(5, test2.Responses.Count());
-            Assert.Equal(3, test3.Responses.Count());
-            Assert.Equal(20, test4.Responses.Count());
-            Assert.Single(test5.Responses);
+            Assert.InRange(test.TotalCount, _fixture.UsersTotalCount, _fixture.UsersTotalCount + 2);
+            Assert.InRange(test.Responses.Count(), _fixture.UsersTotalCount, _fixture.UsersTotalCount + 2);
         }
 
         [Fact]

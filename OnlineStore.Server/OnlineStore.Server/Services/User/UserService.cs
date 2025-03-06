@@ -53,7 +53,12 @@ namespace OnlineStore.Server.Services.User
 
             if (isValid)
             {
-                return await _userRepository.GetPageOfUsersInfo(pageNumber, pageSize);
+                ResponseList<UserResponse> response = await _userRepository.GetAllUsers();
+                response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
+                                                       .Take(pageSize)
+                                                       .ToList();
+
+                return response;
             }
 
             return new ResponseList<UserResponse>();

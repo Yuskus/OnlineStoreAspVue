@@ -15,7 +15,7 @@ namespace OnlineStore.Server.Repositories.OrderElement
         {
             Entity.OrderElement? orderElementEntity = await _context.OrderElements.FirstOrDefaultAsync(x => x.OrderId == orderElement.OrderId && x.ItemId == orderElement.ItemId);
             
-            if (orderElementEntity != null)
+            if (orderElementEntity is not null)
             {
                 orderElementEntity.ItemsCount++;
             }

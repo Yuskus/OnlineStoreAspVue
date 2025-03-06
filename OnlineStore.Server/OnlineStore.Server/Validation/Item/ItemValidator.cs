@@ -1,9 +1,26 @@
-﻿using System.Text.RegularExpressions;
+﻿using OnlineStore.Server.DTO.Item;
+using System.Text.RegularExpressions;
 
 namespace OnlineStore.Server.Validation.Item
 {
     public class ItemValidator
     {
+        public static bool CheckCriteria(ItemFilterCriteria criteria)
+        {
+            return criteria.Id != Guid.Empty
+                && CheckCategory(criteria.Category)
+                && (criteria.Code is null || CheckCode(criteria.Code))
+                && (criteria.Name is null || CheckName(criteria.Name));
+        }
+
+        public static bool CheckRequest(ItemRequest item)
+        {
+            return CheckName(item.Name)
+                && CheckCategory(item.Category)
+                && CheckCode(item.Code)
+                && CheckPrice(item.Price);
+        }
+
         public static bool CheckGuid(Guid? guid)
         {
             return guid != null && guid != Guid.Empty;

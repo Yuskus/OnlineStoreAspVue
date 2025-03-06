@@ -11,7 +11,7 @@ namespace OnlineStore.Server.Repositories.Customer
     {
         private readonly OnlineStoreDbContext _context = context;
 
-        public async Task<Guid?> CreateCustomer(CustomerBaseRequest customer)
+        public async Task<Guid?> Create(CustomerBaseRequest customer)
         {
             Entity.Customer? customerEntity = await _context.Customers.FirstOrDefaultAsync(x => x.Code == customer.Code);
 
@@ -26,7 +26,7 @@ namespace OnlineStore.Server.Repositories.Customer
             return customerEntity.Id;
         }
 
-        public async Task<bool> UpdateCustomer(Guid id, CustomerRequest customer)
+        public async Task<bool> Update(Guid id, CustomerRequest customer)
         {
             Entity.Customer? customerEntity = await _context.Customers.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -38,7 +38,7 @@ namespace OnlineStore.Server.Repositories.Customer
             return true;
         }
 
-        public async Task<ResponseList<CustomerResponse>> GetAllCustomers()
+        public async Task<ResponseList<CustomerResponse>> GetAll()
         {
             return new()
             {

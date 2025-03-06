@@ -37,11 +37,11 @@ namespace OnlineStore.Server.Tests.Repositories.User
             var manager = new UserRequest { Username = _fixture.ManagerUsername_ForUpdate, Role = UserRole.User };
 
             // Act
-            var updateUnexistCustomer_Fail = await repository.UpdateUser(_fixture.Username_Unexist, customer);
-            var updateUnexistManager_Fail = await repository.UpdateUser(_fixture.Username_Unexist, manager);
+            var updateUnexistCustomer_Fail = await repository.Update(_fixture.Username_Unexist, customer);
+            var updateUnexistManager_Fail = await repository.Update(_fixture.Username_Unexist, manager);
 
-            var updateCustomer_Success = await repository.UpdateUser(_fixture.CustomerUsername_ForUpdate, customer);
-            var updateManager_Success = await repository.UpdateUser(_fixture.ManagerUsername_ForUpdate, manager);
+            var updateCustomer_Success = await repository.Update(_fixture.CustomerUsername_ForUpdate, customer);
+            var updateManager_Success = await repository.Update(_fixture.ManagerUsername_ForUpdate, manager);
 
             // Assert
             Assert.False(updateUnexistCustomer_Fail);
@@ -58,13 +58,13 @@ namespace OnlineStore.Server.Tests.Repositories.User
             var repository = new UserRepository(_context, _configuration, _logger);
 
             // Act
-            var deleteUnexistUser_Fail = await repository.DeleteUser(_fixture.Username_Unexist);
+            var deleteUnexistUser_Fail = await repository.Delete(_fixture.Username_Unexist);
 
-            var deleteCustomer_Success = await repository.DeleteUser(_fixture.CustomerUsername_ForDelete);
-            var deleteManager_Success = await repository.DeleteUser(_fixture.ManagerUsername_ForDelete);
+            var deleteCustomer_Success = await repository.Delete(_fixture.CustomerUsername_ForDelete);
+            var deleteManager_Success = await repository.Delete(_fixture.ManagerUsername_ForDelete);
 
-            var deleteCustomer_Fail = await repository.DeleteUser(_fixture.CustomerUsername_ForDelete);
-            var deleteManager_Fail = await repository.DeleteUser(_fixture.ManagerUsername_ForDelete);
+            var deleteCustomer_Fail = await repository.Delete(_fixture.CustomerUsername_ForDelete);
+            var deleteManager_Fail = await repository.Delete(_fixture.ManagerUsername_ForDelete);
 
             // Assert
             Assert.False(deleteUnexistUser_Fail);
@@ -83,7 +83,7 @@ namespace OnlineStore.Server.Tests.Repositories.User
             var repository = new UserRepository(_context, _configuration, _logger);
 
             // Act
-            var test = await repository.GetAllUsers();
+            var test = await repository.GetAll();
 
             // Assert
             // there may be range of values because of "register customer/manager" tests
@@ -104,8 +104,8 @@ namespace OnlineStore.Server.Tests.Repositories.User
             };
 
             // Act
-            var registerManager_Success = await repository.RegisterUser(manager);
-            var registerManager_Fail = await repository.RegisterUser(manager);
+            var registerManager_Success = await repository.RegisterManager(manager);
+            var registerManager_Fail = await repository.RegisterManager(manager);
 
             // Assert
             Assert.True(registerManager_Success);
@@ -130,8 +130,8 @@ namespace OnlineStore.Server.Tests.Repositories.User
             };
 
             // Act
-            var registerCustomer_Success = await repository.RegisterUser(customer);
-            var registerCustomer_Fail = await repository.RegisterUser(customer);
+            var registerCustomer_Success = await repository.RegisterManager(customer);
+            var registerCustomer_Fail = await repository.RegisterManager(customer);
 
             // Assert
             Assert.True(registerCustomer_Success);

@@ -35,7 +35,7 @@ namespace OnlineStore.Server.Repositories.User
             return null;
         }
 
-        public async Task<bool> RegisterUser(UserCredentialsRequest registerRequest)
+        public async Task<bool> RegisterManager(UserCredentialsRequest registerRequest)
         {
             if (await _context.Users.AnyAsync(x => x.Username == registerRequest.Username)) return false;
 
@@ -49,7 +49,7 @@ namespace OnlineStore.Server.Repositories.User
             return true;
         }
 
-        public async Task<bool> UpdateUser(string username, UserRequest userRequest)
+        public async Task<bool> Update(string username, UserRequest userRequest)
         {
             if (await _context.Users.FirstOrDefaultAsync(x => x.Username == username) is Entity.User user)
             {
@@ -62,7 +62,7 @@ namespace OnlineStore.Server.Repositories.User
             return false;
         }
 
-        public async Task<bool> DeleteUser(string username)
+        public async Task<bool> Delete(string username)
         {
             if (await _context.Users.FirstOrDefaultAsync(x => x.Username == username) is Entity.User user)
             {
@@ -75,7 +75,7 @@ namespace OnlineStore.Server.Repositories.User
             return false;
         }
 
-        public async Task<ResponseList<UserResponse>> GetAllUsers()
+        public async Task<ResponseList<UserResponse>> GetAll()
         {
             return new()
             {

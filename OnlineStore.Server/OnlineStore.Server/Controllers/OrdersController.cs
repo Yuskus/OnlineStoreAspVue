@@ -20,7 +20,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrders(pageNumber, pageSize);
+                ResponseList<OrderResponse> result = await _orderService.GetPage(pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -37,7 +37,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrdersByCriteria(new() {  Id = id }, pageNumber, pageSize);
+                ResponseList<OrderResponse> result = await _orderService.GetPageByCriteria(new() {  Id = id }, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             } 
@@ -54,7 +54,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrdersByCriteria(new() { OrderStatus = status }, pageNumber, pageSize);
+                ResponseList<OrderResponse> result = await _orderService.GetPageByCriteria(new() { OrderStatus = status }, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -105,7 +105,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                Guid? result = await _orderService.CreateOrder(order);
+                Guid? result = await _orderService.Create(order);
                 if (result is null) return BadRequest();
                 return Ok((Guid)result);
             }
@@ -139,7 +139,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                bool result = await _orderService.UpdateOrder(id, order);
+                bool result = await _orderService.Update(id, order);
                 if (result) return Ok(result);
                 return BadRequest();
             }
@@ -156,7 +156,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                bool result = await _orderService.DeleteOrder(id);
+                bool result = await _orderService.Delete(id);
                 if (result) return Ok(result);
                 return BadRequest();
             }

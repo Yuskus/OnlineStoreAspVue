@@ -18,7 +18,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                IEnumerable<OrderElementResponse> result = await _orderElementService.GetOrderElementsByOrderId(id);
+                IEnumerable<OrderElementResponse> result = await _orderElementService.GetAllByOrderId(id);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -35,7 +35,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                Guid? result = await _orderElementService.CreateOrderElement(orderElement);
+                Guid? result = await _orderElementService.Create(orderElement);
                 if (result is null) return BadRequest();
                 return Ok((Guid)result);
             }
@@ -52,7 +52,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                bool result = await _orderElementService.UpdateOrderElement(id, orderElement);
+                bool result = await _orderElementService.Update(id, orderElement);
                 if (result) return Ok(result);
                 return BadRequest();
             }
@@ -69,7 +69,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                bool result = await _orderElementService.DeleteOrderElement(id);
+                bool result = await _orderElementService.Delete(id);
                 if (result) return Ok(result);
                 return BadRequest();
             }

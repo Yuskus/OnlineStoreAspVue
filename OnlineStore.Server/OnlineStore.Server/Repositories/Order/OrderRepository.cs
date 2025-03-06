@@ -13,7 +13,7 @@ namespace OnlineStore.Server.Repositories.Order
         private readonly OnlineStoreDbContext _context = context;
         private readonly INumberGenerator _orderNumberGenerator = orderNumberGenerator;
 
-        public async Task<Guid?> CreateOrder(OrderRequest order)
+        public async Task<Guid?> Create(OrderRequest order)
         {
             Entity.Order orderEntity = order.MapToDb();
 
@@ -24,7 +24,7 @@ namespace OnlineStore.Server.Repositories.Order
             return orderEntity.Id;
         }
 
-        public async Task<bool> UpdateOrder(Guid id, OrderRequest order)
+        public async Task<bool> Update(Guid id, OrderRequest order)
         {
             if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == id) is Entity.Order orderEntity)
             {
@@ -37,7 +37,7 @@ namespace OnlineStore.Server.Repositories.Order
             return false;
         }
 
-        public async Task<bool> DeleteOrder(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == id) is Entity.Order orderEntity)
             {
@@ -50,7 +50,7 @@ namespace OnlineStore.Server.Repositories.Order
             return false;
         }
 
-        public async Task<ResponseList<OrderResponse>> GetAllOrders()
+        public async Task<ResponseList<OrderResponse>> GetAll()
         {
             return new()
             {
@@ -59,7 +59,7 @@ namespace OnlineStore.Server.Repositories.Order
             };
         }
 
-        public async Task<ResponseList<OrderResponse>> GetOrdersByCriteria(OrderFilterCriteria criteria)
+        public async Task<ResponseList<OrderResponse>> GetAllByCriteria(OrderFilterCriteria criteria)
         {
             IEnumerable<OrderResponse> filtred = await FilteringOrders(criteria);
 

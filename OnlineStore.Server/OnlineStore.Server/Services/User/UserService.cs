@@ -29,7 +29,7 @@ namespace OnlineStore.Server.Services.User
 
             if (isValid)
             {
-                return await _userRepository.UpdateUser(username, userRequest);
+                return await _userRepository.Update(username, userRequest);
             }
 
             return false;
@@ -41,7 +41,7 @@ namespace OnlineStore.Server.Services.User
 
             if (isValid)
             {
-                return await _userRepository.DeleteUser(name);
+                return await _userRepository.Delete(name);
             }
             
             return false;
@@ -53,7 +53,7 @@ namespace OnlineStore.Server.Services.User
 
             if (isValid)
             {
-                ResponseList<UserResponse> response = await _userRepository.GetAllUsers();
+                ResponseList<UserResponse> response = await _userRepository.GetAll();
                 response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
                                                        .Take(pageSize)
                                                        .ToList();
@@ -71,7 +71,7 @@ namespace OnlineStore.Server.Services.User
 
             if (isValid)
             {
-                return await _userRepository.RegisterUser(registerRequest);
+                return await _userRepository.RegisterManager(registerRequest);
             }
 
             return false;

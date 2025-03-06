@@ -20,7 +20,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ResponseList<ItemResponse> result = await _itemService.GetPageOfItems(pageNumber, pageSize);
+                ResponseList<ItemResponse> result = await _itemService.GetPage(pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -37,7 +37,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ResponseList<ItemResponse> result = await _itemService.GetPageOfItemsByCriteria(new() { Category = category }, pageNumber, pageSize);
+                ResponseList<ItemResponse> result = await _itemService.GetPageByCriteria(new() { Category = category }, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -122,7 +122,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                Guid? result = await _itemService.CreateItem(item);
+                Guid? result = await _itemService.Create(item);
                 if (result is null) return BadRequest();
                 return Ok((Guid)result);
             }
@@ -139,7 +139,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                bool result = await _itemService.UpdateItem(id, item);
+                bool result = await _itemService.Update(id, item);
                 if (result) return Ok(result);
                 return BadRequest();
             }
@@ -156,7 +156,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                bool result = await _itemService.DeleteItem(id);
+                bool result = await _itemService.Delete(id);
                 if (result) return Ok(result);
                 return BadRequest();
             }

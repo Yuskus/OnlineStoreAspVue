@@ -19,7 +19,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                ResponseList<CustomerResponse> result = await _customerService.GetPageOfCustomers(pageNumber, pageSize);
+                ResponseList<CustomerResponse> result = await _customerService.GetPage(pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
@@ -70,7 +70,7 @@ namespace OnlineStore.Server.Controllers
         {
             try
             {
-                bool result = await _customerService.UpdateCustomer(id, customer);
+                bool result = await _customerService.Update(id, customer);
                 if (result) return Ok(result);
                 return BadRequest();
             }

@@ -12,7 +12,7 @@ namespace OnlineStore.Server.Repositories.Item
     {
         private readonly OnlineStoreDbContext _context = context;
 
-        public async Task<Guid?> CreateItem(ItemRequest item)
+        public async Task<Guid?> Create(ItemRequest item)
         {
             Entity.Item? itemEntity = await _context.Items.FirstOrDefaultAsync(x => x.Code == item.Code);
 
@@ -27,7 +27,7 @@ namespace OnlineStore.Server.Repositories.Item
             return itemEntity.Id;
         }
 
-        public async Task<bool> UpdateItem(Guid id, ItemRequest item)
+        public async Task<bool> Update(Guid id, ItemRequest item)
         {
             if (await _context.Items.FirstOrDefaultAsync(x => x.Id == id) is Entity.Item itemEntity)
             {
@@ -40,7 +40,7 @@ namespace OnlineStore.Server.Repositories.Item
             return false;
         }
 
-        public async Task<bool> DeleteItem(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             if (await _context.Items.FirstOrDefaultAsync(x => x.Id == id) is Entity.Item item)
             {
@@ -58,7 +58,7 @@ namespace OnlineStore.Server.Repositories.Item
             return [.. _context.Items.Select(x => x.Category ?? "") ];
         }
 
-        public async Task<ResponseList<ItemResponse>> GetAllItems()
+        public async Task<ResponseList<ItemResponse>> GetAll()
         {
             return new()
             {
@@ -67,7 +67,7 @@ namespace OnlineStore.Server.Repositories.Item
             };
         }
 
-        public async Task<ResponseList<ItemResponse>> GetItemsByCriteria(ItemFilterCriteria criteria)
+        public async Task<ResponseList<ItemResponse>> GetAllByCriteria(ItemFilterCriteria criteria)
         {
             IEnumerable<ItemResponse> filtred = await FilteringItems(criteria);
 

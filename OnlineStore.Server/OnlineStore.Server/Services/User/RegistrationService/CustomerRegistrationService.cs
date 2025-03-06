@@ -39,7 +39,7 @@ namespace OnlineStore.Server.Services.User.RegistrationService
         {
             if (!CustomerValidator.CheckRequest(registerRequest.CustomerInfo)) return false;
 
-            registerRequest.Id = await _customerRepository.CreateCustomer(registerRequest.CustomerInfo);
+            registerRequest.Id = await _customerRepository.Create(registerRequest.CustomerInfo);
 
             bool isValid = CustomerValidator.CheckGuid(registerRequest.Id)
                         && UserValidator.CheckUsername(registerRequest.Username)
@@ -47,7 +47,7 @@ namespace OnlineStore.Server.Services.User.RegistrationService
 
             if (isValid)
             {
-                return await _userRepository.RegisterUser(registerRequest);
+                return await _userRepository.RegisterManager(registerRequest);
             }
 
             return false;

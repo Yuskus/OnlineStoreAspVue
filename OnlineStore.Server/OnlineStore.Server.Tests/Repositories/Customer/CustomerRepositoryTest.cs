@@ -29,11 +29,11 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
             };
 
             // Act
-            var test1 = await repository.CreateCustomer(customers[0]); // first customer
-            var test2 = await repository.CreateCustomer(customers[1]); // second customer
+            var test1 = await repository.Create(customers[0]); // first customer
+            var test2 = await repository.Create(customers[1]); // second customer
 
-            var test3 = await repository.CreateCustomer(customers[0]); // equals test1
-            var test4 = await repository.CreateCustomer(customers[1]); // equals test2
+            var test3 = await repository.Create(customers[0]); // equals test1
+            var test4 = await repository.Create(customers[1]); // equals test2
 
             // Assert
             Assert.NotNull(test1);
@@ -68,8 +68,8 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
             };
 
             // Act
-            var updateCustomer_Success = await repository.UpdateCustomer(_fixture.CustomerId_ForUpdate, newCustomer);
-            var updateCustomer_Fail = await repository.UpdateCustomer(_fixture.CustomerId_Unexist, newCustomer);
+            var updateCustomer_Success = await repository.Update(_fixture.CustomerId_ForUpdate, newCustomer);
+            var updateCustomer_Fail = await repository.Update(_fixture.CustomerId_Unexist, newCustomer);
 
             // Assert
             Assert.NotEqual(_fixture.CustomerId_ForUpdate, Guid.Empty);
@@ -120,7 +120,7 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
             var repository = new CustomerRepository(_context);
 
             // Act
-            var test = await repository.GetAllCustomers();
+            var test = await repository.GetAll();
 
             // Assert
             // there may be range of values because of "create customer" test

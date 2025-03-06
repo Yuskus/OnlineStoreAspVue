@@ -5,13 +5,13 @@ namespace OnlineStore.Server.Services.Order
 {
     public interface IOrderService
     {
-        Task<ResponseList<OrderResponse>> GetPageOfOrders(int pageNumber, int pageSize);
-        Task<ResponseList<OrderResponse>> GetPageOfOrdersByCriteria(OrderFilterCriteria criteria, int pageNumber, int pageSize);
-        Task<OrderResponse?> GetOneByCriteria(OrderFilterCriteria criteria);
-        Task<OrderResponse?> GetBasketOrder(Guid customerId);
+        Task<Guid?> Create(OrderRequest order);
+        Task<bool> Update(Guid id, OrderRequest order);
+        Task<bool> Delete(Guid id);
         Task<bool> PlaceAnOrder(Guid orderId);
-        Task<Guid?> CreateOrder(OrderRequest order);
-        Task<bool> UpdateOrder(Guid id, OrderRequest order);
-        Task<bool> DeleteOrder(Guid id);
+        Task<OrderResponse?> GetBasketOrder(Guid customerId);
+        Task<ResponseList<OrderResponse>> GetPage(int pageNumber, int pageSize);
+        Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, int pageNumber, int pageSize);
+        Task<OrderResponse?> GetOneByCriteria(OrderFilterCriteria criteria);
     }
 }

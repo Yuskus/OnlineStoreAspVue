@@ -11,38 +11,38 @@ namespace OnlineStore.Server.Services.Order
     {
         private readonly IOrderRepository _orderRepository = orderRepository;
 
-        public async Task<Guid?> CreateOrder(OrderRequest order)
+        public async Task<Guid?> Create(OrderRequest order)
         {
             bool isValid = OrderValidator.CheckRequest(order);
 
             if (isValid)
             {
-                return await _orderRepository.CreateOrder(order);
+                return await _orderRepository.Create(order);
             }
             
             return null;
         }
 
-        public async Task<bool> UpdateOrder(Guid id, OrderRequest order)
+        public async Task<bool> Update(Guid id, OrderRequest order)
         {
             bool isValid = OrderValidator.CheckGuid(id)
                         && OrderValidator.CheckRequest(order);
 
             if (isValid)
             {
-                return await _orderRepository.UpdateOrder(id, order);
+                return await _orderRepository.Update(id, order);
             }
 
             return false;
         }
 
-        public async Task<bool> DeleteOrder(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             bool isValid = OrderValidator.CheckGuid(id);
 
             if (isValid)
             {
-                return await _orderRepository.DeleteOrder(id);
+                return await _orderRepository.Delete(id);
             }
 
             return false;
@@ -65,7 +65,7 @@ namespace OnlineStore.Server.Services.Order
                     OrderStatus = "basket"
                 };
 
-                Guid? guid = await _orderRepository.CreateOrder(request);
+                Guid? guid = await _orderRepository.Create(request);
 
                 basket = await _orderRepository.GetOneByCriteria(new() { Id = guid });
             }
@@ -84,16 +84,16 @@ namespace OnlineStore.Server.Services.Order
             OrderRequest updateRequest = basket.MapToRequest();
             updateRequest.OrderStatus = "new";
 
-            return await _orderRepository.UpdateOrder(basket.Id, updateRequest);
+            return await _orderRepository.Update(basket.Id, updateRequest);
         }
 
-        public async Task<ResponseList<OrderResponse>> GetPageOfOrders(int pageNumber, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPage(int pageNumber, int pageSize)
         {
             bool isValid = OrderValidator.CheckPages(pageNumber, pageSize);
 
             if (isValid)
             {
-                ResponseList<OrderResponse> response = await _orderRepository.GetAllOrders();
+                ResponseList<OrderResponse> response = await _orderRepository.GetAll();
 
                 response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
                                                        .Take(pageSize)
@@ -105,14 +105,14 @@ namespace OnlineStore.Server.Services.Order
             return new ResponseList<OrderResponse>();
         }
 
-        public async Task<ResponseList<OrderResponse>> GetPageOfOrdersByCriteria(OrderFilterCriteria criteria, int pageNumber, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, int pageNumber, int pageSize)
         {
             bool isValid = OrderValidator.CheckCriteria(criteria)
                         && OrderValidator.CheckPages(pageNumber, pageSize);
 
             if (isValid)
             {
-                ResponseList<OrderResponse> response = await _orderRepository.GetOrdersByCriteria(criteria);
+                ResponseList<OrderResponse> response = await _orderRepository.GetAllByCriteria(criteria);
 
                 response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
                                                        .Take(pageSize)

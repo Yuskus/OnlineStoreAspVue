@@ -8,7 +8,7 @@ namespace OnlineStore.Server.Services.OrderElement
     {
         private readonly IOrderElementRepository _orderElementRepository = orderElementRepository;
         
-        public async Task<Guid?> CreateOrderElement(OrderElementRequest orderElement)
+        public async Task<Guid?> Create(OrderElementRequest orderElement)
         {
             bool isValid = OrderElementValidator.CheckGuid(orderElement.OrderId)
                         && OrderElementValidator.CheckGuid(orderElement.ItemId)
@@ -17,13 +17,13 @@ namespace OnlineStore.Server.Services.OrderElement
 
             if (isValid)
             {
-                return await _orderElementRepository.CreateOrderElement(orderElement);
+                return await _orderElementRepository.Create(orderElement);
             }
 
             return null;
         }
 
-        public async Task<bool> UpdateOrderElement(Guid id, OrderElementRequest orderElement)
+        public async Task<bool> Update(Guid id, OrderElementRequest orderElement)
         {
             bool isValid = OrderElementValidator.CheckGuid(id)
                         && OrderElementValidator.CheckGuid(orderElement.OrderId)
@@ -33,31 +33,31 @@ namespace OnlineStore.Server.Services.OrderElement
 
             if (isValid)
             {
-                return await _orderElementRepository.UpdateOrderElement(id, orderElement);
+                return await _orderElementRepository.Update(id, orderElement);
             }
 
             return false;
         }
 
-        public async Task<bool> DeleteOrderElement(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             bool isValid = OrderElementValidator.CheckGuid(id);
 
             if (isValid)
             {
-                return await _orderElementRepository.DeleteOrderElement(id);
+                return await _orderElementRepository.Delete(id);
             }
 
             return false;
         }
 
-        public async Task<IEnumerable<OrderElementResponse>> GetOrderElementsByOrderId(Guid id)
+        public async Task<IEnumerable<OrderElementResponse>> GetAllByOrderId(Guid id)
         {
             bool isValid = OrderElementValidator.CheckGuid(id);
 
             if (isValid)
             {
-                return await _orderElementRepository.GetOrderElementsByOrderId(id);
+                return await _orderElementRepository.GetAllByOrderId(id);
             }
 
             return [];

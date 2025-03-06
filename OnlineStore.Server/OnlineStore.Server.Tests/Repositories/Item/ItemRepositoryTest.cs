@@ -68,7 +68,7 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             var repository = new ItemRepository(_context);
 
             // Act
-            var test = await repository.GetAllItems();
+            var test = await repository.GetAll();
 
             // Assert
             // there may be range of values because of "create item" test
@@ -83,10 +83,10 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             var repository = new ItemRepository(_context);
 
             // Act
-            var unexist = await repository.GetItemsByCriteria(new() { Category = _fixture.Category_Unexists });
+            var unexist = await repository.GetAllByCriteria(new() { Category = _fixture.Category_Unexists });
 
-            var categoryA = await repository.GetItemsByCriteria(new() { Category = _fixture.Category_SampleA });
-            var categoryB = await repository.GetItemsByCriteria(new() { Category = _fixture.Category_SampleB });
+            var categoryA = await repository.GetAllByCriteria(new() { Category = _fixture.Category_SampleA });
+            var categoryB = await repository.GetAllByCriteria(new() { Category = _fixture.Category_SampleB });
 
             // Assert
             Assert.NotNull(unexist);
@@ -117,8 +117,8 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             };
 
             // Act
-            var createNew = await repository.CreateItem(request);
-            var createSame = await repository.CreateItem(request);
+            var createNew = await repository.Create(request);
+            var createSame = await repository.Create(request);
 
             // Assert
             Assert.NotNull(createNew);
@@ -145,8 +145,8 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             };
 
             // Act
-            var updateItem_Fail = await repository.UpdateItem(_fixture.ItemId_Unexists, requestNew);
-            var updateItem_Success = await repository.UpdateItem(_fixture.ItemId_ForUpdate, requestNew);
+            var updateItem_Fail = await repository.Update(_fixture.ItemId_Unexists, requestNew);
+            var updateItem_Success = await repository.Update(_fixture.ItemId_ForUpdate, requestNew);
 
             // Assert
             Assert.False(updateItem_Fail);
@@ -160,9 +160,9 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             var repository = new ItemRepository(_context);
 
             // Act
-            var deleteItem_Fail = await repository.DeleteItem(_fixture.ItemId_Unexists);
-            var deleteItem_Success = await repository.DeleteItem(_fixture.ItemId_ForDelete);
-            var deleteItem_Again = await repository.DeleteItem(_fixture.ItemId_ForDelete);
+            var deleteItem_Fail = await repository.Delete(_fixture.ItemId_Unexists);
+            var deleteItem_Success = await repository.Delete(_fixture.ItemId_ForDelete);
+            var deleteItem_Again = await repository.Delete(_fixture.ItemId_ForDelete);
 
             // Assert
             Assert.False(deleteItem_Fail);

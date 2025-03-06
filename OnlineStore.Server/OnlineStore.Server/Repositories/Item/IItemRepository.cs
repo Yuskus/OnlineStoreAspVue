@@ -6,12 +6,12 @@ namespace OnlineStore.Server.Repositories.Item
 {
     public interface IItemRepository
     {
-        Task<ResponseList<ItemResponse>> GetAllItems();
-        Task<ResponseList<ItemResponse>> GetItemsByCriteria(ItemFilterCriteria criteria);
+        Task<Guid?> Create(ItemRequest item);
+        Task<bool> Update(Guid id, ItemRequest item);
+        Task<bool> Delete(Guid id);
+        Task<ResponseList<ItemResponse>> GetAll();
+        Task<ResponseList<ItemResponse>> GetAllByCriteria(ItemFilterCriteria criteria);
         Task<ItemResponse?> GetOneByCriteria(ItemFilterCriteria criteria);
-        Task<Guid?> CreateItem(ItemRequest item);
-        Task<bool> UpdateItem(Guid id, ItemRequest item);
-        Task<bool> DeleteItem(Guid id);
         ImmutableSortedSet<string> GetAllCategories();
     }
 }

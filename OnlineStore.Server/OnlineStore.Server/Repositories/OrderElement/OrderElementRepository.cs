@@ -11,7 +11,7 @@ namespace OnlineStore.Server.Repositories.OrderElement
     {
         private readonly OnlineStoreDbContext _context = context;
 
-        public async Task<Guid?> CreateOrderElement(OrderElementRequest orderElement)
+        public async Task<Guid?> Create(OrderElementRequest orderElement)
         {
             Entity.OrderElement? orderElementEntity = await _context.OrderElements.FirstOrDefaultAsync(x => x.OrderId == orderElement.OrderId && x.ItemId == orderElement.ItemId);
             
@@ -30,7 +30,7 @@ namespace OnlineStore.Server.Repositories.OrderElement
             return orderElementEntity.Id;
         }
 
-        public async Task<bool> UpdateOrderElement(Guid id, OrderElementRequest orderElement)
+        public async Task<bool> Update(Guid id, OrderElementRequest orderElement)
         {
             Entity.OrderElement? orderElementEntity = await _context.OrderElements.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -42,7 +42,7 @@ namespace OnlineStore.Server.Repositories.OrderElement
             return true;
         }
 
-        public async Task<bool> DeleteOrderElement(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             Entity.OrderElement? orderElementEntity = await _context.OrderElements.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -54,7 +54,7 @@ namespace OnlineStore.Server.Repositories.OrderElement
             return true;
         }
 
-        public async Task<IEnumerable<OrderElementResponse>> GetOrderElementsByOrderId(Guid id)
+        public async Task<IEnumerable<OrderElementResponse>> GetAllByOrderId(Guid id)
         {
             List<OrderElementResponse> result = await _context.OrderElements.Where(x => x.OrderId == id)
                                                                             .Include(x => x.Item)

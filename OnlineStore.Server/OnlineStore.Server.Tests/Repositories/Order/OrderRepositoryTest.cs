@@ -25,7 +25,7 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             var repository = new OrderRepository(_context, _generatorMock);
 
             // Act
-            var test = await repository.GetAllOrders();
+            var test = await repository.GetAll();
 
             // Assert
             // there may be range of values because of "create order" test
@@ -40,10 +40,10 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             var repository = new OrderRepository(_context, _generatorMock);
 
             // Act
-            var unexist = await repository.GetOrdersByCriteria(new() { CustomerId = _fixture.Guid_Unexists });
+            var unexist = await repository.GetAllByCriteria(new() { CustomerId = _fixture.Guid_Unexists });
 
-            var customerA = await repository.GetOrdersByCriteria(new() { CustomerId = _fixture.CustomerId_SampleA });
-            var customerB = await repository.GetOrdersByCriteria(new() { CustomerId = _fixture.CustomerId_SampleB });
+            var customerA = await repository.GetAllByCriteria(new() { CustomerId = _fixture.CustomerId_SampleA });
+            var customerB = await repository.GetAllByCriteria(new() { CustomerId = _fixture.CustomerId_SampleB });
 
             // Assert
             Assert.NotNull(unexist);
@@ -66,10 +66,10 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             var repository = new OrderRepository(_context, _generatorMock);
 
             // Act
-            var unexist = await repository.GetOrdersByCriteria(new() { OrderStatus = _fixture.Status_Unexists });
+            var unexist = await repository.GetAllByCriteria(new() { OrderStatus = _fixture.Status_Unexists });
 
-            var statusA = await repository.GetOrdersByCriteria(new() { OrderStatus = _fixture.Status_New });
-            var statusB = await repository.GetOrdersByCriteria(new() { OrderStatus = _fixture.Status_Basket });
+            var statusA = await repository.GetAllByCriteria(new() { OrderStatus = _fixture.Status_New });
+            var statusB = await repository.GetAllByCriteria(new() { OrderStatus = _fixture.Status_Basket });
 
             // Assert
             Assert.NotNull(unexist);
@@ -135,7 +135,7 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             };
 
             // Act
-            var createNew = await repository.CreateOrder(request);
+            var createNew = await repository.Create(request);
 
             // Assert
             Assert.NotNull(createNew);
@@ -156,8 +156,8 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             };
 
             // Act
-            var updateOrder_Fail = await repository.UpdateOrder(_fixture.Guid_Unexists, request);
-            var updateOrder_Success = await repository.UpdateOrder(_fixture.OrderId_ForUpdate, request);
+            var updateOrder_Fail = await repository.Update(_fixture.Guid_Unexists, request);
+            var updateOrder_Success = await repository.Update(_fixture.OrderId_ForUpdate, request);
 
             // Assert
             Assert.False(updateOrder_Fail);
@@ -171,10 +171,10 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             var repository = new OrderRepository(_context, _generatorMock);
 
             // Act
-            var deleteOrder_Fail = await repository.DeleteOrder(_fixture.Guid_Unexists);
+            var deleteOrder_Fail = await repository.Delete(_fixture.Guid_Unexists);
 
-            var deleteOrder_Success = await repository.DeleteOrder(_fixture.OrderId_ForDelete);
-            var deleteOrder_Again = await repository.DeleteOrder(_fixture.OrderId_ForDelete);
+            var deleteOrder_Success = await repository.Delete(_fixture.OrderId_ForDelete);
+            var deleteOrder_Again = await repository.Delete(_fixture.OrderId_ForDelete);
 
             // Assert
             Assert.False(deleteOrder_Fail);

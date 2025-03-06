@@ -9,7 +9,7 @@ namespace OnlineStore.Server.Services.User
     {
         private readonly IUserRepository _userRepository = userRepository;
 
-        public async Task<LoginResponse?> Authenticate(LoginRequest loginRequest)
+        public async Task<LoginResponse?> Authenticate(UserCredentialsRequest loginRequest)
         {
             bool isValid = UserValidator.CheckUsername(loginRequest.Username)
                         && UserValidator.CheckPassword(loginRequest.Password);
@@ -59,18 +59,16 @@ namespace OnlineStore.Server.Services.User
             return new ResponseList<UserResponse>();
         }
 
-        public async Task<bool> RegisterManager(ManagerRegisterRequest managerRegisterRequest)
+        public async Task<bool> RegisterManager(UserCredentialsRequest registerRequest)
         {
-            bool isValid = UserValidator.CheckUsername(managerRegisterRequest.Username)
-                        && UserValidator.CheckPassword(managerRegisterRequest.Password);
+            bool isValid = UserValidator.CheckUsername(registerRequest.Username)
+                        && UserValidator.CheckPassword(registerRequest.Password);
 
-            // добавление, если данные юзера валидны, и возврат результата добавления
             if (isValid)
             {
-                return await _userRepository.RegisterManager(managerRegisterRequest);
+                return await _userRepository.RegisterUser(registerRequest);
             }
 
-            // если не валидны - false
             return false;
         }
     }

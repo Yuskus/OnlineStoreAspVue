@@ -9,6 +9,16 @@ namespace OnlineStore.Server.Validation.Item
             return guid != null && guid != Guid.Empty;
         }
 
+        public static bool CheckName(string name)
+        {
+            return !string.IsNullOrWhiteSpace(name) && name.Length < 256;
+        }
+
+        public static bool CheckCategory(string? category)
+        {
+            return category is null || category.Length < 256;
+        }
+
         public static bool CheckCode(string code) //XX-XXXX-YYXX
         {
             if (string.IsNullOrWhiteSpace(code)) return false;

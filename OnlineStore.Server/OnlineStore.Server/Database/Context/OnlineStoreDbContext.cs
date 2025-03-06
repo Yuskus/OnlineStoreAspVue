@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineStore.Server.Database.Entities;
-using OnlineStore.Server.Database.EntityTypeConfiguration;
+using System.Reflection;
 
 namespace OnlineStore.Server.Database.Context
 {
@@ -27,11 +27,7 @@ namespace OnlineStore.Server.Database.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new CustomerTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new OrderTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new OrderElementTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ItemTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new UserTypeConfiguration());
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
             base.OnModelCreating(modelBuilder);
         }

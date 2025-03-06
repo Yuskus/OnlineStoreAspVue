@@ -14,7 +14,7 @@ namespace OnlineStore.Server.Repositories.User
         private readonly IConfiguration _configuration = configuration;
         private readonly ILogger<UserRepository> _logger = logger;
 
-        public async Task<LoginResponse?> Authenticate(LoginRequest loginRequest)
+        public async Task<LoginResponse?> Authenticate(UserCredentialsRequest loginRequest)
         {
             Entity.User? user = await _context.Users.FirstOrDefaultAsync(x => x.Username == loginRequest.Username);
 
@@ -37,27 +37,13 @@ namespace OnlineStore.Server.Repositories.User
             return null;
         }
 
-        public async Task<bool> RegisterManager(ManagerRegisterRequest managerRegisterRequest)
+        public async Task<bool> RegisterUser(UserCredentialsRequest registerRequest)
         {
-            if (await _context.Users.AnyAsync(x => x.Username == managerRegisterRequest.Username)) return false;
+            if (await _context.Users.AnyAsync(x => x.Username == registerRequest.Username)) return false;
 
-            (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(managerRegisterRequest.Password);
+            (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(registerRequest.Password);
 
-            Entity.User userEntity = managerRegisterRequest.MapManagerToDb(hash, salt);
-
-            await _context.Users.AddAsync(userEntity);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<bool> RegisterUser(Guid customerId, CustomerRegisterRequest customerRegisterRequest)
-        {
-            if (await _context.Users.AnyAsync(x => x.Username == customerRegisterRequest.Username)) return false;
-
-            (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(customerRegisterRequest.Password);
-
-            Entity.User userEntity = customerRegisterRequest.MapCustomerToDb(customerId, hash, salt);
+            Entity.User userEntity = registerRequest.MapUserToDb(hash, salt);
 
             await _context.Users.AddAsync(userEntity);
             await _context.SaveChangesAsync();

@@ -35,32 +35,24 @@ namespace OnlineStore.Server.Services.User.RegistrationService
             _transaction = _context.Database.BeginTransaction();
         }
 
-        public async Task<bool> RegisterUser(CustomerRegisterRequest customerRegisterRequest)
+        public async Task<bool> RegisterUser(CustomerRegisterRequest registerRequest)
         {
-            // проверка данных заказчика
-            bool isValid = CustomerValidator.CheckName(customerRegisterRequest.CustomerInfo.Name)
-                        && CustomerValidator.CheckCode(customerRegisterRequest.CustomerInfo.Code);
+            bool isValid = CustomerValidator.CheckName(registerRequest.CustomerInfo.Name) 
+                        && CustomerValidator.CheckCode(registerRequest.CustomerInfo.Code);
 
-            // создание заказчика, добавление в базу
-            Guid? customerId = await _customerRepository.CreateCustomer(customerRegisterRequest.CustomerInfo);
-
-            // проверка guid-а заказчика
-            isValid &= CustomerValidator.CheckGuid(customerId);
-
-            // выход (и отмена транзакции в вызывающем коде), если данные не валидны
             if (!isValid) return false;
 
-            // проверка данных юзера
-            isValid &= UserValidator.CheckUsername(customerRegisterRequest.Username)
-                    && UserValidator.CheckPassword(customerRegisterRequest.Password);
+            registerRequest.Id = await _customerRepository.CreateCustomer(registerRequest.CustomerInfo);
 
-            // добавление, если данные юзера валидны, и возврат результата добавления
+            isValid &= CustomerValidator.CheckGuid(registerRequest.Id)
+                    && UserValidator.CheckUsername(registerRequest.Username)
+                    && UserValidator.CheckPassword(registerRequest.Password);
+
             if (isValid)
             {
-                return await _userRepository.RegisterUser((Guid)customerId, customerRegisterRequest);
+                return await _userRepository.RegisterUser(registerRequest);
             }
 
-            // если не валидны - false (и отмена транзакции в вызывающем коде)
             return false;
         }
 

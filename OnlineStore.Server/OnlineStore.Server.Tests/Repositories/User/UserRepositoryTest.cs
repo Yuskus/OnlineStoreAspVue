@@ -110,15 +110,15 @@ namespace OnlineStore.Server.Tests.Repositories.User
             // Arrange
             var repository = new UserRepository(_context, _configuration, _logger);
 
-            var manager = new ManagerRegisterRequest
+            var manager = new UserCredentialsRequest
             {
                 Username = "RegisterUser_Manager",
                 Password = "myManagerPassword"
             };
 
             // Act
-            var registerManager_Success = await repository.RegisterManager(manager);
-            var registerManager_Fail = await repository.RegisterManager(manager);
+            var registerManager_Success = await repository.RegisterUser(manager);
+            var registerManager_Fail = await repository.RegisterUser(manager);
 
             // Assert
             Assert.True(registerManager_Success);
@@ -143,8 +143,8 @@ namespace OnlineStore.Server.Tests.Repositories.User
             };
 
             // Act
-            var registerCustomer_Success = await repository.RegisterUser(_fixture.CustomerId_ForRegister, customer);
-            var registerCustomer_Fail = await repository.RegisterUser(_fixture.CustomerId_ForRegister, customer);
+            var registerCustomer_Success = await repository.RegisterUser(customer);
+            var registerCustomer_Fail = await repository.RegisterUser(customer);
 
             // Assert
             Assert.True(registerCustomer_Success);

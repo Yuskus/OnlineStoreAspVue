@@ -4,7 +4,11 @@
     {
         public static bool CheckUsername(string? name)
         {
-            return !string.IsNullOrWhiteSpace(name) && name.Trim().Length > 6;
+            if (string.IsNullOrWhiteSpace(name)) return false;
+
+            string trimmed = name.Trim();
+
+            return trimmed.Length > 6 && trimmed.Length < 100;
         }
 
         public static bool CheckPassword(string? password)

@@ -129,7 +129,15 @@ namespace OnlineStore.Server.Repositories.Order
             if (order is null)
             {
                 // создание при отсутствии
-                order = new(customerId, _orderNumberGenerator.GenerateNewNumber);
+                order = new Entity.Order
+                {
+                    Id = Guid.NewGuid(),
+                    CustomerId = customerId,
+                    OrderDate = DateOnly.FromDateTime(DateTime.Now),
+                    OrderNumber = _orderNumberGenerator.GenerateNewNumber,
+                    OrderStatus = "basket"
+                };
+
                 await _context.Orders.AddAsync(order);
                 await _context.SaveChangesAsync();
             }

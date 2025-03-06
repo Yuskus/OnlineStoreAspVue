@@ -2,10 +2,9 @@
 
 namespace OnlineStore.Server.DTO.User
 {
-    public class CustomerRegisterRequest
+    public class CustomerRegisterRequest : UserCredentialsRequest
     {
+        public Guid? Id { get; set; }
         public required CustomerBaseRequest CustomerInfo { get; set; }
-        public required string Username { get; set; }
-        public required string Password { get; set; }
     }
 }

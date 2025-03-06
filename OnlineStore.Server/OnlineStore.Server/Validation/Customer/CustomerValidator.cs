@@ -16,25 +16,24 @@ namespace OnlineStore.Server.Validation.Customer
 
         public static bool CheckName(string name)
         {
-            return !string.IsNullOrWhiteSpace(name);
+            return !string.IsNullOrWhiteSpace(name) && name.Length < 256;
         }
 
         public static bool CheckCode(string code)
         {
-            if (string.IsNullOrWhiteSpace(code)) return false;
-
-            if (code.Length != 9) return false;
-
             if (Regex.IsMatch(code, "^[0-9]{4}-[0-9]{4}$"))
             {
                 int year = int.Parse(code.Substring(5, 4));
 
-                int nowYear = DateOnly.FromDateTime(DateTime.Now).Year;
-
-                return year > 1900 && year <= nowYear;
+                return year > 1900 && year <= DateOnly.FromDateTime(DateTime.Now).Year;
             }
 
             return false;
+        }
+
+        public static bool CheckAddress(string? address)
+        {
+            return address is null || address.Length < 256;
         }
 
         public static bool CheckPages(int pageNumber, int pageSize)

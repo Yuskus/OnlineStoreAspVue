@@ -12,7 +12,9 @@ namespace OnlineStore.Server.Services.Item
 
         public async Task<Guid?> CreateItem(ItemRequest item)
         {
-            bool isValid = ItemValidator.CheckCode(item.Code)
+            bool isValid = ItemValidator.CheckName(item.Name)
+                        && ItemValidator.CheckCategory(item.Category)
+                        && ItemValidator.CheckCode(item.Code)
                         && ItemValidator.CheckPrice(item.Price);
 
             if (isValid)
@@ -26,6 +28,8 @@ namespace OnlineStore.Server.Services.Item
         public async Task<bool> UpdateItem(Guid id, ItemRequest item)
         {
             bool isValid = ItemValidator.CheckGuid(id)
+                        && ItemValidator.CheckName(item.Name)
+                        && ItemValidator.CheckCategory(item.Category)
                         && ItemValidator.CheckCode(item.Code)
                         && ItemValidator.CheckPrice(item.Price);
 

@@ -12,9 +12,10 @@ namespace OnlineStore.Server.Services.Customer
         public async Task<bool> UpdateCustomer(Guid id, CustomerRequest customer)
         {
             bool isValid = CustomerValidator.CheckGuid(id)
-                        && CustomerValidator.CheckName(customer.Name)
-                        && CustomerValidator.CheckCode(customer.Code)
-                        && CustomerValidator.CheckDiscount(customer.Discount);
+                        && CustomerValidator.CheckName(customer.Name) 
+                        && CustomerValidator.CheckCode(customer.Code) 
+                        && CustomerValidator.CheckDiscount(customer.Discount) 
+                        && CustomerValidator.CheckAddress(customer.Address);
 
             if (isValid)
             {

@@ -36,7 +36,7 @@ namespace OnlineStore.Server.Mapping.User
             };
         }
 
-        public static Entity.User MapManagerToDb(this ManagerRegisterRequest registerRequest, byte[] hash, byte[] salt)
+        public static Entity.User MapManagerToDb(this UserCredentialsRequest registerRequest, byte[] hash, byte[] salt)
         {
             return new()
             {
@@ -45,6 +45,27 @@ namespace OnlineStore.Server.Mapping.User
                 Salt = salt,
                 Role = 1 //тк Manager
             };
+        }
+
+        public static Entity.User MapUserToDb(this UserCredentialsRequest registerRequest, byte[] hash, byte[] salt)
+        {
+            Entity.User user = new()
+            {
+                Username = registerRequest.Username,
+                Password = hash,
+                Salt = salt
+            };
+
+            if (registerRequest is CustomerRegisterRequest customerRequest)
+            {
+                user.CustomerId = customerRequest.Id;
+            }
+            else
+            {
+                user.Role = (int)UserRole.Manager;
+            }
+
+            return user;
         }
 
         public static LoginResponse MapAuthFromDb(this Entity.User userEntity)

@@ -34,7 +34,7 @@ namespace OnlineStore.Server.Controllers
 
         [AllowAnonymous]
         [HttpPost(template: "login")]
-        public async Task<ActionResult<LoginResponse>> Authenticate([FromBody] LoginRequest loginRequest)
+        public async Task<ActionResult<LoginResponse>> Authenticate([FromBody] UserCredentialsRequest loginRequest)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize(Roles = "Manager")]
         [HttpPost(template: "registermanager")]
-        public async Task<ActionResult<bool>> RegisterManager([FromBody] ManagerRegisterRequest managerRegisterRequest)
+        public async Task<ActionResult<bool>> RegisterManager([FromBody] UserCredentialsRequest managerRegisterRequest)
         {
             try
             {

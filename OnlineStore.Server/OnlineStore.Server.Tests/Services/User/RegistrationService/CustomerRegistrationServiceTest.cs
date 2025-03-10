@@ -2,5 +2,6 @@
 {
     public class CustomerRegistrationServiceTest
     {
+        /*Task<bool> Register(CustomerRegisterRequest customerRegisterRequest);*/
     }
 }

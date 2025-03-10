@@ -9,6 +9,7 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
         public Guid CustomerId_Unexists { get; private set; } = Guid.NewGuid();
         public string CustomerCode_ForGetByCode { get; private set; } = string.Empty;
         public string CustomerCode_Unexists { get; private set; } = string.Empty;
+        public string CustomerCode_ForUpdate { get; private set; } = string.Empty;
         public int CustomersTotalCount { get; private set; }
 
         public CustomerDbContextFixture()
@@ -27,6 +28,7 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
             CustomerId_ForUpdate = guids[^1];
 
             CustomerCode_Unexists = "9999-2000";
+            CustomerCode_ForUpdate = "6475_2000";
 
             // some code from user who is in the middle of the list (or unexist code if errors)
             CustomerCode_ForGetByCode = Context.Customers 

@@ -32,6 +32,12 @@ namespace OnlineStore.Server.Repositories.Customer
 
             if (customerEntity is null) return false;
 
+            if (customerEntity.Code != customer.Code)
+            {
+                // на случай изменения кода новый код должен быть уникален
+                if (await _context.Customers.AnyAsync(x => x.Code == customer.Code)) return false;
+            }
+
             customerEntity.UpdateInDb(customer);
             await _context.SaveChangesAsync();
 

@@ -68,19 +68,21 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
             // Arrange
             var repository = new CustomerRepository(_context);
 
-            var newCustomer = new CustomerRequest()
-            {
-                Name = "Test4",
-                Code = "0004-2005"
-            };
+            var newCustomer_success = new CustomerRequest { Name = "Test4", Code = _fixture.CustomerCode_ForUpdate };
+            var newCustomer_fail = new CustomerRequest { Name = "Test5", Code = _fixture.CustomerCode_ForGetByCode };
 
             // Act
-            var updateCustomer_Success = await repository.Update(_fixture.CustomerId_ForUpdate, newCustomer);
-            var updateCustomer_Fail = await repository.Update(_fixture.CustomerId_Unexists, newCustomer);
+            var updateCustomer_Fail_1 = await repository.Update(_fixture.CustomerId_Unexists, newCustomer_fail);
+            var updateCustomer_Fail_2 = await repository.Update(_fixture.CustomerId_ForUpdate, newCustomer_fail);
+            var updateCustomer_Fail_3 = await repository.Update(_fixture.CustomerId_Unexists, newCustomer_success);
+            var updateCustomer_Success = await repository.Update(_fixture.CustomerId_ForUpdate, newCustomer_success);
 
             // Assert
+            Assert.False(updateCustomer_Fail_1);
+            Assert.False(updateCustomer_Fail_2);
+            Assert.False(updateCustomer_Fail_3);
+
             Assert.True(updateCustomer_Success);
-            Assert.False(updateCustomer_Fail);
         }
 
         [Fact]

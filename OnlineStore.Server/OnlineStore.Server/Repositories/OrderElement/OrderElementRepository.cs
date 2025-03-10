@@ -13,6 +13,9 @@ namespace OnlineStore.Server.Repositories.OrderElement
 
         public async Task<Guid?> Create(OrderElementRequest orderElement)
         {
+            if (await _context.Orders.AnyAsync(x => x.Id == orderElement.OrderId) == false) return null;
+            if (await _context.Items.AnyAsync(x => x.Id == orderElement.ItemId) == false) return null;
+
             Entity.OrderElement? orderElementEntity = await _context.OrderElements.FirstOrDefaultAsync(x => x.OrderId == orderElement.OrderId && x.ItemId == orderElement.ItemId);
             
             if (orderElementEntity is not null)
@@ -32,6 +35,9 @@ namespace OnlineStore.Server.Repositories.OrderElement
 
         public async Task<bool> Update(Guid id, OrderElementRequest orderElement)
         {
+            if (await _context.Orders.AnyAsync(x => x.Id == orderElement.OrderId) == false) return false;
+            if (await _context.Items.AnyAsync(x => x.Id == orderElement.ItemId) == false) return false;
+
             Entity.OrderElement? orderElementEntity = await _context.OrderElements.FirstOrDefaultAsync(x => x.Id == id);
 
             if (orderElementEntity is null) return false;

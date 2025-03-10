@@ -11,8 +11,7 @@ namespace OnlineStore.Server.Services.User
 
         public async Task<LoginResponse?> Authenticate(UserCredentialsRequest loginRequest)
         {
-            bool isValid = UserValidator.CheckUsername(loginRequest.Username)
-                        && UserValidator.CheckPassword(loginRequest.Password);
+            bool isValid = UserValidator.CheckCredentials(loginRequest);
 
             if (isValid)
             {
@@ -22,7 +21,7 @@ namespace OnlineStore.Server.Services.User
             return null;
         }
 
-        public async Task<bool> UpdateUser(string username, UserRequest userRequest)
+        public async Task<bool> Update(string username, UserRequest userRequest)
         {
             bool isValid = UserValidator.CheckUsername(username)
                         && UserValidator.CheckUsername(userRequest.Username);
@@ -35,25 +34,26 @@ namespace OnlineStore.Server.Services.User
             return false;
         }
 
-        public async Task<bool> DeleteUser(string name)
+        public async Task<bool> Delete(string username)
         {
-            bool isValid = UserValidator.CheckUsername(name);
+            bool isValid = UserValidator.CheckUsername(username);
 
             if (isValid)
             {
-                return await _userRepository.Delete(name);
+                return await _userRepository.Delete(username);
             }
             
             return false;
         }
 
-        public async Task<ResponseList<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize)
+        public async Task<ResponseList<UserResponse>> GetPage(int pageNumber, int pageSize)
         {
             bool isValid = UserValidator.CheckPages(pageNumber, pageSize);
 
             if (isValid)
             {
                 ResponseList<UserResponse> response = await _userRepository.GetAll();
+
                 response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
                                                        .Take(pageSize)
                                                        .ToList();
@@ -66,12 +66,11 @@ namespace OnlineStore.Server.Services.User
 
         public async Task<bool> RegisterManager(UserCredentialsRequest registerRequest)
         {
-            bool isValid = UserValidator.CheckUsername(registerRequest.Username)
-                        && UserValidator.CheckPassword(registerRequest.Password);
+            bool isValid = UserValidator.CheckCredentials(registerRequest);
 
             if (isValid)
             {
-                return await _userRepository.RegisterManager(registerRequest);
+                return await _userRepository.Create(registerRequest);
             }
 
             return false;

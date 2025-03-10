@@ -35,19 +35,18 @@ namespace OnlineStore.Server.Services.User.RegistrationService
             _transaction = _context.Database.BeginTransaction();
         }
 
-        public async Task<bool> RegisterUser(CustomerRegisterRequest registerRequest)
+        public async Task<bool> Register(CustomerRegisterRequest registerRequest)
         {
             if (!CustomerValidator.CheckRequest(registerRequest.CustomerInfo)) return false;
 
             registerRequest.Id = await _customerRepository.Create(registerRequest.CustomerInfo);
 
             bool isValid = CustomerValidator.CheckGuid(registerRequest.Id)
-                        && UserValidator.CheckUsername(registerRequest.Username)
-                        && UserValidator.CheckPassword(registerRequest.Password);
+                        && UserValidator.CheckCredentials(registerRequest);
 
             if (isValid)
             {
-                return await _userRepository.RegisterManager(registerRequest);
+                return await _userRepository.Create(registerRequest);
             }
 
             return false;

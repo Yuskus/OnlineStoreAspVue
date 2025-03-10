@@ -15,6 +15,8 @@ namespace OnlineStore.Server.Repositories.Order
 
         public async Task<Guid?> Create(OrderRequest order)
         {
+            if (await _context.Orders.AnyAsync(x => x.CustomerId == order.CustomerId) == false) return null;
+
             Entity.Order orderEntity = order.MapToDb();
 
             await _context.Orders.AddAsync(orderEntity);
@@ -28,10 +30,13 @@ namespace OnlineStore.Server.Repositories.Order
         {
             if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == id) is Entity.Order orderEntity)
             {
-                orderEntity.UpdateInDb(order);
-                await _context.SaveChangesAsync();
+                if (await _context.Customers.AnyAsync(x => x.Id == order.CustomerId))
+                {
+                    orderEntity.UpdateInDb(order);
+                    await _context.SaveChangesAsync();
 
-                return true;
+                    return true;
+                }
             }
 
             return false;

@@ -14,59 +14,8 @@ namespace OnlineStore.Server.Controllers
         private readonly ILogger<CustomersController> _logger = logger;
 
         [Authorize(Roles = "Manager")]
-        [HttpGet(template: "getpage")]
-        public async Task<ActionResult<ResponseList<CustomerResponse>>> GetPageOfCustomers([FromQuery] int pageNumber, [FromQuery] int pageSize)
-        {
-            try
-            {
-                ResponseList<CustomerResponse> result = await _customerService.GetPage(pageNumber, pageSize);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetPageOfCustomers.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize(Roles = "Manager")]
-        [HttpGet(template: "getbyid/{id}")]
-        public async Task<ActionResult<CustomerResponse>> GetCustomerById(Guid id)
-        {
-            try
-            {
-                CustomerResponse? result = await _customerService.GetOneByCriteria(new() { Id = id });
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetCustomerById.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize(Roles = "Manager")]
-        [HttpGet(template: "getbycode/{code}")]
-        public async Task<ActionResult<CustomerResponse>> GetCustomerByCode(string code)
-        {
-            try
-            {
-                CustomerResponse? result = await _customerService.GetOneByCriteria(new() { Code = code });
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetCustomerByCode.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize(Roles = "Manager")]
         [HttpPut(template: "update/{id}")]
-        public async Task<ActionResult<bool>> UpdateCustomer(Guid id, [FromBody] CustomerRequest customer)
+        public async Task<ActionResult<bool>> Update(Guid id, [FromBody] CustomerRequest customer)
         {
             try
             {
@@ -76,7 +25,41 @@ namespace OnlineStore.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при запросе UpdateCustomer.");
+                _logger.LogError(ex, "Ошибка при запросе Update.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize(Roles = "Manager")]
+        [HttpGet(template: "getpage")]
+        public async Task<ActionResult<ResponseList<CustomerResponse>>> GetPage([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            try
+            {
+                ResponseList<CustomerResponse> result = await _customerService.GetPage(pageNumber, pageSize);
+                if (result is null) return BadRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе GetPage.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize(Roles = "Manager")]
+        [HttpGet(template: "getone")]
+        public async Task<ActionResult<CustomerResponse>> GetOneByCriteria(CustomerFilterCriteria criteria)
+        {
+            try
+            {
+                CustomerResponse? result = await _customerService.GetOneByCriteria(criteria);
+                if (result is null) return BadRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе GetOneByCriteria.");
                 return StatusCode(500);
             }
         }

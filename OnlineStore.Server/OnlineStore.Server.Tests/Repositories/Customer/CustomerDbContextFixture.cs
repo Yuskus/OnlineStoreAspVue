@@ -6,7 +6,7 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
     {
         public Guid CustomerId_ForGetById { get; private set; }
         public Guid CustomerId_ForUpdate { get; private set; }
-        public Guid CustomerId_Unexist { get; private set; } = Guid.NewGuid();
+        public Guid CustomerId_Unexists { get; private set; } = Guid.NewGuid();
         public string CustomerCode_ForGetByCode { get; private set; } = string.Empty;
         public string CustomerCode_Unexists { get; private set; } = string.Empty;
         public int CustomersTotalCount { get; private set; }

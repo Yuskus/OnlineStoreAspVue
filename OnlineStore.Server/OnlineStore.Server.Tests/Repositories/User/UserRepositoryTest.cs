@@ -12,8 +12,6 @@ namespace OnlineStore.Server.Tests.Repositories.User
     [Collection("DatabaseCollection")]
     public class UserRepositoryTest : IClassFixture<UserDbContextFixture>
     {
-        /* Authenticate ??? */
-
         private readonly FakeDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserRepository> _logger;
@@ -28,31 +26,39 @@ namespace OnlineStore.Server.Tests.Repositories.User
         }
 
         [Fact]
-        public async Task UpdateUser() // isolated
+        public async Task UpdateUser()
         {
             // Arrange
             var repository = new UserRepository(_context, _configuration, _logger);
 
-            var customer = new UserRequest { Username = _fixture.CustomerUsername_ForUpdate, Role = UserRole.Manager };
-            var manager = new UserRequest { Username = _fixture.ManagerUsername_ForUpdate, Role = UserRole.User };
+            var customer_fail = new UserRequest { Username = _fixture.Username_Unexist, Role = UserRole.Manager };
+            var manager_fail = new UserRequest { Username = _fixture.Username_Unexist, Role = UserRole.User };
+            var customer_success = new UserRequest { Username = _fixture.CustomerUsername_ForUpdate, Role = UserRole.Manager };
+            var manager_success = new UserRequest { Username = _fixture.ManagerUsername_ForUpdate, Role = UserRole.User };
 
             // Act
-            var updateUnexistCustomer_Fail = await repository.Update(_fixture.Username_Unexist, customer);
-            var updateUnexistManager_Fail = await repository.Update(_fixture.Username_Unexist, manager);
+            var updateCustomer_Fail_1 = await repository.Update(_fixture.Username_Unexist, customer_fail);
+            var updateManager_Fail_2 = await repository.Update(_fixture.Username_Unexist, manager_fail);
 
-            var updateCustomer_Success = await repository.Update(_fixture.CustomerUsername_ForUpdate, customer);
-            var updateManager_Success = await repository.Update(_fixture.ManagerUsername_ForUpdate, manager);
+            var updateCustomer_Fail_3 = await repository.Update(_fixture.Username_Unexist, customer_success);
+            var updateManager_Fail_4 = await repository.Update(_fixture.Username_Unexist, manager_success);
+
+            var updateCustomer_Success = await repository.Update(_fixture.CustomerUsername_ForUpdate, customer_success);
+            var updateManager_Success = await repository.Update(_fixture.ManagerUsername_ForUpdate, manager_success);
 
             // Assert
-            Assert.False(updateUnexistCustomer_Fail);
-            Assert.False(updateUnexistManager_Fail);
+            Assert.False(updateCustomer_Fail_1);
+            Assert.False(updateManager_Fail_2);
+
+            Assert.False(updateCustomer_Fail_3);
+            Assert.False(updateManager_Fail_4);
 
             Assert.True(updateCustomer_Success);
             Assert.True(updateManager_Success);
         }
 
         [Fact]
-        public async Task DeleteUser() // isolated
+        public async Task DeleteUser()
         {
             // Arrange
             var repository = new UserRepository(_context, _configuration, _logger);
@@ -77,7 +83,7 @@ namespace OnlineStore.Server.Tests.Repositories.User
         }
 
         [Fact]
-        public async Task GetPageOfCustomers() // isolated
+        public async Task GetPageOfCustomers()
         {
             // Arrange
             var repository = new UserRepository(_context, _configuration, _logger);
@@ -104,8 +110,8 @@ namespace OnlineStore.Server.Tests.Repositories.User
             };
 
             // Act
-            var registerManager_Success = await repository.RegisterManager(manager);
-            var registerManager_Fail = await repository.RegisterManager(manager);
+            var registerManager_Success = await repository.Create(manager);
+            var registerManager_Fail = await repository.Create(manager);
 
             // Assert
             Assert.True(registerManager_Success);
@@ -130,8 +136,8 @@ namespace OnlineStore.Server.Tests.Repositories.User
             };
 
             // Act
-            var registerCustomer_Success = await repository.RegisterManager(customer);
-            var registerCustomer_Fail = await repository.RegisterManager(customer);
+            var registerCustomer_Success = await repository.Create(customer);
+            var registerCustomer_Fail = await repository.Create(customer);
 
             // Assert
             Assert.True(registerCustomer_Success);

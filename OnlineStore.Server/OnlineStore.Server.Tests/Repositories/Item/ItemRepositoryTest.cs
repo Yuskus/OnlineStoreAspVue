@@ -17,7 +17,7 @@ namespace OnlineStore.Server.Tests.Repositories.Item
         }
 
         [Fact]
-        public async Task GetItemById()
+        public async Task GetOneByCriteria()
         {
             // Arrange
             var repository = new ItemRepository(_context);
@@ -26,37 +26,19 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             var getById_Success = await repository.GetOneByCriteria(new() { Id = _fixture.ItemId_Exists });
             var getById_Fail = await repository.GetOneByCriteria(new() { Id = _fixture.ItemId_Unexists });
 
-            // Assert
-            Assert.NotNull(getById_Success);
-            Assert.Null(getById_Fail);
-        }
-
-        [Fact]
-        public async Task GetItemByName()
-        {
-            // Arrange
-            var repository = new ItemRepository(_context);
-
-            // Act
             var getByName_Success = await repository.GetOneByCriteria(new() { Name = _fixture.ItemName_Exists });
             var getByName_Fail = await repository.GetOneByCriteria(new() { Name = _fixture.ItemName_Unexists });
 
-            // Assert
-            Assert.NotNull(getByName_Success);
-            Assert.Null(getByName_Fail);
-        }
-
-        [Fact]
-        public async Task GetItemByCode()
-        {
-            // Arrange
-            var repository = new ItemRepository(_context);
-
-            // Act
             var getByCode_Success = await repository.GetOneByCriteria(new() { Code = _fixture.ItemCode_Exists });
             var getByCode_Fail = await repository.GetOneByCriteria(new() { Code = _fixture.ItemCode_Unexists });
 
             // Assert
+            Assert.NotNull(getById_Success);
+            Assert.Null(getById_Fail);
+
+            Assert.NotNull(getByName_Success);
+            Assert.Null(getByName_Fail);
+
             Assert.NotNull(getByCode_Success);
             Assert.Null(getByCode_Fail);
         }
@@ -77,29 +59,66 @@ namespace OnlineStore.Server.Tests.Repositories.Item
         }
 
         [Fact]
-        public async Task GetPageOfItemsByCategory()
+        public async Task GetAllByCriteria_Success()
         {
             // Arrange
             var repository = new ItemRepository(_context);
 
-            // Act
-            var unexist = await repository.GetAllByCriteria(new() { Category = _fixture.Category_Unexists });
+            var request_1 = new ItemFilterCriteria { Category = _fixture.Category_SampleA };
+            var request_2 = new ItemFilterCriteria { Category = _fixture.Category_SampleB };
+            var request_3 = new ItemFilterCriteria { Category = _fixture.Category_SampleA, Code = _fixture.ItemCode_Exists };
+            var request_4 = new ItemFilterCriteria { Category = _fixture.Category_SampleB, Name = _fixture.ItemName_Exists };
 
-            var categoryA = await repository.GetAllByCriteria(new() { Category = _fixture.Category_SampleA });
-            var categoryB = await repository.GetAllByCriteria(new() { Category = _fixture.Category_SampleB });
+            // Act
+            var test_1 = await repository.GetAllByCriteria(request_1);
+            var test_2 = await repository.GetAllByCriteria(request_2);
+            var test_3 = await repository.GetAllByCriteria(request_3);
+            var test_4 = await repository.GetAllByCriteria(request_4);
 
             // Assert
-            Assert.NotNull(unexist);
-            Assert.NotNull(categoryA);
-            Assert.NotNull(categoryB);
+            Assert.NotNull(test_1);
+            Assert.NotNull(test_2);
+            Assert.NotNull(test_3);
+            Assert.NotNull(test_4);
 
-            Assert.Equal(0, unexist.TotalCount);
-            Assert.InRange(categoryA.TotalCount, 1, _fixture.ItemsTotalCount);
-            Assert.InRange(categoryB.TotalCount, 1, _fixture.ItemsTotalCount);
+            Assert.InRange(test_1.TotalCount, 1, _fixture.ItemsTotalCount);
+            Assert.InRange(test_2.TotalCount, 1, _fixture.ItemsTotalCount);
+            Assert.InRange(test_3.TotalCount, 1, _fixture.ItemsTotalCount);
+            Assert.InRange(test_4.TotalCount, 1, _fixture.ItemsTotalCount);
 
-            Assert.Empty(unexist.Responses);
-            Assert.InRange(categoryA.Responses.Count(), 1, _fixture.ItemsTotalCount);
-            Assert.InRange(categoryB.Responses.Count(), 1, _fixture.ItemsTotalCount);
+            Assert.InRange(test_1.Responses.Count(), 1, _fixture.ItemsTotalCount);
+            Assert.InRange(test_2.Responses.Count(), 1, _fixture.ItemsTotalCount);
+            Assert.InRange(test_3.Responses.Count(), 1, _fixture.ItemsTotalCount);
+            Assert.InRange(test_4.Responses.Count(), 1, _fixture.ItemsTotalCount);
+        }
+
+        [Fact]
+        public async Task GetAllByCriteria_Fail()
+        {
+            // Arrange
+            var repository = new ItemRepository(_context);
+
+            var request_1 = new ItemFilterCriteria { Category = _fixture.Category_Unexists };
+            var request_2 = new ItemFilterCriteria { Category = _fixture.Category_SampleA, Name = _fixture.ItemName_Unexists };
+            var request_3 = new ItemFilterCriteria { Category = _fixture.Category_SampleB, Code = _fixture.ItemCode_Unexists };
+
+            // Act
+            var test_1 = await repository.GetAllByCriteria(request_1);
+            var test_2 = await repository.GetAllByCriteria(request_2);
+            var test_3 = await repository.GetAllByCriteria(request_3);
+
+            // Assert
+            Assert.NotNull(test_1);
+            Assert.NotNull(test_2);
+            Assert.NotNull(test_3);
+
+            Assert.Equal(0, test_1.TotalCount);
+            Assert.Equal(0, test_2.TotalCount);
+            Assert.Equal(0, test_3.TotalCount);
+
+            Assert.Empty(test_1.Responses);
+            Assert.Empty(test_2.Responses);
+            Assert.Empty(test_3.Responses);
         }
 
         [Fact]
@@ -160,14 +179,14 @@ namespace OnlineStore.Server.Tests.Repositories.Item
             var repository = new ItemRepository(_context);
 
             // Act
-            var deleteItem_Fail = await repository.Delete(_fixture.ItemId_Unexists);
+            var deleteItem_Fail_1 = await repository.Delete(_fixture.ItemId_Unexists);
             var deleteItem_Success = await repository.Delete(_fixture.ItemId_ForDelete);
-            var deleteItem_Again = await repository.Delete(_fixture.ItemId_ForDelete);
+            var deleteItem_Fail_2 = await repository.Delete(_fixture.ItemId_ForDelete);
 
             // Assert
-            Assert.False(deleteItem_Fail);
+            Assert.False(deleteItem_Fail_1);
             Assert.True(deleteItem_Success);
-            Assert.False(deleteItem_Again);
+            Assert.False(deleteItem_Fail_2);
         }
     }
 }

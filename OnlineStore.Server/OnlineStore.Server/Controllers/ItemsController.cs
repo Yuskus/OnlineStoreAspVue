@@ -14,9 +14,60 @@ namespace OnlineStore.Server.Controllers
         private readonly IItemService _itemService = itemService;
         private readonly ILogger<ItemsController> _logger = logger;
 
+        [Authorize(Roles = "Manager")]
+        [HttpPost(template: "add")]
+        public async Task<ActionResult<Guid>> Create([FromBody] ItemRequest item)
+        {
+            try
+            {
+                Guid? result = await _itemService.Create(item);
+                if (result is null) return BadRequest();
+                return Ok((Guid)result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе Create.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize(Roles = "Manager")]
+        [HttpPut(template: "update/{id}")]
+        public async Task<ActionResult> Update(Guid id, [FromBody] ItemRequest item)
+        {
+            try
+            {
+                bool result = await _itemService.Update(id, item);
+                if (result) return Ok(result);
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе Update.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize(Roles = "Manager")]
+        [HttpDelete(template: "delete/{id}")]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            try
+            {
+                bool result = await _itemService.Delete(id);
+                if (result) return Ok(result);
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе Delete.");
+                return StatusCode(500);
+            }
+        }
+
         [Authorize]
         [HttpGet(template: "getpage")]
-        public async Task<ActionResult<ResponseList<ItemResponse>>> GetPageOfItems([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<ResponseList<ItemResponse>>> GetPage([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
@@ -26,24 +77,24 @@ namespace OnlineStore.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при запросе GetPageOfItems.");
+                _logger.LogError(ex, "Ошибка при запросе GetPage.");
                 return StatusCode(500);
             }
         }
 
         [Authorize]
-        [HttpGet(template: "getpagebycategory/{category}")]
-        public async Task<ActionResult<ResponseList<ItemResponse>>> GetPageOfItemsByCategory(string category, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        [HttpGet(template: "getpagebycriteria")]
+        public async Task<ActionResult<ResponseList<ItemResponse>>> GetPageByCriteria(ItemFilterCriteria criteria, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
-                ResponseList<ItemResponse> result = await _itemService.GetPageByCriteria(new() { Category = category }, pageNumber, pageSize);
+                ResponseList<ItemResponse> result = await _itemService.GetPageByCriteria(criteria, pageNumber, pageSize);
                 if (result is null) return BadRequest();
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при запросе GetItemsByCategory.");
+                _logger.LogError(ex, "Ошибка при запросе GetPageByCriteria.");
                 return StatusCode(500);
             }
         }
@@ -66,103 +117,18 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize]
-        [HttpGet(template: "getbyid/{id}")]
-        public async Task<ActionResult<ItemResponse>> GetItemById(Guid id)
+        [HttpGet(template: "getone")]
+        public async Task<ActionResult<ItemResponse>> GetOneByCriteria(ItemFilterCriteria criteria)
         {
             try
             {
-                ItemResponse? result = await _itemService.GetOneByCriteria(new() { Id = id });
-                if (result is null) return BadRequest();
+                ItemResponse? result = await _itemService.GetOneByCriteria(criteria);
+                if (result is null) return BadRequest(); 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при запросе GetItemById.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize]
-        [HttpGet(template: "getbycode/{code}")]
-        public async Task<ActionResult<ItemResponse>> GetItemByCode(string code)
-        {
-            try
-            {
-                ItemResponse? result = await _itemService.GetOneByCriteria(new() { Code = code });
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetItemByCode.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize]
-        [HttpGet(template: "getbyname/{name}")]
-        public async Task<ActionResult<ItemResponse>> GetItemByName(string name)
-        {
-            try
-            {
-                ItemResponse? result = await _itemService.GetOneByCriteria(new() { Name = name });
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetItemByName.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize(Roles = "Manager")]
-        [HttpPost(template: "add")]
-        public async Task<ActionResult<Guid>> CreateItem([FromBody] ItemRequest item)
-        {
-            try
-            {
-                Guid? result = await _itemService.Create(item);
-                if (result is null) return BadRequest();
-                return Ok((Guid)result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе CreateItem.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize(Roles = "Manager")]
-        [HttpPut(template: "update/{id}")]
-        public async Task<ActionResult> UpdateItem(Guid id, [FromBody] ItemRequest item)
-        {
-            try
-            {
-                bool result = await _itemService.Update(id, item);
-                if (result) return Ok(result);
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе UpdateItem.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize(Roles = "Manager")]
-        [HttpDelete(template: "delete/{id}")]
-        public async Task<ActionResult> DeleteItem(Guid id)
-        {
-            try
-            {
-                bool result = await _itemService.Delete(id);
-                if (result) return Ok(result);
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе DeleteItem.");
+                _logger.LogError(ex, "Ошибка при запросе GetOneByCriteria.");
                 return StatusCode(500);
             }
         }

@@ -34,70 +34,99 @@ namespace OnlineStore.Server.Tests.Repositories.Order
         }
 
         [Fact]
-        public async Task GetPageOfOrdersByCustomerId()
+        public async Task GetAllByCriteria_Success()
         {
             // Arrange
             var repository = new OrderRepository(_context, _generatorMock);
 
-            // Act
-            var unexist = await repository.GetAllByCriteria(new() { CustomerId = _fixture.Guid_Unexists });
+            var request_1 = new OrderFilterCriteria { CustomerId = _fixture.CustomerId_SampleA };
+            var request_2 = new OrderFilterCriteria { CustomerId = _fixture.CustomerId_SampleB };
+            var request_3 = new OrderFilterCriteria { CustomerId = _fixture.CustomerId_SampleA, OrderStatus = _fixture.Status_New };
+            var request_4 = new OrderFilterCriteria { CustomerId = _fixture.CustomerId_SampleA, OrderStatus = _fixture.Status_Basket };
+            var request_5 = new OrderFilterCriteria { CustomerId = _fixture.CustomerId_SampleB, OrderStatus = _fixture.Status_New };
+            var request_6 = new OrderFilterCriteria { CustomerId = _fixture.CustomerId_SampleB, OrderStatus = _fixture.Status_Basket };
 
-            var customerA = await repository.GetAllByCriteria(new() { CustomerId = _fixture.CustomerId_SampleA });
-            var customerB = await repository.GetAllByCriteria(new() { CustomerId = _fixture.CustomerId_SampleB });
+            // Act
+            var test_1 = await repository.GetAllByCriteria(request_1);
+            var test_2 = await repository.GetAllByCriteria(request_2);
+            var test_3 = await repository.GetAllByCriteria(request_3);
+            var test_4 = await repository.GetAllByCriteria(request_4);
+            var test_5 = await repository.GetAllByCriteria(request_5);
+            var test_6 = await repository.GetAllByCriteria(request_6);
 
             // Assert
-            Assert.NotNull(unexist);
-            Assert.NotNull(customerA);
-            Assert.NotNull(customerB);
+            Assert.NotNull(test_1);
+            Assert.NotNull(test_2);
+            Assert.NotNull(test_3);
+            Assert.NotNull(test_4);
+            Assert.NotNull(test_5);
+            Assert.NotNull(test_6);
 
-            Assert.Equal(0, unexist.TotalCount);
-            Assert.InRange(customerA.TotalCount, 1, _fixture.OrdersTotalCount);
-            Assert.InRange(customerB.TotalCount, 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_1.TotalCount, 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_2.TotalCount, 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_3.TotalCount, 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_4.TotalCount, 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_5.TotalCount, 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_6.TotalCount, 1, _fixture.OrdersTotalCount);
 
-            Assert.Empty(unexist.Responses);
-            Assert.InRange(customerA.Responses.Count(), 1, _fixture.OrdersTotalCount);
-            Assert.InRange(customerB.Responses.Count(), 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_1.Responses.Count(), 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_2.Responses.Count(), 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_3.Responses.Count(), 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_4.Responses.Count(), 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_5.Responses.Count(), 1, _fixture.OrdersTotalCount);
+            Assert.InRange(test_6.Responses.Count(), 1, _fixture.OrdersTotalCount);
         }
 
         [Fact]
-        public async Task GetPageOfOrdersByStatus()
+        public async Task GetAllByCriteria_Fail()
         {
             // Arrange
             var repository = new OrderRepository(_context, _generatorMock);
 
-            // Act
-            var unexist = await repository.GetAllByCriteria(new() { OrderStatus = _fixture.Status_Unexists });
+            var request_1 = new OrderFilterCriteria { CustomerId = _fixture.Guid_Unexists };
+            var request_2 = new OrderFilterCriteria { OrderStatus = _fixture.Status_Unexists };
+            var request_3 = new OrderFilterCriteria { CustomerId = _fixture.CustomerId_SampleA, OrderStatus = _fixture.Status_Unexists };
+            var request_4 = new OrderFilterCriteria { CustomerId = _fixture.Guid_Unexists, OrderStatus = _fixture.Status_New };
 
-            var statusA = await repository.GetAllByCriteria(new() { OrderStatus = _fixture.Status_New });
-            var statusB = await repository.GetAllByCriteria(new() { OrderStatus = _fixture.Status_Basket });
+            // Act
+            var test_1 = await repository.GetAllByCriteria(request_1);
+            var test_2 = await repository.GetAllByCriteria(request_2);
+            var test_3 = await repository.GetAllByCriteria(request_3);
+            var test_4 = await repository.GetAllByCriteria(request_4);
 
             // Assert
-            Assert.NotNull(unexist);
-            Assert.NotNull(statusA);
-            Assert.NotNull(statusB);
+            Assert.NotNull(test_1);
+            Assert.NotNull(test_2);
+            Assert.NotNull(test_3);
+            Assert.NotNull(test_4);
 
-            Assert.Equal(0, unexist.TotalCount);
-            Assert.InRange(statusA.TotalCount, 1, _fixture.OrdersTotalCount);
-            Assert.InRange(statusB.TotalCount, 1, _fixture.OrdersTotalCount);
+            Assert.Equal(0, test_1.TotalCount);
+            Assert.Equal(0, test_2.TotalCount);
+            Assert.Equal(0, test_3.TotalCount);
+            Assert.Equal(0, test_4.TotalCount);
 
-            Assert.Empty(unexist.Responses);
-            Assert.InRange(statusA.Responses.Count(), 1, _fixture.OrdersTotalCount);
-            Assert.InRange(statusB.Responses.Count(), 1, _fixture.OrdersTotalCount);
+            Assert.Empty(test_1.Responses);
+            Assert.Empty(test_2.Responses);
+            Assert.Empty(test_3.Responses);
+            Assert.Empty(test_4.Responses);
         }
 
         [Fact]
-        public async Task GetOrderByNumber()
+        public async Task GetOneByCriteria()
         {
             // Arrange
             var repository = new OrderRepository(_context, _generatorMock);
 
+            var request_fail = new OrderFilterCriteria { OrderNumber = _fixture.OrderNumber_Unexists };
+            var request_success = new OrderFilterCriteria { OrderNumber = _fixture.OrderNumber_Exists };
+
             // Act
-            var getByNumber_Fail = await repository.GetOneByCriteria(new() { OrderNumber = _fixture.OrderNumber_Unexists });
-            var getByNumber_Success = await repository.GetOneByCriteria(new() { OrderNumber = _fixture.OrderNumber_Exists });
+            var getByCriteria_Fail = await repository.GetOneByCriteria(request_fail);
+            var getByCriteria_Success = await repository.GetOneByCriteria(request_success);
 
             // Assert
-            Assert.Null(getByNumber_Fail);
-            Assert.NotNull(getByNumber_Success);
+            Assert.Null(getByCriteria_Fail);
+            Assert.NotNull(getByCriteria_Success);
         }
 
         [Fact]
@@ -106,11 +135,15 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             // Arrange
             var repository = new OrderRepository(_context, _generatorMock);
 
-            // Act
-            var getBasketOrder_Fail = await repository.GetOneByCriteria(new() { CustomerId = _fixture.Guid_Unexists });
+            var request_fail = new OrderFilterCriteria { CustomerId = _fixture.Guid_Unexists, OrderStatus = _fixture.Status_Basket };
+            var request_success_1 = new OrderFilterCriteria { CustomerId = _fixture.CustomerId_SampleA, OrderStatus = _fixture.Status_Basket };
+            var request_success_2 = new OrderFilterCriteria { CustomerId = _fixture.CustomerId_SampleB, OrderStatus = _fixture.Status_Basket };
 
-            var getBasketOrder_Success1 = await repository.GetOneByCriteria(new() { CustomerId = _fixture.CustomerId_SampleA });
-            var getBasketOrder_Success2 = await repository.GetOneByCriteria(new() { CustomerId = _fixture.CustomerId_SampleB });
+            // Act
+            var getBasketOrder_Fail = await repository.GetOneByCriteria(request_fail);
+
+            var getBasketOrder_Success1 = await repository.GetOneByCriteria(request_success_1);
+            var getBasketOrder_Success2 = await repository.GetOneByCriteria(request_success_2);
 
             // Assert
             Assert.Null(getBasketOrder_Fail);
@@ -127,7 +160,14 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             // Arrange
             var repository = new OrderRepository(_context, _generatorMock);
 
-            var request = new OrderRequest
+            var request_fail = new OrderRequest
+            {
+                CustomerId = _fixture.Guid_Unexists,
+                OrderDate = DateOnly.FromDateTime(DateTime.Now).ToString(),
+                OrderStatus = "new"
+            };
+
+            var request_success = new OrderRequest
             {
                 CustomerId = _fixture.CustomerId_SampleA,
                 OrderDate = DateOnly.FromDateTime(DateTime.Now).ToString(),
@@ -135,11 +175,14 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             };
 
             // Act
-            var createNew = await repository.Create(request);
+            var createNew_fail = await repository.Create(request_fail);
+            var createNew_success = await repository.Create(request_success);
 
             // Assert
-            Assert.NotNull(createNew);
-            Assert.NotEqual(createNew, Guid.Empty);
+            Assert.Null(createNew_fail);
+
+            Assert.NotNull(createNew_success);
+            Assert.NotEqual(createNew_success, Guid.Empty);
         }
 
         [Fact]
@@ -148,7 +191,14 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             // Arrange
             var repository = new OrderRepository(_context, _generatorMock);
 
-            var request = new OrderRequest
+            var request_fail = new OrderRequest
+            {
+                CustomerId = _fixture.Guid_Unexists,
+                OrderDate = DateOnly.FromDateTime(DateTime.Now).ToString(),
+                OrderStatus = "new"
+            };
+
+            var request_success = new OrderRequest
             {
                 CustomerId = _fixture.CustomerId_SampleB,
                 OrderDate = DateOnly.FromDateTime(DateTime.Now).ToString(),
@@ -156,11 +206,17 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             };
 
             // Act
-            var updateOrder_Fail = await repository.Update(_fixture.Guid_Unexists, request);
-            var updateOrder_Success = await repository.Update(_fixture.OrderId_ForUpdate, request);
+            var updateOrder_Fail_1 = await repository.Update(_fixture.Guid_Unexists, request_fail);
+            var updateOrder_Fail_2 = await repository.Update(_fixture.OrderId_ForUpdate, request_fail);
+            var updateOrder_Fail_3 = await repository.Update(_fixture.Guid_Unexists, request_success);
+
+            var updateOrder_Success = await repository.Update(_fixture.OrderId_ForUpdate, request_success);
 
             // Assert
-            Assert.False(updateOrder_Fail);
+            Assert.False(updateOrder_Fail_1);
+            Assert.False(updateOrder_Fail_2);
+            Assert.False(updateOrder_Fail_3);
+
             Assert.True(updateOrder_Success);
         }
 
@@ -171,16 +227,15 @@ namespace OnlineStore.Server.Tests.Repositories.Order
             var repository = new OrderRepository(_context, _generatorMock);
 
             // Act
-            var deleteOrder_Fail = await repository.Delete(_fixture.Guid_Unexists);
-
+            var deleteOrder_Fail_1 = await repository.Delete(_fixture.Guid_Unexists);
             var deleteOrder_Success = await repository.Delete(_fixture.OrderId_ForDelete);
-            var deleteOrder_Again = await repository.Delete(_fixture.OrderId_ForDelete);
+            var deleteOrder_Fail_2 = await repository.Delete(_fixture.OrderId_ForDelete);
 
             // Assert
-            Assert.False(deleteOrder_Fail);
+            Assert.False(deleteOrder_Fail_1);
+            Assert.False(deleteOrder_Fail_2);
 
             Assert.True(deleteOrder_Success);
-            Assert.False(deleteOrder_Again);
         }
     }
 }

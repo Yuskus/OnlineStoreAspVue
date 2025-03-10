@@ -4,7 +4,7 @@ namespace OnlineStore.Server.Services.User.RegistrationService
 {
     public interface ICustomerRegistrationService
     {
-        Task<bool> RegisterUser(CustomerRegisterRequest customerRegisterRequest);
+        Task<bool> Register(CustomerRegisterRequest customerRegisterRequest);
         void CreateTransaction();
         void Commit();
         void Rollback();

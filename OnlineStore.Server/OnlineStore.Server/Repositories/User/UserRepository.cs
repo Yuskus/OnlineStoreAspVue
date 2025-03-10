@@ -35,7 +35,7 @@ namespace OnlineStore.Server.Repositories.User
             return null;
         }
 
-        public async Task<bool> RegisterManager(UserCredentialsRequest registerRequest)
+        public async Task<bool> Create(UserCredentialsRequest registerRequest)
         {
             if (await _context.Users.AnyAsync(x => x.Username == registerRequest.Username)) return false;
 
@@ -79,7 +79,7 @@ namespace OnlineStore.Server.Repositories.User
         {
             return new()
             {
-                Responses = await _context.Users.Include(x => x.Customer).Select(x => x.MapFromDb()).ToListAsync(), //??
+                Responses = await _context.Users.Include(x => x.Customer).Select(x => x.MapFromDb()).ToListAsync(),
                 TotalCount = await _context.Users.CountAsync()
             };
         }

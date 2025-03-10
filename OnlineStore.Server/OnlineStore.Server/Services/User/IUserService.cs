@@ -7,8 +7,8 @@ namespace OnlineStore.Server.Services.User
     {
         Task<LoginResponse?> Authenticate(UserCredentialsRequest loginRequest);
         Task<bool> RegisterManager(UserCredentialsRequest registerRequest);
-        Task<bool> UpdateUser(string username, UserRequest userRequest);
-        Task<bool> DeleteUser(string name);
-        Task<ResponseList<UserResponse>> GetPageOfUsersInfo(int pageNumber, int pageSize);
+        Task<bool> Update(string username, UserRequest userRequest);
+        Task<bool> Delete(string username);
+        Task<ResponseList<UserResponse>> GetPage(int pageNumber, int pageSize);
     }
 }

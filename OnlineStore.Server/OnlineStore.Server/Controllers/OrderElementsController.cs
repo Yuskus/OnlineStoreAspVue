@@ -13,25 +13,8 @@ namespace OnlineStore.Server.Controllers
         private readonly ILogger<OrderElementsController> _logger = logger;
 
         [Authorize]
-        [HttpGet(template: "getbyorderid/{id}")]
-        public async Task<ActionResult<IEnumerable<OrderElementResponse>>> GetOrderElementsByOrderId(Guid id)
-        {
-            try
-            {
-                IEnumerable<OrderElementResponse> result = await _orderElementService.GetAllByOrderId(id);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetOrderElementById.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize]
         [HttpPost(template: "add")]
-        public async Task<ActionResult<Guid>> CreateOrderElement([FromBody] OrderElementRequest orderElement)
+        public async Task<ActionResult<Guid>> Create([FromBody] OrderElementRequest orderElement)
         {
             try
             {
@@ -41,14 +24,14 @@ namespace OnlineStore.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при запросе CreateOrderElement.");
+                _logger.LogError(ex, "Ошибка при запросе Create.");
                 return StatusCode(500);
             }
         }
 
         [Authorize]
         [HttpPut(template: "update/{id}")]
-        public async Task<ActionResult> UpdateOrderElement(Guid id, [FromBody] OrderElementRequest orderElement)
+        public async Task<ActionResult> Update(Guid id, [FromBody] OrderElementRequest orderElement)
         {
             try
             {
@@ -58,14 +41,14 @@ namespace OnlineStore.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при запросе UpdateOrderElement.");
+                _logger.LogError(ex, "Ошибка при запросе Update.");
                 return StatusCode(500);
             }
         }
 
         [Authorize]
         [HttpDelete(template: "delete/{id}")]
-        public async Task<ActionResult> DeleteOrderElement(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             try
             {
@@ -75,7 +58,24 @@ namespace OnlineStore.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при запросе DeleteOrderElement.");
+                _logger.LogError(ex, "Ошибка при запросе Delete.");
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpGet(template: "getbyorderid/{id}")]
+        public async Task<ActionResult<IEnumerable<OrderElementResponse>>> GetAllByOrderId(Guid id)
+        {
+            try
+            {
+                IEnumerable<OrderElementResponse> result = await _orderElementService.GetAllByOrderId(id);
+                if (result is null) return BadRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при запросе GetAllByOrderId.");
                 return StatusCode(500);
             }
         }

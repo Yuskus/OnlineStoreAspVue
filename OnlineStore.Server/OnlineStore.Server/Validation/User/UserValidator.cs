@@ -1,7 +1,15 @@
-﻿namespace OnlineStore.Server.Validation.User
+﻿using OnlineStore.Server.DTO.User;
+
+namespace OnlineStore.Server.Validation.User
 {
     public class UserValidator
     {
+        public static bool CheckCredentials(UserCredentialsRequest request)
+        {
+            return CheckUsername(request.Username)
+                && CheckPassword(request.Password);
+        }
+
         public static bool CheckUsername(string? name)
         {
             if (string.IsNullOrWhiteSpace(name)) return false;

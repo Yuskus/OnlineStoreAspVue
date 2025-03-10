@@ -17,23 +17,32 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
         }
 
         [Fact]
-        public async Task CreateCustomer() // isolated
+        public async Task CreateCustomer()
         {
             // Arrange
             var repository = new CustomerRepository(_context);
 
-            var customers = new[]
+            var baseCustomerRequest = new CustomerBaseRequest()
             {
-                new CustomerBaseRequest() { Name = "Test1", Code = "0001-2000", Address = "some address 1" },
-                new CustomerRequest() { Name = "Test2", Code = "0002-2000", Address = null, Discount = 5 }
+                Name = "Test1",
+                Code = "0001-2000",
+                Address = "some address 1"
+            };
+
+            var usualCustomerRequest = new CustomerRequest()
+            {
+                Name = "Test2",
+                Code = "0002-2000",
+                Address = null,
+                Discount = 5
             };
 
             // Act
-            var test1 = await repository.Create(customers[0]); // first customer
-            var test2 = await repository.Create(customers[1]); // second customer
+            var test1 = await repository.Create(baseCustomerRequest); // first customer
+            var test2 = await repository.Create(usualCustomerRequest); // second customer
 
-            var test3 = await repository.Create(customers[0]); // equals test1
-            var test4 = await repository.Create(customers[1]); // equals test2
+            var test3 = await repository.Create(baseCustomerRequest); // equals test1
+            var test4 = await repository.Create(usualCustomerRequest); // equals test2
 
             // Assert
             Assert.NotNull(test1);
@@ -54,7 +63,7 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
         }
 
         [Fact]
-        public async Task UpdateCustomer() // isolated
+        public async Task UpdateCustomer()
         {
             // Arrange
             var repository = new CustomerRepository(_context);
@@ -62,51 +71,37 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
             var newCustomer = new CustomerRequest()
             {
                 Name = "Test4",
-                Code = "0004-2005",
-                Address = null,
-                Discount = _fixture.CustomersTotalCount - 1 // save serial number the same for other tests
+                Code = "0004-2005"
             };
 
             // Act
             var updateCustomer_Success = await repository.Update(_fixture.CustomerId_ForUpdate, newCustomer);
-            var updateCustomer_Fail = await repository.Update(_fixture.CustomerId_Unexist, newCustomer);
+            var updateCustomer_Fail = await repository.Update(_fixture.CustomerId_Unexists, newCustomer);
 
             // Assert
-            Assert.NotEqual(_fixture.CustomerId_ForUpdate, Guid.Empty);
-            Assert.NotEqual(_fixture.CustomerId_Unexist, Guid.Empty);
-
             Assert.True(updateCustomer_Success);
             Assert.False(updateCustomer_Fail);
         }
 
         [Fact]
-        public async Task GetCustomerByCode() // isolated
+        public async Task GetCustomerByCriteria()
         {
             // Arrange
             var repository = new CustomerRepository(_context);
 
             // Act
             var getByCode_Fail = await repository.GetOneByCriteria(new() { Code = _fixture.CustomerCode_Unexists });
-            var getByCode_Seccess = await repository.GetOneByCriteria(new() { Code = _fixture.CustomerCode_ForGetByCode });
+            var getByCode_Success = await repository.GetOneByCriteria(new() { Code = _fixture.CustomerCode_ForGetByCode });
+
+            var getById_Fail = await repository.GetOneByCriteria(new() { Id = _fixture.CustomerId_Unexists });
+            var getById_Success = await repository.GetOneByCriteria(new() { Id = _fixture.CustomerId_ForGetById });
 
             // Assert
             Assert.Null(getByCode_Fail);
 
-            Assert.NotNull(getByCode_Seccess);
-            Assert.NotEqual(getByCode_Seccess.Id, Guid.Empty);
-        }
+            Assert.NotNull(getByCode_Success);
+            Assert.NotEqual(getByCode_Success.Id, Guid.Empty);
 
-        [Fact]
-        public async Task GetCustomerById() // isolated
-        {
-            // Arrange
-            var repository = new CustomerRepository(_context);
-
-            // Act
-            var getById_Fail = await repository.GetOneByCriteria(new() { Id = _fixture.CustomerId_Unexist });
-            var getById_Success = await repository.GetOneByCriteria(new() { Id = _fixture.CustomerId_ForGetById });
-
-            // Assert
             Assert.Null(getById_Fail);
 
             Assert.NotNull(getById_Success);
@@ -114,7 +109,7 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
         }
 
         [Fact]
-        public async Task GetPageOfCustomers() // isolated
+        public async Task GetPageOfCustomers()
         {
             // Arrange
             var repository = new CustomerRepository(_context);

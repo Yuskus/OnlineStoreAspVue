@@ -1,5 +1,6 @@
 ﻿using OnlineStore.Server.DTO.Item;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace OnlineStore.Server.Validation.Item
 {
@@ -28,12 +29,24 @@ namespace OnlineStore.Server.Validation.Item
 
         public static bool CheckName(string name)
         {
-            return !string.IsNullOrWhiteSpace(name) && name.Length < 256;
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                int length = name.Trim().Length;
+                return length > 0 && length < 256;
+            }
+
+            return false;
         }
 
         public static bool CheckCategory(string? category)
         {
-            return category is null || category.Length < 256;
+            if (category is not null)
+            {
+                int length = category.Trim().Length;
+                return length > 0 && length < 256;
+            }
+
+            return true;
         }
 
         public static bool CheckCode(string code) //XX-XXXX-YYXX

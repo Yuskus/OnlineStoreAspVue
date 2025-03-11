@@ -9,6 +9,7 @@ namespace OnlineStore.Server.Validation.Order
         {
             return criteria.Id != Guid.Empty
                 && criteria.CustomerId != Guid.Empty
+                && CheckOrderNumber(criteria.OrderNumber)
                 && CheckStatus(criteria.OrderStatus);
         }
 
@@ -39,6 +40,11 @@ namespace OnlineStore.Server.Validation.Order
             }
 
             return false;
+        }
+
+        public static bool CheckOrderNumber(int? number)
+        {
+            return number is null || number >= 0;
         }
 
         public static bool CheckPages(int pageNumber, int pageSize)

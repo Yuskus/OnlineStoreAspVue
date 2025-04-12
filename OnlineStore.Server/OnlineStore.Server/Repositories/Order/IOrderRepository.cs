@@ -6,8 +6,8 @@ namespace OnlineStore.Server.Repositories.Order
     public interface IOrderRepository
     {
         Task<Guid?> Create(OrderRequest order);
-        Task<bool> Update(Guid id, OrderRequest order);
-        Task<bool> Delete(Guid id);
+        Task<bool> Update(Guid orderId, OrderRequest order);
+        Task<bool> Delete(Guid orderId);
         Task<ResponseList<OrderResponse>> GetAll();
         Task<ResponseList<OrderResponse>> GetAllByCriteria(OrderFilterCriteria criteria);
         Task<OrderResponse?> GetOneByCriteria(OrderFilterCriteria criteria);

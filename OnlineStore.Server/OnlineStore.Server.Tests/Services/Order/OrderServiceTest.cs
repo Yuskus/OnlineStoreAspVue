@@ -80,9 +80,9 @@ namespace OnlineStore.Server.Tests.Services.Order
             var request_success_3 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(10).ToString(), OrderStatus = "new" }; //yes, yes, yes, yes
 
             //Act
-            var update_success_1 = await service.Update(_fixture.CustomerId_Exists, request_success_1);
-            var update_success_2 = await service.Update(_fixture.CustomerId_Exists, request_success_2);
-            var update_success_3 = await service.Update(_fixture.CustomerId_Exists, request_success_3);
+            var update_success_1 = await service.Update(_fixture.OrderId_Exists, request_success_1);
+            var update_success_2 = await service.Update(_fixture.OrderId_Exists, request_success_2);
+            var update_success_3 = await service.Update(_fixture.OrderId_Exists, request_success_3);
 
             //Assert
             Assert.True(update_success_1);

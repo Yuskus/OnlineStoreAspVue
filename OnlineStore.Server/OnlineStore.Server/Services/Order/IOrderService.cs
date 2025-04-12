@@ -6,8 +6,8 @@ namespace OnlineStore.Server.Services.Order
     public interface IOrderService
     {
         Task<Guid?> Create(OrderRequest order);
-        Task<bool> Update(Guid id, OrderRequest order);
-        Task<bool> Delete(Guid id);
+        Task<bool> Update(Guid orderId, OrderRequest order);
+        Task<bool> Delete(Guid orderId);
         Task<bool> PlaceAnOrder(Guid orderId);
         Task<OrderResponse?> GetBasketOrder(Guid customerId);
         Task<ResponseList<OrderResponse>> GetPage(int pageNumber, int pageSize);

@@ -26,9 +26,9 @@ namespace OnlineStore.Server.Repositories.Order
             return orderEntity.Id;
         }
 
-        public async Task<bool> Update(Guid id, OrderRequest order)
+        public async Task<bool> Update(Guid orderId, OrderRequest order)
         {
-            if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == id) is Entity.Order orderEntity)
+            if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId) is Entity.Order orderEntity)
             {
                 if (await _context.Customers.AnyAsync(x => x.Id == order.CustomerId))
                 {
@@ -42,9 +42,9 @@ namespace OnlineStore.Server.Repositories.Order
             return false;
         }
 
-        public async Task<bool> Delete(Guid id)
+        public async Task<bool> Delete(Guid orderId)
         {
-            if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == id) is Entity.Order orderEntity)
+            if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId) is Entity.Order orderEntity)
             {
                 _context.Orders.Remove(orderEntity);
                 await _context.SaveChangesAsync();

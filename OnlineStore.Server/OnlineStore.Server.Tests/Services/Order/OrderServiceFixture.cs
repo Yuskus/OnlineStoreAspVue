@@ -1,6 +1,5 @@
 ﻿using Moq;
 using OnlineStore.Server.DTO.Common;
-using OnlineStore.Server.DTO.Item;
 using OnlineStore.Server.DTO.Order;
 using OnlineStore.Server.Repositories.Order;
 
@@ -25,11 +24,9 @@ namespace OnlineStore.Server.Tests.Services.Order
 
             //update
 
-            mockRepository.Setup(x => x.Update(CustomerId_Exists, It.IsAny<OrderRequest>())).ReturnsAsync(true);
+            mockRepository.Setup(x => x.Update(OrderId_Exists, It.IsAny<OrderRequest>())).ReturnsAsync(true);
 
             mockRepository.Setup(x => x.Update(Guid_Unexists, It.IsAny<OrderRequest>())).ReturnsAsync(false);
-
-            mockRepository.Setup(x => x.Update(OrderId_Exists, It.IsAny<OrderRequest>())).ReturnsAsync(true);
 
             //delete
 

@@ -23,26 +23,26 @@ namespace OnlineStore.Server.Services.Order
             return null;
         }
 
-        public async Task<bool> Update(Guid id, OrderRequest order)
+        public async Task<bool> Update(Guid orderId, OrderRequest order)
         {
-            bool isValid = OrderValidator.CheckGuid(id)
+            bool isValid = OrderValidator.CheckGuid(orderId)
                         && OrderValidator.CheckRequest(order);
 
             if (isValid)
             {
-                return await _orderRepository.Update(id, order);
+                return await _orderRepository.Update(orderId, order);
             }
 
             return false;
         }
 
-        public async Task<bool> Delete(Guid id)
+        public async Task<bool> Delete(Guid orderId)
         {
-            bool isValid = OrderValidator.CheckGuid(id);
+            bool isValid = OrderValidator.CheckGuid(orderId);
 
             if (isValid)
             {
-                return await _orderRepository.Delete(id);
+                return await _orderRepository.Delete(orderId);
             }
 
             return false;

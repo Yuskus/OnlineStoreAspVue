@@ -31,7 +31,7 @@ namespace OnlineStore.Server.Controllers
 
         [Authorize]
         [HttpPut(template: "update/{id}")]
-        public async Task<ActionResult> Update(Guid id, [FromBody] OrderElementRequest orderElement)
+        public async Task<ActionResult> Update(Guid id, [FromBody] UpdateOrderElementRequest orderElement)
         {
             try
             {

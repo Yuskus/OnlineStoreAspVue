@@ -23,11 +23,9 @@ namespace OnlineStore.Server.Services.OrderElement
             return null;
         }
 
-        public async Task<bool> Update(Guid id, OrderElementRequest orderElement)
+        public async Task<bool> Update(Guid id, UpdateOrderElementRequest orderElement)
         {
             bool isValid = OrderElementValidator.CheckGuid(id)
-                        && OrderElementValidator.CheckGuid(orderElement.OrderId)
-                        && OrderElementValidator.CheckGuid(orderElement.ItemId)
                         && OrderElementValidator.CheckCount(orderElement.ItemsCount)
                         && OrderElementValidator.CheckPrice(orderElement.ItemPrice);
 

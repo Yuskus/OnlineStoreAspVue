@@ -31,10 +31,8 @@ namespace OnlineStore.Server.Mapping.OrderElement
             };
         }
 
-        public static void UpdateInDb(this Entity.OrderElement orderElementEntity, OrderElementRequest orderElement)
+        public static void UpdateInDb(this Entity.OrderElement orderElementEntity, UpdateOrderElementRequest orderElement)
         {
-            orderElementEntity.OrderId = orderElement.OrderId;
-            orderElementEntity.ItemId = orderElement.ItemId;
             orderElementEntity.ItemsCount = orderElement.ItemsCount;
             orderElementEntity.ItemPrice = orderElement.ItemPrice;
         }

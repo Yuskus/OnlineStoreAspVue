@@ -16,7 +16,8 @@ namespace OnlineStore.Server.Repositories.OrderElement
             if (await _context.Orders.AnyAsync(x => x.Id == orderElement.OrderId) == false) return null;
             if (await _context.Items.AnyAsync(x => x.Id == orderElement.ItemId) == false) return null;
 
-            Entity.OrderElement? orderElementEntity = await _context.OrderElements.FirstOrDefaultAsync(x => x.OrderId == orderElement.OrderId && x.ItemId == orderElement.ItemId);
+            Entity.OrderElement? orderElementEntity = await _context.OrderElements.FirstOrDefaultAsync(x => x.OrderId == orderElement.OrderId 
+                                                                                                         && x.ItemId == orderElement.ItemId);
             
             if (orderElementEntity is not null)
             {
@@ -33,19 +34,17 @@ namespace OnlineStore.Server.Repositories.OrderElement
             return orderElementEntity.Id;
         }
 
-        public async Task<bool> Update(Guid id, OrderElementRequest orderElement)
+        public async Task<bool> Update(Guid id, UpdateOrderElementRequest orderElement)
         {
-            if (await _context.Orders.AnyAsync(x => x.Id == orderElement.OrderId) == false) return false;
-            if (await _context.Items.AnyAsync(x => x.Id == orderElement.ItemId) == false) return false;
+            if (await _context.OrderElements.FirstOrDefaultAsync(x => x.Id == id) is Entity.OrderElement orderElementEntity)
+            {
+                orderElementEntity.UpdateInDb(orderElement);
+                await _context.SaveChangesAsync();
 
-            Entity.OrderElement? orderElementEntity = await _context.OrderElements.FirstOrDefaultAsync(x => x.Id == id);
+                return true;
+            }
 
-            if (orderElementEntity is null) return false;
-
-            orderElementEntity.UpdateInDb(orderElement);
-            await _context.SaveChangesAsync();
-
-            return true;
+            return false;
         }
 
         public async Task<bool> Delete(Guid id)
@@ -62,12 +61,10 @@ namespace OnlineStore.Server.Repositories.OrderElement
 
         public async Task<IEnumerable<OrderElementResponse>> GetAllByOrderId(Guid id)
         {
-            List<OrderElementResponse> result = await _context.OrderElements.Where(x => x.OrderId == id)
-                                                                            .Include(x => x.Item)
-                                                                            .Select(x => x.MapFromDb())
-                                                                            .ToListAsync();
-
-            return result ?? [];
+            return await _context.OrderElements.Where(x => x.OrderId == id)
+                                               .Include(x => x.Item)
+                                               .Select(x => x.MapFromDb())
+                                               .ToListAsync();
         }
     }
 }

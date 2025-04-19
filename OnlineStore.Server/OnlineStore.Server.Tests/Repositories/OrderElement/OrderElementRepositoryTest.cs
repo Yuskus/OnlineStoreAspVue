@@ -91,59 +91,19 @@ namespace OnlineStore.Server.Tests.Repositories.OrderElement
             // Arrange
             var repository = new OrderElementRepository(_context);
 
-            var request_Fail_1 = new OrderElementRequest
-            {
-                OrderId = _fixture.OrderId_SampleB,
-                ItemId = _fixture.Guid_Unexists,
-                ItemPrice = 100,
-                ItemsCount = 1
-            };
-
-            var request_Fail_2 = new OrderElementRequest
-            {
-                OrderId = _fixture.Guid_Unexists,
-                ItemId = _fixture.ItemId_SampleA,
-                ItemPrice = 100,
-                ItemsCount = 1
-            };
-
-            var request_Fail_3 = new OrderElementRequest
-            {
-                OrderId = _fixture.Guid_Unexists,
-                ItemId = _fixture.Guid_Unexists,
-                ItemPrice = 100,
-                ItemsCount = 1
-            };
-
-            var request_Success = new OrderElementRequest
-            {
-                OrderId = _fixture.OrderId_SampleA,
-                ItemId = _fixture.ItemId_SampleA,
-                ItemPrice = 100,
-                ItemsCount = 1
-            };
+            var request_success = new UpdateOrderElementRequest { ItemPrice = 100, ItemsCount = 1 };
 
             // Act
-            var Update_Fail_1 = await repository.Update(_fixture.Guid_Unexists, request_Fail_1);
-            var Update_Fail_2 = await repository.Update(_fixture.OrderElement_ToUpdate, request_Fail_1);
+            var update_fail_1 = await repository.Update(_fixture.Guid_Unexists, request_success);
+            var update_fail_2 = await repository.Update(Guid.Empty, request_success);
 
-            var Update_Fail_3 = await repository.Update(_fixture.Guid_Unexists, request_Fail_2);
-            var Update_Fail_4 = await repository.Update(_fixture.OrderElement_ToUpdate, request_Fail_2);
-
-            var Update_Fail_5 = await repository.Update(_fixture.Guid_Unexists, request_Fail_3);
-            var Update_Fail_6 = await repository.Update(_fixture.OrderElement_ToUpdate, request_Fail_3);
-
-            var Update_Success = await repository.Update(_fixture.OrderElement_ToUpdate, request_Success);
+            var update_success = await repository.Update(_fixture.OrderElement_ToUpdate, request_success);
 
             // Assert
-            Assert.False(Update_Fail_1);
-            Assert.False(Update_Fail_2);
-            Assert.False(Update_Fail_3);
-            Assert.False(Update_Fail_4);
-            Assert.False(Update_Fail_5);
-            Assert.False(Update_Fail_6);
+            Assert.False(update_fail_1);
+            Assert.False(update_fail_2);
 
-            Assert.True(Update_Success);
+            Assert.True(update_success);
         }
 
         [Fact]
@@ -153,15 +113,18 @@ namespace OnlineStore.Server.Tests.Repositories.OrderElement
             var repository = new OrderElementRepository(_context);
 
             // Act
-            var Delete_Fail_1 = await repository.Delete(_fixture.Guid_Unexists);
             var Delete_Success = await repository.Delete(_fixture.OrderElement_ToDelete);
-            var Delete_Fail_2 = await repository.Delete(_fixture.OrderElement_ToDelete);
+
+            var Delete_Fail_1 = await repository.Delete(_fixture.OrderElement_ToDelete);
+            var Delete_Fail_2 = await repository.Delete(_fixture.Guid_Unexists);
+            var Delete_Fail_3 = await repository.Delete(Guid.Empty);
 
             // Assert
+            Assert.True(Delete_Success);
+
             Assert.False(Delete_Fail_1);
             Assert.False(Delete_Fail_2);
-
-            Assert.True(Delete_Success);
+            Assert.False(Delete_Fail_3);
         }
     }
 }

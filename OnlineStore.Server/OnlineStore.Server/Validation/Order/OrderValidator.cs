@@ -3,7 +3,7 @@ using OnlineStore.Server.Validation.Customer;
 
 namespace OnlineStore.Server.Validation.Order
 {
-    public class OrderValidator
+    public static class OrderValidator
     {
         public static bool CheckCriteria(OrderFilterCriteria criteria)
         {

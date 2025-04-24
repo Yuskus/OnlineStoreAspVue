@@ -1,0 +1,34 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using OnlineStore.Server.DTO.User;
+using OnlineStore.Server.Services.User.RegistrationService;
+
+namespace OnlineStore.Server.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class RegistrationController(IRegistrationService<CustomerRegisterRequest> registrationCustomerService, 
+                                        IRegistrationService<UserCredentialsRequest> registrationManagerService) : ControllerBase
+    {
+        private readonly IRegistrationService<CustomerRegisterRequest> _registrationCustomerService = registrationCustomerService;
+        private readonly IRegistrationService<UserCredentialsRequest> _registrationManagerService = registrationManagerService;
+
+        [AllowAnonymous]
+        [HttpPost(template: "registercustomer")]
+        public async Task<ActionResult<bool>> RegisterCustomer([FromBody] CustomerRegisterRequest customerRegisterRequest)
+        {
+            bool result = await _registrationCustomerService.Register(customerRegisterRequest);
+
+            return result ? Ok(result) : BadRequest();
+        }
+
+        [Authorize(Roles = "Manager")]
+        [HttpPost(template: "registermanager")]
+        public async Task<ActionResult<bool>> RegisterManager([FromBody] UserCredentialsRequest managerRegisterRequest)
+        {
+            bool result = await _registrationManagerService.Register(managerRegisterRequest);
+
+            return result ? Ok(result) : BadRequest();
+        }
+    }
+}

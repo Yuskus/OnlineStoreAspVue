@@ -9,14 +9,12 @@ using OnlineStore.Server.Validation.User;
 
 namespace OnlineStore.Server.Services.User.RegistrationService
 {
-    public class CustomerRegistrationService : ICustomerRegistrationService, IDisposable
+    public class CustomerRegistrationService : IRegistrationService<CustomerRegisterRequest>
     {
         private readonly OnlineStoreDbContext _context;
         private readonly UserRepository _userRepository;
         private readonly CustomerRepository _customerRepository;
-        private IDbContextTransaction? _transaction;
         private readonly ILogger<CustomerRegistrationService> _logger;
-        private bool disposed = false;
 
         public CustomerRegistrationService(OnlineStoreDbContext context, IConfiguration configuration, ILogger<CustomerRegistrationService> loggerCustomer, ILogger<UserRepository> loggerUser)
         {
@@ -25,71 +23,48 @@ namespace OnlineStore.Server.Services.User.RegistrationService
             _customerRepository = new CustomerRepository(_context);
             _logger = loggerCustomer;
         }
-        public void Commit()
+
+        public async Task<bool> Register(CustomerRegisterRequest customerRegisterRequest)
         {
-            _transaction?.Commit();
-        }
+            IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
 
-        public void CreateTransaction()
-        {
-            _transaction = _context.Database.BeginTransaction();
-        }
-
-        public async Task<bool> Register(CustomerRegisterRequest registerRequest)
-        {
-            if (!CustomerValidator.CheckRequest(registerRequest.CustomerInfo)) return false;
-
-            registerRequest.Id = await _customerRepository.Create(registerRequest.CustomerInfo);
-
-            bool isValid = CustomerValidator.CheckGuid(registerRequest.Id)
-                        && UserValidator.CheckCredentials(registerRequest);
-
-            if (isValid)
-            {
-                return await _userRepository.Create(registerRequest);
-            }
-
-            return false;
-        }
-
-        public void Rollback()
-        {
-            _transaction?.RollbackAsync();
-            _transaction?.Dispose();
-        }
-
-        public async Task Save()
-        {
             try
             {
-                await _context.SaveChangesAsync();
+                bool isValid = CustomerValidator.CheckRequest(customerRegisterRequest.CustomerInfo);
+
+                if (!isValid) return false;
+
+                customerRegisterRequest.Id = await _customerRepository.Create(customerRegisterRequest.CustomerInfo);
+
+                isValid &= CustomerValidator.CheckGuid(customerRegisterRequest.Id)
+                        && UserValidator.CheckCredentials(customerRegisterRequest);
+
+                if (isValid && await _userRepository.Create(customerRegisterRequest) is bool result)
+                {
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return result;
+                }
+
+                await transaction.RollbackAsync();
+                return false;
             }
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex, "Ошибка во время выполнения транзакции при попытке зарегистрировать пользователя (заказчика), метод Save().");
-                throw new Exception(ex.Message, ex);
+                await transaction.RollbackAsync();
+                return false;
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed) return;
-            if (disposing)
+            catch (Exception ex)
             {
-                _transaction?.Dispose();
+                _logger.LogError(ex, "Ошибка при запросе RegisterCustomer.");
+                await transaction.RollbackAsync();
+                return false;
             }
-            disposed = true;
-        }
-
-        ~CustomerRegistrationService()
-        {
-            Dispose(false);
+            finally
+            {
+                await transaction.DisposeAsync();
+            }
         }
     }
 }

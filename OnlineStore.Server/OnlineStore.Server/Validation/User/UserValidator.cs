@@ -2,7 +2,7 @@
 
 namespace OnlineStore.Server.Validation.User
 {
-    public class UserValidator
+    public static class UserValidator
     {
         public static bool CheckCredentials(UserCredentialsRequest request)
         {

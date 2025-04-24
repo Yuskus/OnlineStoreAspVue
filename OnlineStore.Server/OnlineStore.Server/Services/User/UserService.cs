@@ -63,17 +63,5 @@ namespace OnlineStore.Server.Services.User
 
             return new ResponseList<UserResponse>();
         }
-
-        public async Task<bool> RegisterManager(UserCredentialsRequest registerRequest)
-        {
-            bool isValid = UserValidator.CheckCredentials(registerRequest);
-
-            if (isValid)
-            {
-                return await _userRepository.Create(registerRequest);
-            }
-
-            return false;
-        }
     }
 }

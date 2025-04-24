@@ -8,8 +8,6 @@ namespace OnlineStore.Server.Tests.Services.OrderElement
     [Collection("OrderElementServiceCollection")]
     public class OrderElementServiceTest : IClassFixture<OrderElementServiceFixture>
     {
-        /*Task<IEnumerable<OrderElementResponse>> GetAllByOrderId(Guid id);*/
-
         private readonly OrderElementServiceFixture _fixture;
         private readonly Mock<IOrderElementRepository> _mockRepository;
 

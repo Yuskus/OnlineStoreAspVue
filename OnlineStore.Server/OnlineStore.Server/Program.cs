@@ -15,9 +15,13 @@ using OnlineStore.Server.Services.OrderElement;
 using OnlineStore.Server.Services.User.RegistrationService;
 using OnlineStore.Server.Services.User;
 using OnlineStore.Server.Utilities.Order.Generators;
+using Microsoft.EntityFrameworkCore;
+using OnlineStore.Server.Middleware;
+using OnlineStore.Server.DTO.User;
 
 namespace OnlineStore.Server
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "<ќжидание>")]
     public class Program
     {
         public static void Main(string[] args)
@@ -28,6 +32,8 @@ namespace OnlineStore.Server
                                  .AddEnvironmentVariables();
 
             builder.Services.AddControllers();
+            builder.Services.AddExceptionCatcher();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
@@ -94,8 +100,11 @@ namespace OnlineStore.Server
                 };
             });
 
-            string connectionString = builder.Configuration["DB_CONNECTION_STRING"] ?? throw new Exception("Warning! Connection string was not found!");
-            builder.Services.AddScoped(x => new OnlineStoreDbContext(connectionString));
+            builder.Services.AddDbContext<OnlineStoreDbContext>(options =>
+            {
+                options.UseLazyLoadingProxies().UseNpgsql(builder.Configuration["DB_CONNECTION_STRING"]);
+            },
+            ServiceLifetime.Scoped);
 
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<IItemRepository, ItemRepository>();
@@ -109,13 +118,17 @@ namespace OnlineStore.Server
             builder.Services.AddScoped<IOrderElementService, OrderElementService>();
             builder.Services.AddScoped<IUserService, UserService>();
 
-            builder.Services.AddScoped<ICustomerRegistrationService, CustomerRegistrationService>();
+            builder.Services.AddScoped<IRegistrationService<CustomerRegisterRequest>, CustomerRegistrationService>();
+            builder.Services.AddScoped<IRegistrationService<UserCredentialsRequest>, ManagerRegistrationService>();
+
             builder.Services.AddSingleton<INumberGenerator, OrderNumberGenerator>();
 
             builder.Logging.AddDebug()
                            .AddConsole();
 
             var app = builder.Build();
+
+            app.UseExceptionCatcher();
 
             app.UseSwagger();
             app.UseSwaggerUI(options =>

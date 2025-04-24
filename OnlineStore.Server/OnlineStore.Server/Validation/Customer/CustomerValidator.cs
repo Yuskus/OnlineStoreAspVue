@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace OnlineStore.Server.Validation.Customer
 {
-    public class CustomerValidator
+    public static class CustomerValidator
     {
         public static bool CheckCriteria(CustomerFilterCriteria criteria)
         {

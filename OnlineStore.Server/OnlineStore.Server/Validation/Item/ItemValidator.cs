@@ -1,10 +1,9 @@
 ﻿using OnlineStore.Server.DTO.Item;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace OnlineStore.Server.Validation.Item
 {
-    public class ItemValidator
+    public static class ItemValidator
     {
         public static bool CheckCriteria(ItemFilterCriteria criteria)
         {

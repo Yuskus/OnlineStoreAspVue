@@ -1,6 +1,6 @@
 ﻿namespace OnlineStore.Server.Validation.OrderElement
 {
-    public class OrderElementValidator
+    public static class OrderElementValidator
     {
         public static bool CheckGuid(Guid? guid)
         {

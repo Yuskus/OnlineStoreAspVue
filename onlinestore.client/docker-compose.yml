@@ -1,0 +1,12 @@
+services:
+  onlinestore-client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: onlinestore-client
+    restart: unless-stopped
+    ports:
+      - "5777:80"
+
+networks:
+  storeclient_network:

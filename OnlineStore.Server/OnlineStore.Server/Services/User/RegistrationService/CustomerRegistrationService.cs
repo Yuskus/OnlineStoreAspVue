@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using OnlineStore.Server.Database.Context;
 using OnlineStore.Server.DTO.User;
 using OnlineStore.Server.Repositories.Customer;
 using OnlineStore.Server.Repositories.User;
+using OnlineStore.Server.Utilities.Common.Database;
 using OnlineStore.Server.Validation.Customer;
 using OnlineStore.Server.Validation.User;
 
@@ -11,60 +10,63 @@ namespace OnlineStore.Server.Services.User.RegistrationService
 {
     public class CustomerRegistrationService : IRegistrationService<CustomerRegisterRequest>
     {
-        private readonly OnlineStoreDbContext _context;
-        private readonly UserRepository _userRepository;
-        private readonly CustomerRepository _customerRepository;
+        private readonly ITransactionService _transactionService;
+        private readonly IUserRepository _userRepository;
+        private readonly ICustomerRepository _customerRepository;
         private readonly ILogger<CustomerRegistrationService> _logger;
 
-        public CustomerRegistrationService(OnlineStoreDbContext context, IConfiguration configuration, ILogger<CustomerRegistrationService> loggerCustomer, ILogger<UserRepository> loggerUser)
+        public CustomerRegistrationService(ITransactionService transactionService,
+                                           IUserRepository userRepository,
+                                           ICustomerRepository customerRepository,
+                                           ILogger<CustomerRegistrationService> logger)
         {
-            _context = context;
-            _userRepository = new UserRepository(_context, configuration, loggerUser);
-            _customerRepository = new CustomerRepository(_context);
-            _logger = loggerCustomer;
+            _transactionService = transactionService;
+            _userRepository = userRepository;
+            _customerRepository = customerRepository;
+            _logger = logger;
         }
 
         public async Task<bool> Register(CustomerRegisterRequest customerRegisterRequest)
         {
-            IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
+            await _transactionService.BeginTransactionAsync();
 
             try
             {
-                bool isValid = CustomerValidator.CheckRequest(customerRegisterRequest.CustomerInfo);
+                bool isValidCustomer = CustomerValidator.CheckRequest(customerRegisterRequest.CustomerInfo);
 
-                if (!isValid) return false;
+                if (!isValidCustomer) return false;
 
                 customerRegisterRequest.Id = await _customerRepository.Create(customerRegisterRequest.CustomerInfo);
 
-                isValid &= CustomerValidator.CheckGuid(customerRegisterRequest.Id)
-                        && UserValidator.CheckCredentials(customerRegisterRequest);
+                bool isValidUser = CustomerValidator.CheckGuid(customerRegisterRequest.Id)
+                                && UserValidator.CheckCredentials(customerRegisterRequest);
 
-                if (isValid && await _userRepository.Create(customerRegisterRequest) is bool result)
+                if (isValidUser)
                 {
-                    await _context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                    bool result = await _userRepository.Create(customerRegisterRequest);
+
+                    await _transactionService.SaveChangesAsync();
+                    await _transactionService.CommitAsync();
+
                     return result;
                 }
-
-                await transaction.RollbackAsync();
-                return false;
             }
             catch (DbUpdateException ex)
             {
+                await _transactionService.RollbackAsync();
                 _logger.LogError(ex, "Ошибка во время выполнения транзакции при попытке зарегистрировать пользователя (заказчика), метод Save().");
-                await transaction.RollbackAsync();
-                return false;
             }
             catch (Exception ex)
             {
+                await _transactionService.RollbackAsync();
                 _logger.LogError(ex, "Ошибка при запросе RegisterCustomer.");
-                await transaction.RollbackAsync();
-                return false;
             }
             finally
             {
-                await transaction.DisposeAsync();
+                await _transactionService.DisposeAsync();
             }
+
+            return false;
         }
     }
 }

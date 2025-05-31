@@ -18,6 +18,7 @@ using OnlineStore.Server.Utilities.Order.Generators;
 using Microsoft.EntityFrameworkCore;
 using OnlineStore.Server.Middleware;
 using OnlineStore.Server.DTO.User;
+using OnlineStore.Server.Utilities.Common.Database;
 
 namespace OnlineStore.Server
 {
@@ -122,6 +123,7 @@ namespace OnlineStore.Server
             builder.Services.AddScoped<IRegistrationService<UserCredentialsRequest>, ManagerRegistrationService>();
 
             builder.Services.AddSingleton<INumberGenerator, OrderNumberGenerator>();
+            builder.Services.AddScoped<ITransactionService, TransactionService>();
 
             builder.Logging.AddDebug()
                            .AddConsole();

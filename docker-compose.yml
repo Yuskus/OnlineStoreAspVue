@@ -17,7 +17,7 @@ services:
       - store_network
 
   db_postgres:
-    image: elestio/postgres:${SOFTWARE_VERSION_TAG}
+    image: elestio/postgres:16
     container_name: db_postgres
     restart: always
     env_file:

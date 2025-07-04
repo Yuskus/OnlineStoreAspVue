@@ -24,29 +24,16 @@ if not exist "%directory%\%frontend%" (
 
 cd %backend%
 
-dotnet --version >nul 2>&1
-if %errorlevel% == 0 (
-    dotnet restore
-    dotnet build
-)
-
 docker-compose down
-docker-compose build --no-cache
+docker-compose build
 docker-compose up -d
 
 cd ..
 
 cd %frontend%
 
-set "output="
-for /f "delims=" %%i in ('npm install 2^>^&1') do (
-    set "output=!output!%%i"
-)
-
-echo !output!
-
 docker-compose down
-docker-compose build --no-cache
+docker-compose build
 docker-compose up -d
 
 endlocal

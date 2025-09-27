@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+ï»¿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OnlineStore.Server.Authorization.Utilities;
@@ -22,7 +22,6 @@ using OnlineStore.Server.Utilities.Common.Database;
 
 namespace OnlineStore.Server
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "<Îæèäàíèå>")]
     public class Program
     {
         public static void Main(string[] args)
@@ -103,7 +102,9 @@ namespace OnlineStore.Server
 
             builder.Services.AddDbContext<OnlineStoreDbContext>(options =>
             {
-                options.UseLazyLoadingProxies().UseNpgsql(builder.Configuration["DB_CONNECTION_STRING"]);
+                options.UseLazyLoadingProxies().UseNpgsql(
+                    Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ??
+                    builder.Configuration["DB_CONNECTION_STRING"]);
             },
             ServiceLifetime.Scoped);
 
@@ -122,7 +123,7 @@ namespace OnlineStore.Server
             builder.Services.AddScoped<IRegistrationService<CustomerRegisterRequest>, CustomerRegistrationService>();
             builder.Services.AddScoped<IRegistrationService<UserCredentialsRequest>, ManagerRegistrationService>();
 
-            builder.Services.AddSingleton<INumberGenerator, OrderNumberGenerator>();
+            builder.Services.AddScoped<INumberGenerator, OrderNumberGenerator>();
             builder.Services.AddScoped<ITransactionService, TransactionService>();
 
             builder.Logging.AddDebug()

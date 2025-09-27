@@ -9,7 +9,7 @@ namespace OnlineStore.Server.Repositories.User
         Task<bool> CreateCustomerIfNotExists(CustomerRegisterRequest registerRequest);
         Task<bool> CreateUserIfNotExists(UserCredentialsRequest registerRequest);
         Task<bool> Update(string username, UserRequest userRequest);
-        Task<bool> Delete(string name);
+        Task<bool> Delete(string username);
         Task<ResponseList<UserResponse>> GetAll();
     }
 }

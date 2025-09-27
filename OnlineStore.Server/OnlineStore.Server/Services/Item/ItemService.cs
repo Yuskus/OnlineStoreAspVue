@@ -10,26 +10,26 @@ namespace OnlineStore.Server.Services.Item
     {
         private readonly IItemRepository _itemRepository = itemRepository;
 
-        public async Task<Guid?> Create(ItemRequest item)
+        public async Task<Guid?> Create(ItemRequest request)
         {
-            bool isValid = ItemValidator.CheckRequest(item);
+            bool isValid = ItemValidator.CheckRequest(request);
 
             if (isValid)
             {
-                return await _itemRepository.Create(item);
+                return await _itemRepository.Create(request);
             }
             
             return null;
         }
 
-        public async Task<bool> Update(Guid id, ItemRequest item)
+        public async Task<bool> Update(Guid id, ItemRequest request)
         {
             bool isValid = ItemValidator.CheckGuid(id)
-                        && ItemValidator.CheckRequest(item);
+                        && ItemValidator.CheckRequest(request);
 
             if (isValid)
             {
-                return await _itemRepository.Update(id, item);
+                return await _itemRepository.Update(id, request);
             }
 
             return false;
@@ -59,18 +59,16 @@ namespace OnlineStore.Server.Services.Item
             return null;
         }
 
-        public async Task<ResponseList<ItemResponse>> GetPageByCriteria(ItemFilterCriteria criteria, int pageNumber, int pageSize)
+        public async Task<ResponseList<ItemResponse>> GetPageByCriteria(ItemFilterCriteria criteria, int page, int pageSize)
         {
             bool isValid = ItemValidator.CheckCriteria(criteria)
-                        && ItemValidator.CheckPages(pageNumber, pageSize);
+                        && ItemValidator.CheckPages(page, pageSize);
 
             if (isValid)
             {
                 ResponseList<ItemResponse> response = await _itemRepository.GetAllByCriteria(criteria);
 
-                response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
-                                                       .Take(pageSize)
-                                                       .ToList();
+                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
 
                 return response;
             }
@@ -78,17 +76,15 @@ namespace OnlineStore.Server.Services.Item
             return new ResponseList<ItemResponse>();
         }
 
-        public async Task<ResponseList<ItemResponse>> GetPage(int pageNumber, int pageSize)
+        public async Task<ResponseList<ItemResponse>> GetPage(int page, int pageSize)
         {
-            bool isValid = ItemValidator.CheckPages(pageNumber, pageSize);
+            bool isValid = ItemValidator.CheckPages(page, pageSize);
 
             if (isValid)
             {
                 ResponseList<ItemResponse> response = await _itemRepository.GetAll();
 
-                response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
-                                                       .Take(pageSize)
-                                                       .ToList();
+                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
 
                 return response;
             }

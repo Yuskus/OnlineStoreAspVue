@@ -1,7 +1,10 @@
-﻿namespace OnlineStore.Server.Services.User.RegistrationService
+﻿using OnlineStore.Server.DTO.User;
+
+namespace OnlineStore.Server.Services.User.RegistrationService
 {
-    public interface IRegistrationService<in T>
+    public interface IRegistrationService
     {
-        Task<bool> Register(T request);
+        Task<bool> Register(CustomerRegisterRequest request);
+        Task<bool> Register(UserCredentialsRequest request);
     }
 }

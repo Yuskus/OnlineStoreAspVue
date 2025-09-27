@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OnlineStore.Server.Authorization.Utilities;
 using OnlineStore.Server.Database.Context;
+using OnlineStore.Server.DTO.User;
+using OnlineStore.Server.Middleware;
 using OnlineStore.Server.Repositories.Customer;
 using OnlineStore.Server.Repositories.Item;
 using OnlineStore.Server.Repositories.Order;
@@ -12,19 +15,16 @@ using OnlineStore.Server.Services.Customer;
 using OnlineStore.Server.Services.Item;
 using OnlineStore.Server.Services.Order;
 using OnlineStore.Server.Services.OrderElement;
-using OnlineStore.Server.Services.User.RegistrationService;
 using OnlineStore.Server.Services.User;
-using OnlineStore.Server.Utilities.Order.Generators;
-using Microsoft.EntityFrameworkCore;
-using OnlineStore.Server.Middleware;
-using OnlineStore.Server.DTO.User;
+using OnlineStore.Server.Services.User.RegistrationService;
 using OnlineStore.Server.Utilities.Common.Database;
+using OnlineStore.Server.Utilities.Order.Generators;
 
 namespace OnlineStore.Server
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -120,8 +120,7 @@ namespace OnlineStore.Server
             builder.Services.AddScoped<IOrderElementService, OrderElementService>();
             builder.Services.AddScoped<IUserService, UserService>();
 
-            builder.Services.AddScoped<IRegistrationService<CustomerRegisterRequest>, CustomerRegistrationService>();
-            builder.Services.AddScoped<IRegistrationService<UserCredentialsRequest>, ManagerRegistrationService>();
+            builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 
             builder.Services.AddScoped<INumberGenerator, OrderNumberGenerator>();
             builder.Services.AddScoped<ITransactionService, TransactionService>();
@@ -130,6 +129,12 @@ namespace OnlineStore.Server
                            .AddConsole();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                using var context = scope.ServiceProvider.GetRequiredService<OnlineStoreDbContext>();
+                await context.Database.MigrateAsync();
+            }
 
             app.UseExceptionCatcher();
 

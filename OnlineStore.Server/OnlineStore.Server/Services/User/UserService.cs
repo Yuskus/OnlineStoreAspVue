@@ -9,26 +9,26 @@ namespace OnlineStore.Server.Services.User
     {
         private readonly IUserRepository _userRepository = userRepository;
 
-        public async Task<LoginResponse?> Authenticate(UserCredentialsRequest loginRequest)
+        public async Task<LoginResponse?> Authenticate(UserCredentialsRequest request)
         {
-            bool isValid = UserValidator.CheckCredentials(loginRequest);
+            bool isValid = UserValidator.CheckCredentials(request);
 
             if (isValid)
             {
-                return await _userRepository.Authenticate(loginRequest);
+                return await _userRepository.Authenticate(request);
             }
 
             return null;
         }
 
-        public async Task<bool> Update(string username, UserRequest userRequest)
+        public async Task<bool> Update(string username, UserRequest request)
         {
             bool isValid = UserValidator.CheckUsername(username)
-                        && UserValidator.CheckUsername(userRequest.Username);
+                        && UserValidator.CheckUsername(request.Username);
 
             if (isValid)
             {
-                return await _userRepository.Update(username, userRequest);
+                return await _userRepository.Update(username, request);
             }
 
             return false;
@@ -46,17 +46,15 @@ namespace OnlineStore.Server.Services.User
             return false;
         }
 
-        public async Task<ResponseList<UserResponse>> GetPage(int pageNumber, int pageSize)
+        public async Task<ResponseList<UserResponse>> GetPage(int page, int pageSize)
         {
-            bool isValid = UserValidator.CheckPages(pageNumber, pageSize);
+            bool isValid = UserValidator.CheckPages(page, pageSize);
 
             if (isValid)
             {
                 ResponseList<UserResponse> response = await _userRepository.GetAll();
 
-                response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
-                                                       .Take(pageSize)
-                                                       .ToList();
+                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
 
                 return response;
             }

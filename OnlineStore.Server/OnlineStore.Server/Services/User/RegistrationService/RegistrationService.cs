@@ -8,22 +8,27 @@ using OnlineStore.Server.Validation.User;
 
 namespace OnlineStore.Server.Services.User.RegistrationService
 {
-    public class CustomerRegistrationService : IRegistrationService<CustomerRegisterRequest>
+    public class RegistrationService(
+        ITransactionService transactionService,
+        IUserRepository userRepository,
+        ICustomerRepository customerRepository,
+        ILogger<RegistrationService> logger) : IRegistrationService
     {
-        private readonly ITransactionService _transactionService;
-        private readonly IUserRepository _userRepository;
-        private readonly ICustomerRepository _customerRepository;
-        private readonly ILogger<CustomerRegistrationService> _logger;
+        private readonly ITransactionService _transactionService = transactionService;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly ICustomerRepository _customerRepository = customerRepository;
+        private readonly ILogger<RegistrationService> _logger = logger;
 
-        public CustomerRegistrationService(ITransactionService transactionService,
-                                           IUserRepository userRepository,
-                                           ICustomerRepository customerRepository,
-                                           ILogger<CustomerRegistrationService> logger)
+        public async Task<bool> Register(UserCredentialsRequest request)
         {
-            _transactionService = transactionService;
-            _userRepository = userRepository;
-            _customerRepository = customerRepository;
-            _logger = logger;
+            bool isValid = UserValidator.CheckCredentials(request);
+
+            if (isValid)
+            {
+                return await _userRepository.CreateUserIfNotExists(request);
+            }
+
+            return false;
         }
 
         public async Task<bool> Register(CustomerRegisterRequest request)

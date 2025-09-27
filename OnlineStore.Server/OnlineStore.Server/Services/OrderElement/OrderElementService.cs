@@ -8,30 +8,30 @@ namespace OnlineStore.Server.Services.OrderElement
     {
         private readonly IOrderElementRepository _orderElementRepository = orderElementRepository;
         
-        public async Task<Guid?> Create(OrderElementRequest orderElement)
+        public async Task<Guid?> Create(OrderElementRequest request)
         {
-            bool isValid = OrderElementValidator.CheckGuid(orderElement.OrderId)
-                        && OrderElementValidator.CheckGuid(orderElement.ItemId)
-                        && OrderElementValidator.CheckCount(orderElement.ItemsCount)
-                        && OrderElementValidator.CheckPrice(orderElement.ItemPrice);
+            bool isValid = OrderElementValidator.CheckGuid(request.OrderId)
+                        && OrderElementValidator.CheckGuid(request.ItemId)
+                        && OrderElementValidator.CheckCount(request.ItemsCount)
+                        && OrderElementValidator.CheckPrice(request.ItemPrice);
 
             if (isValid)
             {
-                return await _orderElementRepository.Create(orderElement);
+                return await _orderElementRepository.Create(request);
             }
 
             return null;
         }
 
-        public async Task<bool> Update(Guid id, UpdateOrderElementRequest orderElement)
+        public async Task<bool> Update(Guid id, UpdateOrderElementRequest request)
         {
             bool isValid = OrderElementValidator.CheckGuid(id)
-                        && OrderElementValidator.CheckCount(orderElement.ItemsCount)
-                        && OrderElementValidator.CheckPrice(orderElement.ItemPrice);
+                        && OrderElementValidator.CheckCount(request.ItemsCount)
+                        && OrderElementValidator.CheckPrice(request.ItemPrice);
 
             if (isValid)
             {
-                return await _orderElementRepository.Update(id, orderElement);
+                return await _orderElementRepository.Update(id, request);
             }
 
             return false;

@@ -11,38 +11,38 @@ namespace OnlineStore.Server.Services.Order
     {
         private readonly IOrderRepository _orderRepository = orderRepository;
 
-        public async Task<Guid?> Create(OrderRequest order)
+        public async Task<Guid?> Create(OrderRequest request)
         {
-            bool isValid = OrderValidator.CheckRequest(order);
+            bool isValid = OrderValidator.CheckRequest(request);
 
             if (isValid)
             {
-                return await _orderRepository.Create(order);
+                return await _orderRepository.Create(request);
             }
             
             return null;
         }
 
-        public async Task<bool> Update(Guid orderId, OrderRequest order)
+        public async Task<bool> Update(Guid id, OrderRequest request)
         {
-            bool isValid = OrderValidator.CheckGuid(orderId)
-                        && OrderValidator.CheckRequest(order);
+            bool isValid = OrderValidator.CheckGuid(id)
+                        && OrderValidator.CheckRequest(request);
 
             if (isValid)
             {
-                return await _orderRepository.Update(orderId, order);
+                return await _orderRepository.Update(id, request);
             }
 
             return false;
         }
 
-        public async Task<bool> Delete(Guid orderId)
+        public async Task<bool> Delete(Guid id)
         {
-            bool isValid = OrderValidator.CheckGuid(orderId);
+            bool isValid = OrderValidator.CheckGuid(id);
 
             if (isValid)
             {
-                return await _orderRepository.Delete(orderId);
+                return await _orderRepository.Delete(id);
             }
 
             return false;
@@ -73,11 +73,11 @@ namespace OnlineStore.Server.Services.Order
             return basket;
         }
 
-        public async Task<bool> PlaceAnOrder(Guid orderId)
+        public async Task<bool> PlaceAnOrder(Guid id)
         {
-            if (!OrderValidator.CheckGuid(orderId)) return false;
+            if (!OrderValidator.CheckGuid(id)) return false;
 
-            OrderResponse? basket = await _orderRepository.GetOneByCriteria(new() { Id = orderId, OrderStatus = "basket" });
+            OrderResponse? basket = await _orderRepository.GetOneByCriteria(new() { Id = id, OrderStatus = "basket" });
 
             if (basket is null) return false;
 
@@ -87,17 +87,15 @@ namespace OnlineStore.Server.Services.Order
             return await _orderRepository.Update(basket.Id, updateRequest);
         }
 
-        public async Task<ResponseList<OrderResponse>> GetPage(int pageNumber, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPage(int page, int pageSize)
         {
-            bool isValid = OrderValidator.CheckPages(pageNumber, pageSize);
+            bool isValid = OrderValidator.CheckPages(page, pageSize);
 
             if (isValid)
             {
                 ResponseList<OrderResponse> response = await _orderRepository.GetAll();
 
-                response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
-                                                       .Take(pageSize)
-                                                       .ToList();
+                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
 
                 return response;
             }
@@ -105,18 +103,16 @@ namespace OnlineStore.Server.Services.Order
             return new ResponseList<OrderResponse>();
         }
 
-        public async Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, int pageNumber, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, int page, int pageSize)
         {
             bool isValid = OrderValidator.CheckCriteria(criteria)
-                        && OrderValidator.CheckPages(pageNumber, pageSize);
+                        && OrderValidator.CheckPages(page, pageSize);
 
             if (isValid)
             {
                 ResponseList<OrderResponse> response = await _orderRepository.GetAllByCriteria(criteria);
 
-                response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
-                                                       .Take(pageSize)
-                                                       .ToList();
+                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
 
                 return response;
             }

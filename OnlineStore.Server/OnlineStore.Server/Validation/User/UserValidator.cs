@@ -27,7 +27,7 @@ namespace OnlineStore.Server.Validation.User
 
         public static bool CheckPassword(string? password)
         {
-            return !string.IsNullOrWhiteSpace(password) && password.Length > 6;
+            return !string.IsNullOrWhiteSpace(password) && password.Length > 6 && password.Length < 100;
         }
 
         public static bool CheckPages(int pageNumber, int pageSize)

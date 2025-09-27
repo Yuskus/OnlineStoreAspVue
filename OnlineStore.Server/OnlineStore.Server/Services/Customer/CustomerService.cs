@@ -9,30 +9,28 @@ namespace OnlineStore.Server.Services.Customer
     {
         private readonly ICustomerRepository _customerRepository = customerRepository;
 
-        public async Task<bool> Update(Guid id, CustomerRequest customer)
+        public async Task<bool> Update(Guid id, CustomerRequest request)
         {
             bool isValid = CustomerValidator.CheckGuid(id)
-                        && CustomerValidator.CheckRequest(customer);
+                        && CustomerValidator.CheckRequest(request);
 
             if (isValid)
             {
-                return await _customerRepository.Update(id, customer);
+                return await _customerRepository.Update(id, request);
             }
 
             return false;
         }
 
-        public async Task<ResponseList<CustomerResponse>> GetPage(int pageNumber, int pageSize)
+        public async Task<ResponseList<CustomerResponse>> GetPage(int page, int pageSize)
         {
-            bool isValid = CustomerValidator.CheckPages(pageNumber, pageSize);
+            bool isValid = CustomerValidator.CheckPages(page, pageSize);
 
             if (isValid)
             {
                 var response = await _customerRepository.GetAll();
 
-                response.Responses = response.Responses.Skip((pageNumber - 1) * pageSize)
-                                                       .Take(pageSize)
-                                                       .ToList();
+                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
 
                 return response;
             }

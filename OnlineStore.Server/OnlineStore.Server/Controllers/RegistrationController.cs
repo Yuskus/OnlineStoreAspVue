@@ -7,8 +7,9 @@ namespace OnlineStore.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RegistrationController(IRegistrationService<CustomerRegisterRequest> registrationCustomerService, 
-                                        IRegistrationService<UserCredentialsRequest> registrationManagerService) : ControllerBase
+    public class RegistrationController(
+        IRegistrationService<CustomerRegisterRequest> registrationCustomerService,
+        IRegistrationService<UserCredentialsRequest> registrationManagerService) : ControllerBase
     {
         private readonly IRegistrationService<CustomerRegisterRequest> _registrationCustomerService = registrationCustomerService;
         private readonly IRegistrationService<UserCredentialsRequest> _registrationManagerService = registrationManagerService;
@@ -17,18 +18,22 @@ namespace OnlineStore.Server.Controllers
         [HttpPost(template: "registercustomer")]
         public async Task<ActionResult<bool>> RegisterCustomer([FromBody] CustomerRegisterRequest customerRegisterRequest)
         {
-            bool result = await _registrationCustomerService.Register(customerRegisterRequest);
+            var result = await _registrationCustomerService.Register(customerRegisterRequest);
 
-            return result ? Ok(result) : BadRequest();
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
 
         [Authorize(Roles = "Manager")]
         [HttpPost(template: "registermanager")]
         public async Task<ActionResult<bool>> RegisterManager([FromBody] UserCredentialsRequest managerRegisterRequest)
         {
-            bool result = await _registrationManagerService.Register(managerRegisterRequest);
+            var result = await _registrationManagerService.Register(managerRegisterRequest);
 
-            return result ? Ok(result) : BadRequest();
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
     }
 }

@@ -11,7 +11,22 @@ namespace OnlineStore.Server.Repositories.Customer
     {
         private readonly OnlineStoreDbContext _context = context;
 
-        public async Task<Guid?> Create(CustomerBaseRequest customer)
+        public async Task<Guid?> CreateIfNotExists(CustomerBaseRequest customer)
+        {
+            Entity.Customer? customerEntity = await _context.Customers.FirstOrDefaultAsync(x => x.Code == customer.Code);
+
+            if (customerEntity is null)
+            {
+                customerEntity = customer.MapToDb();
+
+                await _context.Customers.AddAsync(customerEntity);
+                await _context.SaveChangesAsync();
+            }
+
+            return customerEntity.Id;
+        }
+
+        public async Task<Guid?> CreateIfNotExists(CustomerRequest customer)
         {
             Entity.Customer? customerEntity = await _context.Customers.FirstOrDefaultAsync(x => x.Code == customer.Code);
 

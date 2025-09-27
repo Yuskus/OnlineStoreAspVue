@@ -10,6 +10,12 @@ namespace OnlineStore.Server.Validation.User
                 && CheckPassword(request.Password);
         }
 
+        public static bool CheckCredentials(string username, string password)
+        {
+            return CheckUsername(username)
+                && CheckPassword(password);
+        }
+
         public static bool CheckUsername(string? name)
         {
             if (string.IsNullOrWhiteSpace(name)) return false;

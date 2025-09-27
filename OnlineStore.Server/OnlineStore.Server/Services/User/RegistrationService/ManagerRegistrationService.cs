@@ -14,7 +14,7 @@ namespace OnlineStore.Server.Services.User.RegistrationService
 
             if (isValid)
             {
-                return await _userRepository.Create(registerRequest);
+                return await _userRepository.CreateUserIfNotExists(registerRequest);
             }
 
             return false;

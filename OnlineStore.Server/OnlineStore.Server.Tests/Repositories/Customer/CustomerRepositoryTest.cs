@@ -38,11 +38,11 @@ namespace OnlineStore.Server.Tests.Repositories.Customer
             };
 
             // Act
-            var test1 = await repository.Create(baseCustomerRequest); // first customer
-            var test2 = await repository.Create(usualCustomerRequest); // second customer
+            var test1 = await repository.CreateIfNotExists(baseCustomerRequest); // first customer
+            var test2 = await repository.CreateIfNotExists(usualCustomerRequest); // second customer
 
-            var test3 = await repository.Create(baseCustomerRequest); // equals test1
-            var test4 = await repository.Create(usualCustomerRequest); // equals test2
+            var test3 = await repository.CreateIfNotExists(baseCustomerRequest); // equals test1
+            var test4 = await repository.CreateIfNotExists(usualCustomerRequest); // equals test2
 
             // Assert
             Assert.NotNull(test1);

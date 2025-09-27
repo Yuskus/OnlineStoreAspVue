@@ -26,24 +26,25 @@ namespace OnlineStore.Server.Services.User.RegistrationService
             _logger = logger;
         }
 
-        public async Task<bool> Register(CustomerRegisterRequest customerRegisterRequest)
+        public async Task<bool> Register(CustomerRegisterRequest request)
         {
             await _transactionService.BeginTransactionAsync();
 
             try
             {
-                bool isValidCustomer = CustomerValidator.CheckRequest(customerRegisterRequest.CustomerInfo);
+                bool isValidCustomer = CustomerValidator.CheckRequest(request.CustomerInfo);
 
                 if (!isValidCustomer) return false;
 
-                customerRegisterRequest.Id = await _customerRepository.Create(customerRegisterRequest.CustomerInfo);
+                request.Id = await _customerRepository.CreateIfNotExists(request.CustomerInfo);
 
-                bool isValidUser = CustomerValidator.CheckGuid(customerRegisterRequest.Id)
-                                && UserValidator.CheckCredentials(customerRegisterRequest);
+                bool isValidUser =
+                    CustomerValidator.CheckGuid(request.Id) &&
+                    UserValidator.CheckCredentials(request.Username, request.Password);
 
                 if (isValidUser)
                 {
-                    bool result = await _userRepository.Create(customerRegisterRequest);
+                    bool result = await _userRepository.CreateCustomerIfNotExists(request);
 
                     await _transactionService.SaveChangesAsync();
                     await _transactionService.CommitAsync();

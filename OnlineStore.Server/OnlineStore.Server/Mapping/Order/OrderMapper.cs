@@ -12,7 +12,7 @@ namespace OnlineStore.Server.Mapping.Order
                 Id = Guid.NewGuid(),
                 CustomerId = order.CustomerId,
                 OrderDate = DateOnly.Parse(order.OrderDate),
-                ShipmentDate = ParseDateOrNull(order.ShipmentDate),
+                ShipmentDate = DateOnly.TryParse(order.ShipmentDate, out DateOnly date) ? date : null,
                 OrderStatus = order.OrderStatus
             };
         }
@@ -46,14 +46,8 @@ namespace OnlineStore.Server.Mapping.Order
         {
             orderEntity.CustomerId = order.CustomerId;
             orderEntity.OrderDate = DateOnly.Parse(order.OrderDate);
-            orderEntity.ShipmentDate = ParseDateOrNull(order.ShipmentDate);
+            orderEntity.ShipmentDate = DateOnly.TryParse(order.ShipmentDate, out DateOnly date) ? date : null;
             orderEntity.OrderStatus = order.OrderStatus;
-        }
-
-        private static DateOnly? ParseDateOrNull(string? value)
-        {
-            if (value is null) return null;
-            return DateOnly.Parse(value);
         }
     }
 }

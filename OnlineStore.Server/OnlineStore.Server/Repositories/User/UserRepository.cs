@@ -8,7 +8,10 @@ using Entity = OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Repositories.User
 {
-    public class UserRepository(OnlineStoreDbContext context, IConfiguration configuration, ILogger<UserRepository> logger) : IUserRepository
+    public class UserRepository(
+        OnlineStoreDbContext context,
+        IConfiguration configuration,
+        ILogger<UserRepository> logger) : IUserRepository
     {
         private readonly OnlineStoreDbContext _context = context;
         private readonly IConfiguration _configuration = configuration;
@@ -35,7 +38,21 @@ namespace OnlineStore.Server.Repositories.User
             return null;
         }
 
-        public async Task<bool> Create(UserCredentialsRequest registerRequest)
+        public async Task<bool> CreateUserIfNotExists(UserCredentialsRequest registerRequest)
+        {
+            if (await _context.Users.AnyAsync(x => x.Username == registerRequest.Username)) return false;
+
+            (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(registerRequest.Password);
+
+            Entity.User userEntity = registerRequest.MapUserToDb(hash, salt);
+
+            await _context.Users.AddAsync(userEntity);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> CreateCustomerIfNotExists(CustomerRegisterRequest registerRequest)
         {
             if (await _context.Users.AnyAsync(x => x.Username == registerRequest.Username)) return false;
 

@@ -15,36 +15,44 @@ namespace OnlineStore.Server.Controllers
         [HttpPost(template: "add")]
         public async Task<ActionResult<Guid>> Create([FromBody] OrderElementRequest orderElement)
         {
-            Guid? result = await _orderElementService.Create(orderElement);
+            var result = await _orderElementService.Create(orderElement);
 
-            return result is not null ? Ok((Guid)result) : BadRequest();
+            return result is not null
+                ? Ok(result.Value)
+                : BadRequest();
         }
 
         [Authorize]
         [HttpPut(template: "update/{id}")]
         public async Task<ActionResult> Update(Guid id, [FromBody] UpdateOrderElementRequest orderElement)
         {
-            bool result = await _orderElementService.Update(id, orderElement);
+            var result = await _orderElementService.Update(id, orderElement);
 
-            return result ? Ok(result) : BadRequest();
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
 
         [Authorize]
         [HttpDelete(template: "delete/{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {
-            bool result = await _orderElementService.Delete(id);
+            var result = await _orderElementService.Delete(id);
 
-            return result ? Ok(result) : BadRequest();
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
 
         [Authorize]
         [HttpGet(template: "getbyorderid/{id}")]
         public async Task<ActionResult<IEnumerable<OrderElementResponse>>> GetAllByOrderId(Guid id)
         {
-            IEnumerable<OrderElementResponse> result = await _orderElementService.GetAllByOrderId(id);
+            var result = await _orderElementService.GetAllByOrderId(id);
 
-            return result is not null ? Ok(result) : BadRequest();
+            return result is not null
+                ? Ok(result)
+                : BadRequest();
         }
     }
 }

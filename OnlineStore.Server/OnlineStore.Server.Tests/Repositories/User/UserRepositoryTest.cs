@@ -110,8 +110,8 @@ namespace OnlineStore.Server.Tests.Repositories.User
             };
 
             // Act
-            var registerManager_Success = await repository.Create(manager);
-            var registerManager_Fail = await repository.Create(manager);
+            var registerManager_Success = await repository.CreateUserIfNotExists(manager);
+            var registerManager_Fail = await repository.CreateUserIfNotExists(manager);
 
             // Assert
             Assert.True(registerManager_Success);
@@ -136,8 +136,8 @@ namespace OnlineStore.Server.Tests.Repositories.User
             };
 
             // Act
-            var registerCustomer_Success = await repository.Create(customer);
-            var registerCustomer_Fail = await repository.Create(customer);
+            var registerCustomer_Success = await repository.CreateCustomerIfNotExists(customer);
+            var registerCustomer_Fail = await repository.CreateCustomerIfNotExists(customer);
 
             // Assert
             Assert.True(registerCustomer_Success);

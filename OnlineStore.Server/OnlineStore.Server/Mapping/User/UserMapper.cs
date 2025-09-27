@@ -32,7 +32,7 @@ namespace OnlineStore.Server.Mapping.User
                 Username = registerRequest.Username,
                 Password = hash,
                 Salt = salt,
-                Role = 0 //тк Customer
+                Role = (int)UserRole.User
             };
         }
 
@@ -43,29 +43,31 @@ namespace OnlineStore.Server.Mapping.User
                 Username = registerRequest.Username,
                 Password = hash,
                 Salt = salt,
-                Role = 1 //тк Manager
+                Role = (int)UserRole.Manager
             };
         }
 
         public static Entity.User MapUserToDb(this UserCredentialsRequest registerRequest, byte[] hash, byte[] salt)
         {
-            Entity.User user = new()
+            return new()
             {
                 Username = registerRequest.Username,
                 Password = hash,
-                Salt = salt
+                Salt = salt,
+                Role = (int)UserRole.Manager
             };
+        }
 
-            if (registerRequest is CustomerRegisterRequest customerRequest)
+        public static Entity.User MapUserToDb(this CustomerRegisterRequest registerRequest, byte[] hash, byte[] salt)
+        {
+            return new()
             {
-                user.CustomerId = customerRequest.Id;
-            }
-            else
-            {
-                user.Role = (int)UserRole.Manager;
-            }
-
-            return user;
+                Username = registerRequest.Username,
+                Password = hash,
+                Salt = salt,
+                Role = (int)UserRole.User,
+                CustomerId = registerRequest.Id
+            };
         }
 
         public static LoginResponse MapAuthFromDb(this Entity.User userEntity)

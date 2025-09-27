@@ -1,8 +1,7 @@
 ﻿namespace OnlineStore.Server.Database.Entities
 {
-    public class User
+    public class User : BaseEntity
     {
-        public int Id { get; set; }
         public Guid? CustomerId { get; set; }
         public virtual Customer? Customer { get; set; }
         public required string Username { get; set; }

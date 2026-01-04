@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using OnlineStore.Server.Database.Entities;
-using OnlineStore.Server.DTO.Customer;
-using OnlineStore.Server.DTO.User;
-using OnlineStore.Server.Repositories.User;
+using OnlineStore.Server.DTO.Customers;
+using OnlineStore.Server.DTO.Users;
+using OnlineStore.Server.Repositories.Users;
 using OnlineStore.Server.Tests.Common;
 
 namespace OnlineStore.Server.Tests.Repositories.User

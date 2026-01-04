@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Server.DTO.Common;
-using OnlineStore.Server.DTO.Item;
-using OnlineStore.Server.Services.Item;
+using OnlineStore.Server.DTO.Items;
+using OnlineStore.Server.Services.Items;
 using System.Collections.Immutable;
 
 namespace OnlineStore.Server.Controllers

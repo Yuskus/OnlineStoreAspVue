@@ -1,8 +1,11 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using OnlineStore.Server.Database.Entities;
-using OnlineStore.Server.DTO.User;
-using OnlineStore.Server.Repositories.User;
-using OnlineStore.Server.Services.User;
+using OnlineStore.Server.DTO.Users;
+using OnlineStore.Server.Repositories.Customers;
+using OnlineStore.Server.Repositories.Users;
+using OnlineStore.Server.Services.Users;
+using OnlineStore.Server.Utilities.Common.Database;
 
 namespace OnlineStore.Server.Tests.Services.User
 {
@@ -10,19 +13,25 @@ namespace OnlineStore.Server.Tests.Services.User
     public class UserServiceTest : IClassFixture<UserServiceFixture>
     {
         private readonly UserServiceFixture _fixture;
-        private readonly Mock<IUserRepository> _mockRepository;
+        private readonly Mock<IUserRepository> _mockUserRepository;
+        private readonly Mock<ICustomerRepository> _mockCustomerRepository;
 
         public UserServiceTest(UserServiceFixture fixture)
         {
             _fixture = fixture;
-            _mockRepository = _fixture.CreateMockRepository();
+            _mockUserRepository = _fixture.CreateUserMockRepository();
+            _mockCustomerRepository = _fixture.CreateCustomerMockRepository();
         }
 
         [Fact]
         public async Task Auth_Success()
         {
             //Arrange
-            var service = new UserService(_mockRepository.Object);
+            var service = new UserService(
+                _mockUserRepository.Object,
+                _mockCustomerRepository.Object,
+                new Mock<ITransactionService>().Object,
+                new Mock<ILogger<UserService>>().Object);
 
             // exists and ok password
             var request_success_1 = new UserCredentialsRequest { Username = _fixture.Username_Exists[0], Password = "12345678" };
@@ -47,7 +56,11 @@ namespace OnlineStore.Server.Tests.Services.User
         public async Task Auth_Fail()
         {
             //Arrange
-            var service = new UserService(_mockRepository.Object);
+            var service = new UserService(
+                _mockUserRepository.Object,
+                _mockCustomerRepository.Object,
+                new Mock<ITransactionService>().Object,
+                new Mock<ILogger<UserService>>().Object);
 
             // exists and wrong password
             var request_fail_1 = new UserCredentialsRequest { Username = _fixture.Username_Exists[0], Password = null! };
@@ -114,7 +127,11 @@ namespace OnlineStore.Server.Tests.Services.User
         public async Task Update_Success()
         {
             //Arrange
-            var service = new UserService(_mockRepository.Object);
+            var service = new UserService(
+                _mockUserRepository.Object,
+                _mockCustomerRepository.Object,
+                new Mock<ITransactionService>().Object,
+                new Mock<ILogger<UserService>>().Object);
 
             var request_success_1 = new UserRequest { Username = _fixture.Username_Exists[0], Role = UserRole.User };
             var request_success_2 = new UserRequest { Username = _fixture.Username_Exists[1], Role = UserRole.Manager };
@@ -136,7 +153,11 @@ namespace OnlineStore.Server.Tests.Services.User
         public async Task Update_Fail()
         {
             //Arrange
-            var service = new UserService(_mockRepository.Object);
+            var service = new UserService(
+                _mockUserRepository.Object,
+                _mockCustomerRepository.Object,
+                new Mock<ITransactionService>().Object,
+                new Mock<ILogger<UserService>>().Object);
 
             var request_fake_success_1 = new UserRequest { Username = _fixture.Username_Exists[0], Role = UserRole.User };
             var request_fake_success_2 = new UserRequest { Username = _fixture.Username_Exists[1], Role = UserRole.Manager };
@@ -175,7 +196,11 @@ namespace OnlineStore.Server.Tests.Services.User
         public async Task Delete()
         {
             //Arrange
-            var service = new UserService(_mockRepository.Object);
+            var service = new UserService(
+                _mockUserRepository.Object,
+                _mockCustomerRepository.Object,
+                new Mock<ITransactionService>().Object,
+                new Mock<ILogger<UserService>>().Object);
 
             //Act
             var delete_success_1 = await service.Delete(_fixture.Username_Exists[0]);
@@ -192,8 +217,8 @@ namespace OnlineStore.Server.Tests.Services.User
             var delete_fail_8 = await service.Delete(new string('a', 100));
 
             //Assert
-            _mockRepository.Verify(x => x.Delete(_fixture.Username_Exists[0]), Times.Exactly(2));
-            _mockRepository.Verify(x => x.Delete(_fixture.Username_Exists[1]), Times.Exactly(2));
+            _mockUserRepository.Verify(x => x.Delete(_fixture.Username_Exists[0]), Times.Exactly(2));
+            _mockUserRepository.Verify(x => x.Delete(_fixture.Username_Exists[1]), Times.Exactly(2));
 
             Assert.True(delete_success_1);
             Assert.True(delete_success_2);
@@ -212,7 +237,11 @@ namespace OnlineStore.Server.Tests.Services.User
         public async Task GetPage_Success()
         {
             //Arrange
-            var service = new UserService(_mockRepository.Object);
+            var service = new UserService(
+                _mockUserRepository.Object,
+                _mockCustomerRepository.Object,
+                new Mock<ITransactionService>().Object,
+                new Mock<ILogger<UserService>>().Object);
 
             //Act
             var success_1 = await service.GetPage(1, 12); //yes, yes
@@ -238,7 +267,11 @@ namespace OnlineStore.Server.Tests.Services.User
         public async Task GetPage_Fail()
         {
             //Arrange
-            var service = new UserService(_mockRepository.Object);
+            var service = new UserService(
+                _mockUserRepository.Object,
+                _mockCustomerRepository.Object,
+                new Mock<ITransactionService>().Object,
+                new Mock<ILogger<UserService>>().Object);
 
             //Act
             var fail_1 = await service.GetPage(0, 0); //no, no

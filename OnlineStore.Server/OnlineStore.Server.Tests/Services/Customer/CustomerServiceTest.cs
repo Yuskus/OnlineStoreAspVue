@@ -1,7 +1,7 @@
 ﻿using Moq;
-using OnlineStore.Server.DTO.Customer;
-using OnlineStore.Server.Repositories.Customer;
-using OnlineStore.Server.Services.Customer;
+using OnlineStore.Server.DTO.Customers;
+using OnlineStore.Server.Repositories.Customers;
+using OnlineStore.Server.Services.Customers;
 
 namespace OnlineStore.Server.Tests.Services.Customer
 {

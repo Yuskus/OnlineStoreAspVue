@@ -1,5 +1,5 @@
-﻿using OnlineStore.Server.DTO.OrderElement;
-using OnlineStore.Server.Repositories.OrderElement;
+﻿using OnlineStore.Server.DTO.OrderElements;
+using OnlineStore.Server.Repositories.OrderElements;
 using OnlineStore.Server.Tests.Common;
 
 namespace OnlineStore.Server.Tests.Repositories.OrderElement

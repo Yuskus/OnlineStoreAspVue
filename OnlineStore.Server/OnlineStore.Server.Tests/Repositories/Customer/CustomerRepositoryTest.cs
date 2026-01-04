@@ -1,5 +1,5 @@
-﻿using OnlineStore.Server.DTO.Customer;
-using OnlineStore.Server.Repositories.Customer;
+﻿using OnlineStore.Server.DTO.Customers;
+using OnlineStore.Server.Repositories.Customers;
 using OnlineStore.Server.Tests.Common;
 
 namespace OnlineStore.Server.Tests.Repositories.Customer

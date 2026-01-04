@@ -1,5 +1,5 @@
-﻿using OnlineStore.Server.DTO.Item;
-using OnlineStore.Server.Repositories.Item;
+﻿using OnlineStore.Server.DTO.Items;
+using OnlineStore.Server.Repositories.Items;
 using OnlineStore.Server.Tests.Common;
 
 namespace OnlineStore.Server.Tests.Repositories.Item

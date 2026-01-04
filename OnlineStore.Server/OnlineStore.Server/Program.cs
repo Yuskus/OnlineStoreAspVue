@@ -4,19 +4,17 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OnlineStore.Server.Authorization.Utilities;
 using OnlineStore.Server.Database.Context;
-using OnlineStore.Server.DTO.User;
 using OnlineStore.Server.Middleware;
-using OnlineStore.Server.Repositories.Customer;
-using OnlineStore.Server.Repositories.Item;
-using OnlineStore.Server.Repositories.Order;
-using OnlineStore.Server.Repositories.OrderElement;
-using OnlineStore.Server.Repositories.User;
-using OnlineStore.Server.Services.Customer;
-using OnlineStore.Server.Services.Item;
-using OnlineStore.Server.Services.Order;
-using OnlineStore.Server.Services.OrderElement;
-using OnlineStore.Server.Services.User;
-using OnlineStore.Server.Services.User.RegistrationService;
+using OnlineStore.Server.Repositories.Customers;
+using OnlineStore.Server.Repositories.Items;
+using OnlineStore.Server.Repositories.Orders;
+using OnlineStore.Server.Repositories.OrderElements;
+using OnlineStore.Server.Repositories.Users;
+using OnlineStore.Server.Services.Customers;
+using OnlineStore.Server.Services.Items;
+using OnlineStore.Server.Services.Orders;
+using OnlineStore.Server.Services.OrderElements;
+using OnlineStore.Server.Services.Users;
 using OnlineStore.Server.Utilities.Common.Database;
 using OnlineStore.Server.Utilities.Order.Generators;
 
@@ -119,8 +117,6 @@ namespace OnlineStore.Server
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IOrderElementService, OrderElementService>();
             builder.Services.AddScoped<IUserService, UserService>();
-
-            builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 
             builder.Services.AddScoped<INumberGenerator, OrderNumberGenerator>();
             builder.Services.AddScoped<ITransactionService, TransactionService>();

@@ -1,7 +1,7 @@
 ﻿using Moq;
 using OnlineStore.Server.DTO.Common;
-using OnlineStore.Server.DTO.Order;
-using OnlineStore.Server.Repositories.Order;
+using OnlineStore.Server.DTO.Orders;
+using OnlineStore.Server.Repositories.Orders;
 
 namespace OnlineStore.Server.Tests.Services.Order
 {

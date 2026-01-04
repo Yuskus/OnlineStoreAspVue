@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Server.DTO.Common;
-using OnlineStore.Server.DTO.Customer;
-using OnlineStore.Server.Services.Customer;
+using OnlineStore.Server.DTO.Customers;
+using OnlineStore.Server.Services.Customers;
 
 namespace OnlineStore.Server.Controllers
 {

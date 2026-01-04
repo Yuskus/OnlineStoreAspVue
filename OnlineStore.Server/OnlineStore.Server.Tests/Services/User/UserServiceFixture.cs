@@ -1,9 +1,10 @@
 ﻿using Moq;
 using OnlineStore.Server.Database.Entities;
 using OnlineStore.Server.DTO.Common;
-using OnlineStore.Server.DTO.Customer;
-using OnlineStore.Server.DTO.User;
-using OnlineStore.Server.Repositories.User;
+using OnlineStore.Server.DTO.Customers;
+using OnlineStore.Server.DTO.Users;
+using OnlineStore.Server.Repositories.Customers;
+using OnlineStore.Server.Repositories.Users;
 using OnlineStore.Server.Tests.Services.OrderElement;
 
 namespace OnlineStore.Server.Tests.Services.User
@@ -17,7 +18,14 @@ namespace OnlineStore.Server.Tests.Services.User
         public string[] Username_Exists { get; private set; } = ["username1" , "username2"];
         public string Token_Exists { get; private set; } = "sdfhsyjkmfhnmfulutgkfyhkmdytk";
 
-        public Mock<IUserRepository> CreateMockRepository()
+        public Mock<ICustomerRepository> CreateCustomerMockRepository()
+        {
+            var mockRepository = new Mock<ICustomerRepository>();
+
+            return mockRepository;
+        }
+
+        public Mock<IUserRepository> CreateUserMockRepository()
         {
             var mockRepository = new Mock<IUserRepository>();
 

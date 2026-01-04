@@ -270,7 +270,7 @@ namespace OnlineStore.Server.Tests.Services.OrderElement
             Assert.NotNull(getall_fail_1);
             Assert.NotNull(getall_fail_2);
 
-            Assert.Equal(_fixture.OrderElements_ForGetAllByOrderId.Count, getall_success.Count());
+            Assert.Equal(_fixture.OrderElements_ForGetAllByOrderId.Count(), getall_success.Count());
 
             Assert.Empty(getall_fail_1);
             Assert.Empty(getall_fail_2);

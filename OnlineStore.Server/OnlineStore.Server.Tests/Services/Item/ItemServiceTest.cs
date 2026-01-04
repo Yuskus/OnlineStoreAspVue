@@ -1,4 +1,5 @@
 ﻿using Moq;
+using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.Items;
 using OnlineStore.Server.Repositories.Items;
 using OnlineStore.Server.Services.Items;
@@ -211,10 +212,14 @@ namespace OnlineStore.Server.Tests.Services.Item
             //Arrange
             var service = new ItemService(_mockRepository.Object);
 
+            var pages1 = new PageInfo(1, 12);
+            var pages2 = new PageInfo(1, 20);
+            var pages3 = new PageInfo(2, 3);
+
             //Act
-            var success_1 = await service.GetPage(1, 12); //yes, yes
-            var success_2 = await service.GetPage(1, 20); //yes, yes
-            var success_3 = await service.GetPage(2, 3); //yes, yes
+            var success_1 = await service.GetPage(pages1); //yes, yes
+            var success_2 = await service.GetPage(pages2); //yes, yes
+            var success_3 = await service.GetPage(pages3); //yes, yes
 
             //Assert
             Assert.NotNull(success_1);
@@ -236,13 +241,20 @@ namespace OnlineStore.Server.Tests.Services.Item
             //Arrange
             var service = new ItemService(_mockRepository.Object);
 
+            var pages1 = new PageInfo(0, 0);
+            var pages2 = new PageInfo(-1, 1);
+            var pages3 = new PageInfo(1, -1);
+            var pages4 = new PageInfo(1000, 1000);
+            var pages5 = new PageInfo(-1000, -1000);
+            var pages6 = new PageInfo(1, 1000);
+
             //Act
-            var fail_1 = await service.GetPage(0, 0); //no, no
-            var fail_2 = await service.GetPage(-1, 1); //no, yes
-            var fail_3 = await service.GetPage(1, -1);  //yes, no
-            var fail_4 = await service.GetPage(1000, 1000); //yes, no
-            var fail_5 = await service.GetPage(-1000, -1000); //no, no
-            var fail_6 = await service.GetPage(1, 1000); //yes, no
+            var fail_1 = await service.GetPage(pages1); //no, no
+            var fail_2 = await service.GetPage(pages2); //no, yes
+            var fail_3 = await service.GetPage(pages3);  //yes, no
+            var fail_4 = await service.GetPage(pages4); //yes, no
+            var fail_5 = await service.GetPage(pages5); //no, no
+            var fail_6 = await service.GetPage(pages6); //yes, no
 
             //Assert
             Assert.NotNull(fail_1);
@@ -276,11 +288,15 @@ namespace OnlineStore.Server.Tests.Services.Item
             var criteria_success_1 = new ItemFilterCriteria { Id = _fixture.ItemGuid_Exists, Name = _fixture.ItemName_Exists };
             var criteria_success_2 = new ItemFilterCriteria { Code = _fixture.ItemCode_Exists, Category = _fixture.ItemCategory_Exists };
             var criteria_success_3 = new ItemFilterCriteria();
+            
+            var pages1 = new PageInfo(1, 12);
+            var pages2 = new PageInfo(1, 20);
+            var pages3 = new PageInfo(2, 3);
 
             //Act
-            var success_1 = await service.GetPageByCriteria(criteria_success_1, 1, 12); //yes, yes, yes
-            var success_2 = await service.GetPageByCriteria(criteria_success_2, 1, 20); //yes, yes, yes
-            var success_3 = await service.GetPageByCriteria(criteria_success_3, 2, 3); //yes, yes, yes
+            var success_1 = await service.GetPageByCriteria(criteria_success_1, pages1); //yes, yes, yes
+            var success_2 = await service.GetPageByCriteria(criteria_success_2, pages2); //yes, yes, yes
+            var success_3 = await service.GetPageByCriteria(criteria_success_3, pages3); //yes, yes, yes
 
             //Assert
             Assert.NotNull(success_1);
@@ -305,6 +321,17 @@ namespace OnlineStore.Server.Tests.Services.Item
             //Arrange
             var service = new ItemService(_mockRepository.Object);
 
+            var pages1 = new PageInfo(0, 0);
+            var pages2 = new PageInfo(-1, 1);
+            var pages3 = new PageInfo(1, -1);
+            var pages4 = new PageInfo(1000, 1000);
+            var pages5 = new PageInfo(-1000, -1000);
+            var pages6 = new PageInfo(1, 1000);
+
+            var pages7 = new PageInfo(1, 12);
+            var pages8 = new PageInfo(2, 3);
+            var pages9 = new PageInfo(1, 20);
+
             var criteria_fail_1 = new ItemFilterCriteria { Id = _fixture.Guid_Unexists };
             var criteria_fail_2 = new ItemFilterCriteria { Category = "Unexists" };
             var criteria_fail_3 = new ItemFilterCriteria { Code = "Unexists" };
@@ -315,18 +342,18 @@ namespace OnlineStore.Server.Tests.Services.Item
             var criteria_fake_success_4 = new ItemFilterCriteria { Code = _fixture.ItemCode_Exists };
             var criteria_fake_success_5 = new ItemFilterCriteria { Category = _fixture.ItemCategory_Exists };
             var criteria_fake_success_6 = new ItemFilterCriteria { Id = _fixture.ItemGuid_Exists, Name = _fixture.ItemName_Exists, Code = _fixture.ItemCode_Exists, Category = _fixture.ItemCategory_Exists };
-
+            
             //Act
-            var fake_success_1 = await service.GetPageByCriteria(criteria_fail_1, 1, 12); //no, yes, yes
-            var fake_success_2 = await service.GetPageByCriteria(criteria_fail_2, 2, 3); //no, yes, yes
-            var fake_success_3 = await service.GetPageByCriteria(criteria_fail_3, 1, 20); //no, yes, yes
+            var fake_success_1 = await service.GetPageByCriteria(criteria_fail_1, pages7); //no, yes, yes
+            var fake_success_2 = await service.GetPageByCriteria(criteria_fail_2, pages8); //no, yes, yes
+            var fake_success_3 = await service.GetPageByCriteria(criteria_fail_3, pages9); //no, yes, yes
 
-            var fail_1 = await service.GetPageByCriteria(criteria_fake_success_1, 0, 0); //yes, no, no
-            var fail_2 = await service.GetPageByCriteria(criteria_fake_success_2, -1, 1); //yes, no, yes
-            var fail_3 = await service.GetPageByCriteria(criteria_fake_success_3, 1, -1);  //yes, yes, no
-            var fail_4 = await service.GetPageByCriteria(criteria_fake_success_4, 1000, 1000); //yes, yes, no
-            var fail_5 = await service.GetPageByCriteria(criteria_fake_success_5, -1000, -1000); //yes, no, no
-            var fail_6 = await service.GetPageByCriteria(criteria_fake_success_6, 1, 1000); //yes, yes, no
+            var fail_1 = await service.GetPageByCriteria(criteria_fake_success_1, pages1); //yes, no, no
+            var fail_2 = await service.GetPageByCriteria(criteria_fake_success_2, pages2); //yes, no, yes
+            var fail_3 = await service.GetPageByCriteria(criteria_fake_success_3, pages3);  //yes, yes, no
+            var fail_4 = await service.GetPageByCriteria(criteria_fake_success_4, pages4); //yes, yes, no
+            var fail_5 = await service.GetPageByCriteria(criteria_fake_success_5, pages5); //yes, no, no
+            var fail_6 = await service.GetPageByCriteria(criteria_fake_success_6, pages6); //yes, yes, no
 
             //Assert
             Assert.NotNull(fake_success_1);

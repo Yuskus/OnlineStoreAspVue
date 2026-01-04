@@ -10,6 +10,6 @@ namespace OnlineStore.Server.Services.Users
         Task<LoginResponse?> Authenticate(UserCredentialsRequest request);
         Task<bool> Update(string username, UserRequest request);
         Task<bool> Delete(string username);
-        Task<ResponseList<UserResponse>> GetPage(int page, int pageSize);
+        Task<ResponseList<UserResponse>> GetPage(PageInfo pageInfo);
     }
 }

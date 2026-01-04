@@ -71,7 +71,11 @@ namespace OnlineStore.Server.Controllers
         [HttpGet(template: "getpage")]
         public async Task<ActionResult<ResponseList<OrderResponse>>> GetPage([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
-            var result = await _orderService.GetPage(pageNumber, pageSize);
+            var result = await _orderService.GetPage(new PageInfo
+            {
+                Number = pageNumber,
+                Size = pageSize
+            });
             
             return result is not null
                 ? Ok(result)
@@ -82,7 +86,11 @@ namespace OnlineStore.Server.Controllers
         [HttpGet(template: "getpagebycriteria")]
         public async Task<ActionResult<ResponseList<OrderResponse>>> GetPageByCriteria(OrderFilterCriteria criteria, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
-            var result = await _orderService.GetPageByCriteria(criteria, pageNumber, pageSize);
+            var result = await _orderService.GetPageByCriteria(criteria, new PageInfo
+            {
+                Number = pageNumber,
+                Size = pageSize
+            });
             
             return result is not null
                 ? Ok(result)

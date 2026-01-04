@@ -11,6 +11,19 @@ namespace OnlineStore.Server.Tests.Services.Customer
         public Guid CustomerId_Exists { get; private set; } = Guid.NewGuid();
         public string CustomerName_Exists { get; private set; } = "Test test";
         public string CustomerCode_Exists { get; private set; } = "9753-2001";
+        public int ResponseTotal { get; private set; }
+        public IEnumerable<CustomerResponse> ResponseList { get; private set; }
+
+        public CustomerServiceFixture()
+        {
+            ResponseList = Enumerable.Range(0, 20)
+                .Select((x, i) => new CustomerResponse
+                {
+                    Name = "Test",
+                    Code = $"{1000 + i}-2000"
+                });
+            ResponseTotal = ResponseList.Count();
+        }
 
         public Mock<ICustomerRepository> CreateMockRepository()
         {
@@ -18,26 +31,55 @@ namespace OnlineStore.Server.Tests.Services.Customer
 
             //update
 
-            mockRepository.Setup(x => x.Update(CustomerId_Exists, It.Is<CustomerRequest>(c => c.Name == CustomerName_Exists
-                                                                                           && c.Code == CustomerCode_Exists)))
-                          .ReturnsAsync(true);
+            mockRepository
+                .Setup(x => x.Update(
+                    CustomerId_Exists,
+                    It.Is<CustomerRequest>(c =>
+                        c.Name == CustomerName_Exists
+                        && c.Code == CustomerCode_Exists)))
+                .ReturnsAsync(true);
 
-            mockRepository.Setup(x => x.Update(Guid_Unexists, It.IsAny<CustomerRequest>())).ReturnsAsync(false);
+            mockRepository
+                .Setup(x => x.Update(
+                    Guid_Unexists,
+                    It.IsAny<CustomerRequest>()))
+                .ReturnsAsync(false);
 
             //get
 
-            mockRepository.Setup(x => x.GetOneByCriteria(It.Is<CustomerFilterCriteria>(c => c.Id == CustomerId_Exists)))
-                          .ReturnsAsync(new CustomerResponse { Id = CustomerId_Exists, Code = "0000-2000", Name = CustomerName_Exists });
+            mockRepository
+                .Setup(x => x.GetOneByCriteria(
+                    It.Is<CustomerFilterCriteria>(c => c.Id == CustomerId_Exists)))
+                .ReturnsAsync(new CustomerResponse
+                {
+                    Id = CustomerId_Exists,
+                    Code = "0000-2000",
+                    Name = CustomerName_Exists
+                });
 
-            mockRepository.Setup(x => x.GetOneByCriteria(It.Is<CustomerFilterCriteria>(c => c.Code == CustomerCode_Exists)))
-                          .ReturnsAsync(new CustomerResponse { Code = CustomerCode_Exists, Name = CustomerName_Exists });
+            mockRepository
+                .Setup(x => x.GetOneByCriteria(
+                    It.Is<CustomerFilterCriteria>(c => c.Code == CustomerCode_Exists)))
+                .ReturnsAsync(new CustomerResponse
+                {
+                    Code = CustomerCode_Exists,
+                    Name = CustomerName_Exists
+                });
 
-            mockRepository.Setup(x => x.GetAll())
-                          .ReturnsAsync(() => new ResponseList<CustomerResponse>()
-                          {
-                              Responses = Enumerable.Range(0, 20).Select((x, i) => new CustomerResponse { Name = "Test", Code = $"{1000 + i}-2000" }).ToList(),
-                              TotalCount = 20
-                          });
+            mockRepository
+                .Setup(x => x.GetPage(
+                    It.Is<PageInfo>(p => p.Number == 1 && p.Size == 12)))
+                .ReturnsAsync(() => new(ResponseList.Take(12), ResponseTotal));
+
+            mockRepository
+                .Setup(x => x.GetPage(
+                    It.Is<PageInfo>(p => p.Number == 1 && p.Size == 20)))
+                .ReturnsAsync(() => new(ResponseList, ResponseTotal));
+
+            mockRepository
+                .Setup(x => x.GetPage(
+                    It.Is<PageInfo>(p => p.Number == 2 && p.Size == 3)))
+                .ReturnsAsync(() => new(ResponseList.Take(3), ResponseTotal));
 
             return mockRepository;
         }

@@ -55,36 +55,53 @@ namespace OnlineStore.Server.Repositories.Orders
             return false;
         }
 
-        public async Task<ResponseList<OrderResponse>> GetAll()
+        public async Task<ResponseList<OrderResponse>> GetPage(PageInfo pageInfo)
         {
+            IQueryable<Order> query = _context.Orders
+                .AsSingleQuery();
+
             return new()
             {
-                Responses = await _context.Orders.Select(x => x.MapFromDb()).ToListAsync(),
-                TotalCount = await _context.Orders.CountAsync()
+                Responses = await query
+                    .Skip((pageInfo.Number - 1) * pageInfo.Size)
+                    .Take(pageInfo.Size)
+                    .Select(x => x.MapFromDb())
+                    .ToListAsync(),
+                TotalCount = await query
+                    .CountAsync()
             };
         }
 
-        public async Task<ResponseList<OrderResponse>> GetAllByCriteria(OrderFilterCriteria criteria)
+        public async Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, PageInfo pageInfo)
         {
-            IEnumerable<OrderResponse> filtred = await FilteringOrders(criteria);
+            IQueryable<Order> filtredQuery = FilteringOrders(criteria);
 
             return new()
             {
-                Responses = filtred,
-                TotalCount = filtred.Count()
+                Responses = await filtredQuery
+                    .Skip((pageInfo.Number - 1) * pageInfo.Size)
+                    .Take(pageInfo.Size)
+                    .Select(x => x.MapFromDb())
+                    .ToListAsync(),
+                TotalCount = await filtredQuery
+                    .CountAsync()
             };
         }
 
         public async Task<OrderResponse?> GetOneByCriteria(OrderFilterCriteria criteria)
         {
-            IEnumerable<OrderResponse> filtred = await FilteringOrders(criteria);
+            IQueryable<Order> filtredQuery = FilteringOrders(criteria);
 
-            return filtred.FirstOrDefault();
+            return await filtredQuery
+                .Select(x => x.MapFromDb())
+                .FirstOrDefaultAsync();
         }
 
-        private async Task<IEnumerable<OrderResponse>> FilteringOrders(OrderFilterCriteria criteria)
+        private IQueryable<Order> FilteringOrders(OrderFilterCriteria criteria)
         {
-            IQueryable<Order> orders = _context.Orders;
+            IQueryable<Order> orders = _context.Orders
+                .Include(x => x.Customer)
+                .AsSingleQuery();
 
             if (criteria.Id is not null)
             {
@@ -103,9 +120,7 @@ namespace OnlineStore.Server.Repositories.Orders
                 orders = orders.Where(x => x.OrderStatus == criteria.OrderStatus);
             }
 
-            return await orders.Include(x => x.Customer)
-                               .Select(x => x.MapFromDb())
-                               .ToListAsync(); //возвращает ли customer name?
+            return orders;
         }
     }
 }

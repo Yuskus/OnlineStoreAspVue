@@ -59,34 +59,26 @@ namespace OnlineStore.Server.Services.Items
             return null;
         }
 
-        public async Task<ResponseList<ItemResponse>> GetPageByCriteria(ItemFilterCriteria criteria, int page, int pageSize)
+        public async Task<ResponseList<ItemResponse>> GetPageByCriteria(ItemFilterCriteria criteria, PageInfo pageInfo)
         {
             bool isValid = ItemValidator.CheckCriteria(criteria)
-                        && ItemValidator.CheckPages(page, pageSize);
+                        && ItemValidator.CheckPages(pageInfo.Number, pageInfo.Size);
 
             if (isValid)
             {
-                ResponseList<ItemResponse> response = await _itemRepository.GetAllByCriteria(criteria);
-
-                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
-
-                return response;
+                return await _itemRepository.GetPageByCriteria(criteria, pageInfo);
             }
 
             return new ResponseList<ItemResponse>();
         }
 
-        public async Task<ResponseList<ItemResponse>> GetPage(int page, int pageSize)
+        public async Task<ResponseList<ItemResponse>> GetPage(PageInfo pageInfo)
         {
-            bool isValid = ItemValidator.CheckPages(page, pageSize);
+            bool isValid = ItemValidator.CheckPages(pageInfo.Number, pageInfo.Size);
 
             if (isValid)
             {
-                ResponseList<ItemResponse> response = await _itemRepository.GetAll();
-
-                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
-
-                return response;
+                return await _itemRepository.GetPage(pageInfo);
             }
 
             return new ResponseList<ItemResponse>();

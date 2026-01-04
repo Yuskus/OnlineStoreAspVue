@@ -1,4 +1,6 @@
-﻿using OnlineStore.Server.DTO.Common;
+﻿using OnlineStore.Server.Constants.Orders;
+using OnlineStore.Server.Database.Entities;
+using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.Orders;
 using OnlineStore.Server.Mapping.Orders;
 using OnlineStore.Server.Repositories.Orders;
@@ -54,7 +56,11 @@ namespace OnlineStore.Server.Services.Orders
 
             if (await _orderRepository.GetOneByCriteria(new() { CustomerId = customerId }) is null) return null;
 
-            OrderResponse? basket = await _orderRepository.GetOneByCriteria(new() { CustomerId = customerId, OrderStatus = "basket" });
+            OrderResponse? basket = await _orderRepository.GetOneByCriteria(new()
+            {
+                CustomerId = customerId,
+                OrderStatus = OrderStatuses.Basket
+            });
 
             if (basket is null)
             {
@@ -62,7 +68,7 @@ namespace OnlineStore.Server.Services.Orders
                 {
                     CustomerId = customerId,
                     OrderDate = DateOnly.FromDateTime(DateTime.Now).ToString(),
-                    OrderStatus = "basket"
+                    OrderStatus = OrderStatuses.Basket
                 };
 
                 Guid? guid = await _orderRepository.Create(request);
@@ -77,44 +83,40 @@ namespace OnlineStore.Server.Services.Orders
         {
             if (!OrderValidator.CheckGuid(id)) return false;
 
-            OrderResponse? basket = await _orderRepository.GetOneByCriteria(new() { Id = id, OrderStatus = "basket" });
+            OrderResponse? basket = await _orderRepository.GetOneByCriteria(new()
+            {
+                Id = id,
+                OrderStatus = OrderStatuses.Basket
+            });
 
             if (basket is null) return false;
 
             OrderRequest updateRequest = basket.MapToRequest();
-            updateRequest.OrderStatus = "new";
+            updateRequest.OrderStatus = OrderStatuses.New;
 
             return await _orderRepository.Update(basket.Id, updateRequest);
         }
 
-        public async Task<ResponseList<OrderResponse>> GetPage(int page, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPage(PageInfo pageInfo)
         {
-            bool isValid = OrderValidator.CheckPages(page, pageSize);
+            bool isValid = OrderValidator.CheckPages(pageInfo.Number, pageInfo.Size);
 
             if (isValid)
             {
-                ResponseList<OrderResponse> response = await _orderRepository.GetAll();
-
-                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
-
-                return response;
+                return await _orderRepository.GetPage(pageInfo);
             }
 
             return new ResponseList<OrderResponse>();
         }
 
-        public async Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, int page, int pageSize)
+        public async Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, PageInfo pageInfo)
         {
             bool isValid = OrderValidator.CheckCriteria(criteria)
-                        && OrderValidator.CheckPages(page, pageSize);
+                        && OrderValidator.CheckPages(pageInfo.Number, pageInfo.Size);
 
             if (isValid)
             {
-                ResponseList<OrderResponse> response = await _orderRepository.GetAllByCriteria(criteria);
-
-                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
-
-                return response;
+                return await _orderRepository.GetPageByCriteria(criteria, pageInfo);
             }
 
             return new ResponseList<OrderResponse>();

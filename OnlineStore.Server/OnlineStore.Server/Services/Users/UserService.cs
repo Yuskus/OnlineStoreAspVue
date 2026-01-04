@@ -113,17 +113,13 @@ namespace OnlineStore.Server.Services.Users
             return false;
         }
 
-        public async Task<ResponseList<UserResponse>> GetPage(int page, int pageSize)
+        public async Task<ResponseList<UserResponse>> GetPage(PageInfo pageInfo)
         {
-            bool isValid = UserValidator.CheckPages(page, pageSize);
+            bool isValid = UserValidator.CheckPages(pageInfo.Number, pageInfo.Size);
 
             if (isValid)
             {
-                ResponseList<UserResponse> response = await _userRepository.GetAll();
-
-                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
-
-                return response;
+                return await _userRepository.GetPage(pageInfo);
             }
 
             return new ResponseList<UserResponse>();

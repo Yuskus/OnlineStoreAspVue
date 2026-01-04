@@ -10,12 +10,10 @@ namespace OnlineStore.Server.Repositories.Users
 {
     public class UserRepository(
         OnlineStoreDbContext context,
-        IConfiguration configuration,
-        ILogger<UserRepository> logger) : IUserRepository
+        IConfiguration configuration) : IUserRepository
     {
         private readonly OnlineStoreDbContext _context = context;
         private readonly IConfiguration _configuration = configuration;
-        private readonly ILogger<UserRepository> _logger = logger;
 
         public async Task<LoginResponse?> Authenticate(UserCredentialsRequest loginRequest)
         {
@@ -31,8 +29,6 @@ namespace OnlineStore.Server.Repositories.Users
 
                     return response;
                 }
-
-                _logger.LogWarning("Неудачная попытка входа!");
             }
 
             return null;
@@ -92,12 +88,21 @@ namespace OnlineStore.Server.Repositories.Users
             return false;
         }
 
-        public async Task<ResponseList<UserResponse>> GetAll()
+        public async Task<ResponseList<UserResponse>> GetPage(PageInfo pageInfo)
         {
+            var query = _context.Users
+                .Include(x => x.Customer)
+                .AsSingleQuery();
+
             return new()
             {
-                Responses = await _context.Users.Include(x => x.Customer).Select(x => x.MapFromDb()).ToListAsync(),
-                TotalCount = await _context.Users.CountAsync()
+                Responses = await query
+                    .Skip((pageInfo.Number - 1) * pageInfo.Size)
+                    .Take(pageInfo.Size)
+                    .Select(x => x.MapFromDb())
+                    .ToListAsync(),
+                TotalCount = await query
+                    .CountAsync()
             };
         }
     }

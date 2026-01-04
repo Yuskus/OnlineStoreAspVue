@@ -8,7 +8,7 @@ namespace OnlineStore.Server.Repositories.Customers
         Task<Guid?> CreateIfNotExists(CustomerBaseRequest customer);
         Task<Guid?> CreateIfNotExists(CustomerRequest customer);
         Task<bool> Update(Guid id, CustomerRequest customer);
-        Task<ResponseList<CustomerResponse>> GetAll();
+        Task<ResponseList<CustomerResponse>> GetPage(PageInfo pageInfo);
         Task<CustomerResponse?> GetOneByCriteria(CustomerFilterCriteria criteria);
     }
 }

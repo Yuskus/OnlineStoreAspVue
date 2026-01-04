@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 using OnlineStore.Server.Database.Entities;
+using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.Users;
 using OnlineStore.Server.Repositories.Customers;
 using OnlineStore.Server.Repositories.Users;
@@ -243,10 +244,14 @@ namespace OnlineStore.Server.Tests.Services.User
                 new Mock<ITransactionService>().Object,
                 new Mock<ILogger<UserService>>().Object);
 
+            var pages1 = new PageInfo(1, 12);
+            var pages2 = new PageInfo(1, 20);
+            var pages3 = new PageInfo(2, 3);
+
             //Act
-            var success_1 = await service.GetPage(1, 12); //yes, yes
-            var success_2 = await service.GetPage(1, 20); //yes, yes
-            var success_3 = await service.GetPage(2, 3); //yes, yes
+            var success_1 = await service.GetPage(pages1); //yes, yes
+            var success_2 = await service.GetPage(pages2); //yes, yes
+            var success_3 = await service.GetPage(pages3); //yes, yes
 
             //Assert
             Assert.NotNull(success_1);
@@ -273,13 +278,20 @@ namespace OnlineStore.Server.Tests.Services.User
                 new Mock<ITransactionService>().Object,
                 new Mock<ILogger<UserService>>().Object);
 
+            var pages1 = new PageInfo(0, 0);
+            var pages2 = new PageInfo(-1, 1);
+            var pages3 = new PageInfo(1, -1);
+            var pages4 = new PageInfo(1000, 1000);
+            var pages5 = new PageInfo(-1000, -1000);
+            var pages6 = new PageInfo(1, 1000);
+
             //Act
-            var fail_1 = await service.GetPage(0, 0); //no, no
-            var fail_2 = await service.GetPage(-1, 1); //no, yes
-            var fail_3 = await service.GetPage(1, -1);  //yes, no
-            var fail_4 = await service.GetPage(1000, 1000); //yes, no
-            var fail_5 = await service.GetPage(-1000, -1000); //no, no
-            var fail_6 = await service.GetPage(1, 1000); //yes, no
+            var fail_1 = await service.GetPage(pages1); //no, no
+            var fail_2 = await service.GetPage(pages2); //no, yes
+            var fail_3 = await service.GetPage(pages3);  //yes, no
+            var fail_4 = await service.GetPage(pages4); //yes, no
+            var fail_5 = await service.GetPage(pages5); //no, no
+            var fail_6 = await service.GetPage(pages6); //yes, no
 
             //Assert
             Assert.NotNull(fail_1);

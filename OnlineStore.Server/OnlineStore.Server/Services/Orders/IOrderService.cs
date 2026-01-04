@@ -10,8 +10,8 @@ namespace OnlineStore.Server.Services.Orders
         Task<bool> Delete(Guid id);
         Task<bool> PlaceAnOrder(Guid id);
         Task<OrderResponse?> GetBasketOrder(Guid customerId);
-        Task<ResponseList<OrderResponse>> GetPage(int page, int pageSize);
-        Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, int page, int pageSize);
+        Task<ResponseList<OrderResponse>> GetPage(PageInfo pageInfo);
+        Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, PageInfo pageInfo);
         Task<OrderResponse?> GetOneByCriteria(OrderFilterCriteria criteria);
     }
 }

@@ -9,8 +9,8 @@ namespace OnlineStore.Server.Repositories.Items
         Task<Guid?> Create(ItemRequest item);
         Task<bool> Update(Guid id, ItemRequest item);
         Task<bool> Delete(Guid id);
-        Task<ResponseList<ItemResponse>> GetAll();
-        Task<ResponseList<ItemResponse>> GetAllByCriteria(ItemFilterCriteria criteria);
+        Task<ResponseList<ItemResponse>> GetPage(PageInfo pageInfo);
+        Task<ResponseList<ItemResponse>> GetPageByCriteria(ItemFilterCriteria criteria, PageInfo pageInfo);
         Task<ItemResponse?> GetOneByCriteria(ItemFilterCriteria criteria);
         ImmutableSortedSet<string> GetAllCategories();
     }

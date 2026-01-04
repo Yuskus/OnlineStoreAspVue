@@ -59,12 +59,20 @@ namespace OnlineStore.Server.Repositories.Customers
             return true;
         }
 
-        public async Task<ResponseList<CustomerResponse>> GetAll()
+        public async Task<ResponseList<CustomerResponse>> GetPage(PageInfo pageInfo)
         {
+            var query = _context.Customers
+                .AsSingleQuery();
+
             return new()
             {
-                Responses = await _context.Customers.Select(x => x.MapFromDb()).ToListAsync(),
-                TotalCount = await _context.Customers.CountAsync()
+                Responses = await query
+                    .Skip((pageInfo.Number - 1) * pageInfo.Size)
+                    .Take(pageInfo.Size)
+                    .Select(x => x.MapFromDb())
+                    .ToListAsync(),
+                TotalCount = await query
+                    .CountAsync()
             };
         }
 

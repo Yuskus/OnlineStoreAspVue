@@ -1,4 +1,6 @@
-﻿using OnlineStore.Server.DTO.Orders;
+﻿using OnlineStore.Server.Constants.Orders;
+using OnlineStore.Server.Database.Entities;
+using OnlineStore.Server.DTO.Orders;
 using OnlineStore.Server.Validation.Customers;
 
 namespace OnlineStore.Server.Validation.Orders
@@ -54,11 +56,7 @@ namespace OnlineStore.Server.Validation.Orders
 
         public static bool CheckStatus(string? status)
         {
-            return status is null
-                || status == "completed" 
-                || status == "in progress" 
-                || status == "new" 
-                || status == "basket";
+            return status is null || OrderStatuses.Check(status);
         }
     }
 }

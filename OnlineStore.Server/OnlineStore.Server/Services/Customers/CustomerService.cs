@@ -22,17 +22,13 @@ namespace OnlineStore.Server.Services.Customers
             return false;
         }
 
-        public async Task<ResponseList<CustomerResponse>> GetPage(int page, int pageSize)
+        public async Task<ResponseList<CustomerResponse>> GetPage(PageInfo pageInfo)
         {
-            bool isValid = CustomerValidator.CheckPages(page, pageSize);
+            bool isValid = CustomerValidator.CheckPages(pageInfo.Number, pageInfo.Size);
 
             if (isValid)
             {
-                var response = await _customerRepository.GetAll();
-
-                response.Responses = [.. response.Responses.Skip((page - 1) * pageSize).Take(pageSize)];
-
-                return response;
+                return await _customerRepository.GetPage(pageInfo);
             }
 
             return new ResponseList<CustomerResponse>();

@@ -52,7 +52,11 @@ namespace OnlineStore.Server.Controllers
             [FromQuery] int pageNumber,
             [FromQuery] int pageSize)
         {
-            var result = await _itemService.GetPage(pageNumber, pageSize);
+            var result = await _itemService.GetPage(new PageInfo
+            {
+                Number = pageNumber,
+                Size = pageSize
+            });
             
             return result is not null
                 ? Ok(result)
@@ -66,7 +70,11 @@ namespace OnlineStore.Server.Controllers
             [FromQuery] int pageNumber,
             [FromQuery] int pageSize)
         {
-            var result = await _itemService.GetPageByCriteria(criteria, pageNumber, pageSize);
+            var result = await _itemService.GetPageByCriteria(criteria, new PageInfo
+            {
+                Number = pageNumber,
+                Size = pageSize
+            });
             
             return result is not null
                 ? Ok(result)

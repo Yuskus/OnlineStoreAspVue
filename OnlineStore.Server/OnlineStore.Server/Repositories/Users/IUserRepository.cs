@@ -10,6 +10,6 @@ namespace OnlineStore.Server.Repositories.Users
         Task<bool> CreateUserIfNotExists(UserCredentialsRequest registerRequest);
         Task<bool> Update(string username, UserRequest userRequest);
         Task<bool> Delete(string username);
-        Task<ResponseList<UserResponse>> GetAll();
+        Task<ResponseList<UserResponse>> GetPage(PageInfo pageInfo);
     }
 }

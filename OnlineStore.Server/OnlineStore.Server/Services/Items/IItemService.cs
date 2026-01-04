@@ -9,8 +9,8 @@ namespace OnlineStore.Server.Services.Items
         Task<Guid?> Create(ItemRequest request);
         Task<bool> Update(Guid id, ItemRequest request);
         Task<bool> Delete(Guid id);
-        Task<ResponseList<ItemResponse>> GetPage(int page, int pageSize);
-        Task<ResponseList<ItemResponse>> GetPageByCriteria(ItemFilterCriteria criteria, int page, int pageSize);
+        Task<ResponseList<ItemResponse>> GetPage(PageInfo pageInfo);
+        Task<ResponseList<ItemResponse>> GetPageByCriteria(ItemFilterCriteria criteria, PageInfo pageInfo);
         Task<ItemResponse?> GetOneByCriteria(ItemFilterCriteria criteria);
         ImmutableSortedSet<string> GetAllCategories();
     }

@@ -6,7 +6,7 @@ namespace OnlineStore.Server.Services.Customers
     public interface ICustomerService
     {
         Task<bool> Update(Guid id, CustomerRequest request);
-        Task<ResponseList<CustomerResponse>> GetPage(int page, int pageSize);
+        Task<ResponseList<CustomerResponse>> GetPage(PageInfo pageInfo);
         Task<CustomerResponse?> GetOneByCriteria(CustomerFilterCriteria criteria);
     }
 }

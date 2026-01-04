@@ -8,8 +8,8 @@ namespace OnlineStore.Server.Repositories.Orders
         Task<Guid?> Create(OrderRequest order);
         Task<bool> Update(Guid orderId, OrderRequest order);
         Task<bool> Delete(Guid orderId);
-        Task<ResponseList<OrderResponse>> GetAll();
-        Task<ResponseList<OrderResponse>> GetAllByCriteria(OrderFilterCriteria criteria);
+        Task<ResponseList<OrderResponse>> GetPage(PageInfo pageInfo);
+        Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, PageInfo pageInfo);
         Task<OrderResponse?> GetOneByCriteria(OrderFilterCriteria criteria);
     }
 }

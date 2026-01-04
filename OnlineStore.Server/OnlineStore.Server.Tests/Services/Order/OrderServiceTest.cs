@@ -1,4 +1,7 @@
 ﻿using Moq;
+using OnlineStore.Server.Constants.Orders;
+using OnlineStore.Server.Database.Entities;
+using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.Orders;
 using OnlineStore.Server.Repositories.Orders;
 using OnlineStore.Server.Services.Orders;
@@ -25,7 +28,7 @@ namespace OnlineStore.Server.Tests.Services.Order
 
             var request_success_1 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(10).ToString() }; //yes, yes, (yes, yes)
             var request_success_2 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(-10).ToString() }; //yes, yes, (yes, yes)
-            var request_success_3 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(10).ToString(), OrderStatus = "new" }; //yes, yes, yes, yes
+            var request_success_3 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(10).ToString(), OrderStatus = OrderStatuses.New }; //yes, yes, yes, yes
             
             //Act
             var create_success_1 = await service.Create(request_success_1);
@@ -54,7 +57,7 @@ namespace OnlineStore.Server.Tests.Services.Order
             var request_fail_1 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = "99-99-9999" }; //yes, no, (yes, yes)
             var request_fail_2 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(-10).ToString() }; //yes, yes, no, (yes)
             var request_fail_3 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(-10).ToString(), ShipmentDate = _fixture.Today.ToString(), OrderStatus = "unexists" }; //yes, yes, yes, no
-            var request_fail_4 = new OrderRequest { CustomerId = _fixture.Guid_Unexists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(-10).ToString(), OrderStatus = "new" }; //no, yes, yes, yes
+            var request_fail_4 = new OrderRequest { CustomerId = _fixture.Guid_Unexists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(-10).ToString(), OrderStatus = OrderStatuses.New }; //no, yes, yes, yes
 
             //Act
             var create_fail_1 = await service.Create(request_fail_1);
@@ -77,7 +80,7 @@ namespace OnlineStore.Server.Tests.Services.Order
 
             var request_success_1 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(10).ToString() }; //yes, yes, (yes, yes)
             var request_success_2 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(-10).ToString() }; //yes, yes, (yes, yes)
-            var request_success_3 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(10).ToString(), OrderStatus = "new" }; //yes, yes, yes, yes
+            var request_success_3 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(10).ToString(), OrderStatus = OrderStatuses.New }; //yes, yes, yes, yes
 
             //Act
             var update_success_1 = await service.Update(_fixture.OrderId_Exists, request_success_1);
@@ -98,12 +101,12 @@ namespace OnlineStore.Server.Tests.Services.Order
 
             var request_fake_success_1 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(10).ToString() }; //yes, yes, (yes, yes)
             var request_fake_success_2 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(-10).ToString() }; //yes, yes, (yes, yes)
-            var request_fake_success_3 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(10).ToString(), OrderStatus = "new" }; //yes, yes, yes, yes
+            var request_fake_success_3 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(10).ToString(), OrderStatus = OrderStatuses.New }; //yes, yes, yes, yes
 
             var request_fail_1 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = "99-99-9999" }; //yes, no, (yes, yes)
             var request_fail_2 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(-10).ToString() }; //yes, yes, no, (yes)
             var request_fail_3 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(-10).ToString(), ShipmentDate = _fixture.Today.ToString(), OrderStatus = "unexists" }; //yes, yes, yes, no
-            var request_fail_4 = new OrderRequest { CustomerId = _fixture.Guid_Unexists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(-10).ToString(), OrderStatus = "new" }; //no, yes, yes, yes
+            var request_fail_4 = new OrderRequest { CustomerId = _fixture.Guid_Unexists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(-10).ToString(), OrderStatus = OrderStatuses.New }; //no, yes, yes, yes
 
             //Act
             var update_fail_1 = await service.Update(_fixture.Guid_Unexists, request_fake_success_1);
@@ -198,7 +201,7 @@ namespace OnlineStore.Server.Tests.Services.Order
                 Id = _fixture.OrderId_Exists,
                 CustomerId = _fixture.CustomerId_Exists,
                 OrderNumber = 1,
-                OrderStatus = "basket"
+                OrderStatus = OrderStatuses.Basket
             };
 
             //Act
@@ -223,10 +226,10 @@ namespace OnlineStore.Server.Tests.Services.Order
             var service = new OrderService(_mockRepository.Object);
 
             var criteria_fail_1 = new OrderFilterCriteria { Id = Guid.Empty, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = null }; //no, yes, yes, yes
-            var criteria_fail_2 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = Guid.Empty, OrderNumber = null, OrderStatus = "new" }; //yes, no, yes, yes
-            var criteria_fail_3 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = -10, OrderStatus = "basket" }; //yes, yes, no, yes
-            var criteria_fail_4 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = "not exists" }; //yes, yes, yes, no
-            var criteria_fail_5 = new OrderFilterCriteria { Id = _fixture.Guid_Unexists, CustomerId = Guid.Empty, OrderNumber = -100, OrderStatus = "not exists" }; //no, no, no, no
+            var criteria_fail_2 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = Guid.Empty, OrderNumber = null, OrderStatus = OrderStatuses.New }; //yes, no, yes, yes
+            var criteria_fail_3 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = -10, OrderStatus = OrderStatuses.Basket }; //yes, yes, no, yes
+            var criteria_fail_4 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = OrderStatuses.NotExists }; //yes, yes, yes, no
+            var criteria_fail_5 = new OrderFilterCriteria { Id = _fixture.Guid_Unexists, CustomerId = Guid.Empty, OrderNumber = -100, OrderStatus = OrderStatuses.NotExists }; //no, no, no, no
 
             //Act
             var getOneByCriteria_fail_1 = await service.GetOneByCriteria(criteria_fail_1);
@@ -248,11 +251,15 @@ namespace OnlineStore.Server.Tests.Services.Order
         {
             //Arrange
             var service = new OrderService(_mockRepository.Object);
+            
+            var pages1 = new PageInfo(1, 12);
+            var pages2 = new PageInfo(1, 20);
+            var pages3 = new PageInfo(2, 3);
 
             //Act
-            var success_1 = await service.GetPage(1, 12); //yes, yes
-            var success_2 = await service.GetPage(1, 20); //yes, yes
-            var success_3 = await service.GetPage(2, 3); //yes, yes
+            var success_1 = await service.GetPage(pages1); //yes, yes
+            var success_2 = await service.GetPage(pages2); //yes, yes
+            var success_3 = await service.GetPage(pages3); //yes, yes
 
             //Assert
             Assert.NotNull(success_1);
@@ -273,14 +280,21 @@ namespace OnlineStore.Server.Tests.Services.Order
         {
             //Arrange
             var service = new OrderService(_mockRepository.Object);
+            
+            var pages1 = new PageInfo(0, 0);
+            var pages2 = new PageInfo(-1, 1);
+            var pages3 = new PageInfo(1, -1);
+            var pages4 = new PageInfo(1000, 1000);
+            var pages5 = new PageInfo(-1000, -1000);
+            var pages6 = new PageInfo(1, 1000);
 
             //Act
-            var fail_1 = await service.GetPage(0, 0); //no, no
-            var fail_2 = await service.GetPage(-1, 1); //no, yes
-            var fail_3 = await service.GetPage(1, -1);  //yes, no
-            var fail_4 = await service.GetPage(1000, 1000); //yes, no
-            var fail_5 = await service.GetPage(-1000, -1000); //no, no
-            var fail_6 = await service.GetPage(1, 1000); //yes, no
+            var fail_1 = await service.GetPage(pages1); //no, no
+            var fail_2 = await service.GetPage(pages2); //no, yes
+            var fail_3 = await service.GetPage(pages3);  //yes, no
+            var fail_4 = await service.GetPage(pages4); //yes, no
+            var fail_5 = await service.GetPage(pages5); //no, no
+            var fail_6 = await service.GetPage(pages6); //yes, no
 
             //Assert
             Assert.NotNull(fail_1);
@@ -317,18 +331,22 @@ namespace OnlineStore.Server.Tests.Services.Order
                 Id = _fixture.OrderId_Exists,
                 CustomerId = _fixture.CustomerId_Exists,
                 OrderNumber = 1,
-                OrderStatus = "basket"
+                OrderStatus = OrderStatuses.Basket
             };
 
+            var pages1 = new PageInfo(1, 12);
+            var pages2 = new PageInfo(1, 20);
+            var pages3 = new PageInfo(2, 3);
+
             //Act
-            var success_1 = await service.GetPageByCriteria(criteria_success_1, 1, 12); //yes, yes, yes
-            var success_2 = await service.GetPageByCriteria(criteria_success_2, 1, 12); //yes, yes, yes
+            var success_1 = await service.GetPageByCriteria(criteria_success_1, pages1); //yes, yes, yes
+            var success_2 = await service.GetPageByCriteria(criteria_success_2, pages1); //yes, yes, yes
 
-            var success_3 = await service.GetPageByCriteria(criteria_success_1, 1, 20); //yes, yes, yes
-            var success_4 = await service.GetPageByCriteria(criteria_success_2, 1, 20); //yes, yes, yes
+            var success_3 = await service.GetPageByCriteria(criteria_success_1, pages2); //yes, yes, yes
+            var success_4 = await service.GetPageByCriteria(criteria_success_2, pages2); //yes, yes, yes
 
-            var success_5 = await service.GetPageByCriteria(criteria_success_1, 2, 3); //yes, yes, yes
-            var success_6 = await service.GetPageByCriteria(criteria_success_2, 2, 3); //yes, yes, yes
+            var success_5 = await service.GetPageByCriteria(criteria_success_1, pages3); //yes, yes, yes
+            var success_6 = await service.GetPageByCriteria(criteria_success_2, pages3); //yes, yes, yes
 
             //Assert
             Assert.NotNull(success_1);
@@ -366,33 +384,44 @@ namespace OnlineStore.Server.Tests.Services.Order
                 Id = _fixture.OrderId_Exists,
                 CustomerId = _fixture.CustomerId_Exists,
                 OrderNumber = 1,
-                OrderStatus = "basket"
+                OrderStatus = OrderStatuses.Basket
             };
 
             var criteria_fail_1 = new OrderFilterCriteria { Id = Guid.Empty, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = null }; //no, yes, yes, yes
-            var criteria_fail_2 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = Guid.Empty, OrderNumber = null, OrderStatus = "new" }; //yes, no, yes, yes
-            var criteria_fail_3 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = -10, OrderStatus = "basket" }; //yes, yes, no, yes
-            var criteria_fail_4 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = "not exists" }; //yes, yes, yes, no
-            var criteria_fail_5 = new OrderFilterCriteria { Id = _fixture.Guid_Unexists, CustomerId = Guid.Empty, OrderNumber = -100, OrderStatus = "not exists" }; //no, no, no, no
+            var criteria_fail_2 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = Guid.Empty, OrderNumber = null, OrderStatus = OrderStatuses.New }; //yes, no, yes, yes
+            var criteria_fail_3 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = -10, OrderStatus = OrderStatuses.Basket }; //yes, yes, no, yes
+            var criteria_fail_4 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = OrderStatuses.NotExists }; //yes, yes, yes, no
+            var criteria_fail_5 = new OrderFilterCriteria { Id = _fixture.Guid_Unexists, CustomerId = Guid.Empty, OrderNumber = -100, OrderStatus = OrderStatuses.NotExists }; //no, no, no, no
+
+            var pages1 = new PageInfo(1, 12);
+            var pages2 = new PageInfo(2, 3);
+            var pages3 = new PageInfo(1, 20);
+            
+            var pages4 = new PageInfo(0, 0);
+            var pages5 = new PageInfo(-1, 1);
+            var pages6 = new PageInfo(1, -1);
+            var pages7 = new PageInfo(1000, 1000);
+            var pages8 = new PageInfo(-1000, -1000);
+            var pages9 = new PageInfo(1, 1000);
 
             //Act
-            var fake_success_1 = await service.GetPageByCriteria(criteria_fail_1, 1, 12); //no, yes, yes
-            var fake_success_2 = await service.GetPageByCriteria(criteria_fail_2, 2, 3); //no, yes, yes
-            var fake_success_3 = await service.GetPageByCriteria(criteria_fail_3, 1, 20); //no, yes, yes
+            var fake_success_1 = await service.GetPageByCriteria(criteria_fail_1, pages1); //no, yes, yes
+            var fake_success_2 = await service.GetPageByCriteria(criteria_fail_2, pages2); //no, yes, yes
+            var fake_success_3 = await service.GetPageByCriteria(criteria_fail_3, pages3); //no, yes, yes
 
-            var fail_1 = await service.GetPageByCriteria(criteria_fake_success_1, 0, 0); //yes, no, no
-            var fail_2 = await service.GetPageByCriteria(criteria_fake_success_1, -1, 1); //yes, no, yes
-            var fail_3 = await service.GetPageByCriteria(criteria_fake_success_1, 1, -1);  //yes, yes, no
-            var fail_4 = await service.GetPageByCriteria(criteria_fake_success_1, 1000, 1000); //yes, yes, no
-            var fail_5 = await service.GetPageByCriteria(criteria_fake_success_1, -1000, -1000); //yes, no, no
-            var fail_6 = await service.GetPageByCriteria(criteria_fake_success_1, 1, 1000); //yes, yes, no
+            var fail_1 = await service.GetPageByCriteria(criteria_fake_success_1, pages4); //yes, no, no
+            var fail_2 = await service.GetPageByCriteria(criteria_fake_success_1, pages5); //yes, no, yes
+            var fail_3 = await service.GetPageByCriteria(criteria_fake_success_1, pages6);  //yes, yes, no
+            var fail_4 = await service.GetPageByCriteria(criteria_fake_success_1, pages7); //yes, yes, no
+            var fail_5 = await service.GetPageByCriteria(criteria_fake_success_1, pages8); //yes, no, no
+            var fail_6 = await service.GetPageByCriteria(criteria_fake_success_1, pages9); //yes, yes, no
 
-            var fail_7 = await service.GetPageByCriteria(criteria_fake_success_2, 0, 0); //yes, no, no
-            var fail_8 = await service.GetPageByCriteria(criteria_fake_success_2, -1, 1); //yes, no, yes
-            var fail_9 = await service.GetPageByCriteria(criteria_fake_success_2, 1, -1);  //yes, yes, no
-            var fail_10 = await service.GetPageByCriteria(criteria_fake_success_2, 1000, 1000); //yes, yes, no
-            var fail_11 = await service.GetPageByCriteria(criteria_fake_success_2, -1000, -1000); //yes, no, no
-            var fail_12 = await service.GetPageByCriteria(criteria_fake_success_2, 1, 1000); //yes, yes, no
+            var fail_7 = await service.GetPageByCriteria(criteria_fake_success_2, pages4); //yes, no, no
+            var fail_8 = await service.GetPageByCriteria(criteria_fake_success_2, pages5); //yes, no, yes
+            var fail_9 = await service.GetPageByCriteria(criteria_fake_success_2, pages6);  //yes, yes, no
+            var fail_10 = await service.GetPageByCriteria(criteria_fake_success_2, pages7); //yes, yes, no
+            var fail_11 = await service.GetPageByCriteria(criteria_fake_success_2, pages8); //yes, no, no
+            var fail_12 = await service.GetPageByCriteria(criteria_fake_success_2, pages9); //yes, yes, no
 
             //Assert
             Assert.NotNull(fake_success_1);

@@ -29,7 +29,11 @@ namespace OnlineStore.Server.Controllers
             [FromQuery] int pageNumber,
             [FromQuery] int pageSize)
         {
-            var result = await _customerService.GetPage(pageNumber, pageSize);
+            var result = await _customerService.GetPage(new PageInfo
+            {
+                Number = pageNumber,
+                Size = pageSize
+            });
 
             return result is not null
                 ? Ok(result)

@@ -58,36 +58,51 @@ namespace OnlineStore.Server.Repositories.Items
             return [.. _context.Items.Select(x => x.Category ?? "") ];
         }
 
-        public async Task<ResponseList<ItemResponse>> GetAll()
+        public async Task<ResponseList<ItemResponse>> GetPage(PageInfo pageInfo)
         {
+            IQueryable<Item> query = _context.Items
+                .AsSingleQuery();
+
             return new()
             {
-                Responses = await _context.Items.Select(x => x.MapFromDb()).ToListAsync(),
-                TotalCount = await _context.Items.CountAsync()
+                Responses = await query
+                    .Skip((pageInfo.Number - 1) * pageInfo.Size)
+                    .Take(pageInfo.Size)
+                    .Select(x => x.MapFromDb())
+                    .ToListAsync(),
+                TotalCount = await query
+                    .CountAsync()
             };
         }
 
-        public async Task<ResponseList<ItemResponse>> GetAllByCriteria(ItemFilterCriteria criteria)
+        public async Task<ResponseList<ItemResponse>> GetPageByCriteria(ItemFilterCriteria criteria, PageInfo pageInfo)
         {
-            IEnumerable<ItemResponse> filtred = await FilteringItems(criteria);
+            IQueryable<Item> filtredQuery = FilteringItems(criteria);
 
             return new()
             {
-                Responses = filtred,
-                TotalCount = filtred.Count()
+                Responses = await filtredQuery
+                    .Skip((pageInfo.Number - 1) * pageInfo.Size)
+                    .Take(pageInfo.Size)
+                    .Select(x => x.MapFromDb())
+                    .ToListAsync(),
+                TotalCount = await filtredQuery
+                    .CountAsync()
             };
         }
 
         public async Task<ItemResponse?> GetOneByCriteria(ItemFilterCriteria criteria)
         {
-            IEnumerable<ItemResponse> filtred = await FilteringItems(criteria);
+            IQueryable<Item> filtredQuery = FilteringItems(criteria);
 
-            return filtred.FirstOrDefault();
+            return (await filtredQuery
+                .FirstOrDefaultAsync())?.MapFromDb();
         }
 
-        private async Task<IEnumerable<ItemResponse>> FilteringItems(ItemFilterCriteria criteria)
+        private IQueryable<Item> FilteringItems(ItemFilterCriteria criteria)
         {
-            IQueryable<Item> items = _context.Items;
+            IQueryable<Item> items = _context.Items
+                .AsSingleQuery();
 
             if (criteria.Id is not null)
             {
@@ -106,7 +121,7 @@ namespace OnlineStore.Server.Repositories.Items
                 items = items.Where(x => x.Name.ToLower().Contains(criteria.Name.ToLower()));
             }
 
-            return await items.Select(x => x.MapFromDb()).ToListAsync();
+            return items;
         }
     }
 }

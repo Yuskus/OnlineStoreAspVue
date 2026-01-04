@@ -53,8 +53,7 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
-                    b.HasKey("Id")
-                        .HasName("id_customer_pk");
+                    b.HasKey("Id");
 
                     b.HasIndex("Code")
                         .IsUnique();
@@ -90,8 +89,7 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("decimal(10, 2)")
                         .HasColumnName("price");
 
-                    b.HasKey("Id")
-                        .HasName("id_items_pk");
+                    b.HasKey("Id");
 
                     b.HasIndex("Code")
                         .IsUnique();
@@ -127,8 +125,7 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("date")
                         .HasColumnName("shipment_date");
 
-                    b.HasKey("Id")
-                        .HasName("id_order_pk");
+                    b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
@@ -158,8 +155,7 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("order_id");
 
-                    b.HasKey("Id")
-                        .HasName("id_order_element_pk");
+                    b.HasKey("Id");
 
                     b.HasIndex("ItemId");
 
@@ -199,8 +195,7 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("username");
 
-                    b.HasKey("Id")
-                        .HasName("id_user_pk");
+                    b.HasKey("Id");
 
                     b.HasIndex("CustomerId")
                         .IsUnique();

@@ -12,15 +12,15 @@ using OnlineStore.Server.Database.Context;
 namespace OnlineStore.Server.Database.Migrations
 {
     [DbContext(typeof(OnlineStoreDbContext))]
-    [Migration("20250207071731_UserKeys")]
-    partial class UserKeys
+    [Migration("20260104180158_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -56,8 +56,7 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
-                    b.HasKey("Id")
-                        .HasName("id_customer_pk");
+                    b.HasKey("Id");
 
                     b.HasIndex("Code")
                         .IsUnique();
@@ -93,8 +92,7 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("decimal(10, 2)")
                         .HasColumnName("price");
 
-                    b.HasKey("Id")
-                        .HasName("id_items_pk");
+                    b.HasKey("Id");
 
                     b.HasIndex("Code")
                         .IsUnique();
@@ -130,13 +128,9 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("date")
                         .HasColumnName("shipment_date");
 
-                    b.HasKey("Id")
-                        .HasName("id_order_pk");
+                    b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("OrderNumber")
-                        .IsUnique();
 
                     b.ToTable("orders", (string)null);
                 });
@@ -164,8 +158,7 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("order_id");
 
-                    b.HasKey("Id")
-                        .HasName("id_order_element_pk");
+                    b.HasKey("Id");
 
                     b.HasIndex("ItemId");
 
@@ -176,12 +169,10 @@ namespace OnlineStore.Server.Database.Migrations
 
             modelBuilder.Entity("OnlineStore.Server.Database.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid")
@@ -207,8 +198,7 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("username");
 
-                    b.HasKey("Id")
-                        .HasName("id_user_pk");
+                    b.HasKey("Id");
 
                     b.HasIndex("CustomerId")
                         .IsUnique();
@@ -238,14 +228,14 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("manyto1_order_elements_to_item_fk");
+                        .HasConstraintName("1tomany_item_to_order_elements_fk");
 
                     b.HasOne("OnlineStore.Server.Database.Entities.Order", "Order")
                         .WithMany("OrderElements")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("1tomany_order_to_order_elements_fk");
+                        .HasConstraintName("manyto1_order_elements_to_order_fk");
 
                     b.Navigation("Item");
 

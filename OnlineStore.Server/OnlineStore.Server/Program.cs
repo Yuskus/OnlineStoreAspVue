@@ -100,9 +100,9 @@ namespace OnlineStore.Server
 
             builder.Services.AddDbContext<OnlineStoreDbContext>(options =>
             {
-                options.UseLazyLoadingProxies().UseNpgsql(
-                    Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ??
-                    builder.Configuration["DB_CONNECTION_STRING"]);
+                options.UseLazyLoadingProxies().UseNpgsql(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
+                    ?? builder.Configuration["DB_CONNECTION_STRING"]
+                    ?? throw new Exception("connection string not found!"));
             },
             ServiceLifetime.Scoped);
 

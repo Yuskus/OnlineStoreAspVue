@@ -4,7 +4,6 @@ setlocal enabledelayedexpansion
 
 set "directory=%CD%"
 set "backend=OnlineStore.Server"
-set "frontend=onlinestore.client"
 
 docker info >nul 2>&1
 if %errorlevel% neq 0 (
@@ -17,20 +16,7 @@ if not exist "%directory%\%backend%" (
     exit /b 1
 )
 
-if not exist "%directory%\%frontend%" (
-    echo Frontend not found.
-    exit /b 1
-)
-
 cd %backend%
-
-docker-compose down
-docker-compose build
-docker-compose up -d
-
-cd ..
-
-cd %frontend%
 
 docker-compose down
 docker-compose build

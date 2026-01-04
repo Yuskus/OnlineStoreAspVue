@@ -1,4 +1,8 @@
 FROM node:22-alpine3.22 AS builder
+
+ARG VITE_APP_HOST
+ENV VITE_APP_HOST=${VITE_APP_HOST}
+
 RUN apk add --no-cache git
 
 WORKDIR /usr/src/app

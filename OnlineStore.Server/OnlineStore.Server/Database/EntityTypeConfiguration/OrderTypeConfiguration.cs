@@ -8,16 +8,13 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            // primary key
-            builder.HasKey(p => p.Id)
-                   .HasName("id_order_pk");
-
             // table name
             builder.ToTable("orders");
 
             // properties
             builder.Property(p => p.Id)
                    .IsRequired()
+                   .ValueGeneratedOnAdd()
                    .HasColumnType("uuid")
                    .HasColumnName("id");
 

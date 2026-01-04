@@ -53,6 +53,19 @@ services:
     networks:
       - store_network
 
+  onlinestore-client:
+    build:
+      context: ./onlinestore.client/
+      dockerfile: Dockerfile
+      args:
+        VITE_APP_HOST: ${VITE_APP_HOST}
+    container_name: onlinestore-client
+    restart: unless-stopped
+    ports:
+      - "5777:80"
+    networks:
+      - store_network
+
 networks:
   store_network:
     driver: bridge

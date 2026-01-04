@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_APP_HOST;
 
 export const getPageOfItems = async (pageNumber, pageSize) => {
     try {

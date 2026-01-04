@@ -23,7 +23,7 @@ namespace OnlineStore.Server.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("id_customer_pk", x => x.id);
+                    table.PrimaryKey("PK_customers", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -38,7 +38,7 @@ namespace OnlineStore.Server.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("id_items_pk", x => x.id);
+                    table.PrimaryKey("PK_items", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -54,7 +54,7 @@ namespace OnlineStore.Server.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("id_order_pk", x => x.id);
+                    table.PrimaryKey("PK_orders", x => x.id);
                     table.ForeignKey(
                         name: "1tomany_customer_to_orders_fk",
                         column: x => x.customer_id,
@@ -67,6 +67,7 @@ namespace OnlineStore.Server.Database.Migrations
                 name: "users_table",
                 columns: table => new
                 {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
                     customer_id = table.Column<Guid>(type: "uuid", nullable: true),
                     username = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     password = table.Column<byte[]>(type: "bytea", nullable: false),
@@ -75,13 +76,12 @@ namespace OnlineStore.Server.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("id_user_pk", x => x.customer_id);
+                    table.PrimaryKey("PK_users_table", x => x.id);
                     table.ForeignKey(
                         name: "1to1_customer_to_user_fk",
                         column: x => x.customer_id,
                         principalTable: "customers",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -96,17 +96,17 @@ namespace OnlineStore.Server.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("id_order_element_pk", x => x.id);
+                    table.PrimaryKey("PK_order_elements", x => x.id);
                     table.ForeignKey(
-                        name: "1tomany_order_to_order_elements_fk",
-                        column: x => x.order_id,
-                        principalTable: "orders",
+                        name: "1tomany_item_to_order_elements_fk",
+                        column: x => x.item_id,
+                        principalTable: "items",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "manyto1_order_elements_to_item_fk",
-                        column: x => x.item_id,
-                        principalTable: "items",
+                        name: "manyto1_order_elements_to_order_fk",
+                        column: x => x.order_id,
+                        principalTable: "orders",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -139,9 +139,9 @@ namespace OnlineStore.Server.Database.Migrations
                 column: "customer_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_orders_order_number",
-                table: "orders",
-                column: "order_number",
+                name: "IX_users_table_customer_id",
+                table: "users_table",
+                column: "customer_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -161,10 +161,10 @@ namespace OnlineStore.Server.Database.Migrations
                 name: "users_table");
 
             migrationBuilder.DropTable(
-                name: "orders");
+                name: "items");
 
             migrationBuilder.DropTable(
-                name: "items");
+                name: "orders");
 
             migrationBuilder.DropTable(
                 name: "customers");

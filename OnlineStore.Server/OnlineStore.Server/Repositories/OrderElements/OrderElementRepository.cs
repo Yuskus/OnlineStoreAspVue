@@ -38,7 +38,9 @@ namespace OnlineStore.Server.Repositories.OrderElements
         {
             if (await _context.OrderElements.FirstOrDefaultAsync(x => x.Id == id) is OrderElement orderElementEntity)
             {
-                orderElementEntity.UpdateInDb(orderElement);
+                orderElementEntity.ItemsCount = orderElement.ItemsCount;
+                orderElementEntity.ItemPrice = orderElement.ItemPrice;
+
                 await _context.SaveChangesAsync();
 
                 return true;

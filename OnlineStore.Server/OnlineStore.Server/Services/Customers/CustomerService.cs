@@ -33,17 +33,5 @@ namespace OnlineStore.Server.Services.Customers
 
             return new ResponseList<CustomerResponse>();
         }
-
-        public async Task<CustomerResponse?> GetOneByCriteria(CustomerFilterCriteria criteria)
-        {
-            bool isValid = CustomerValidator.CheckCriteria(criteria);
-
-            if (isValid)
-            {
-                return await _customerRepository.GetOneByCriteria(criteria);
-            }
-
-            return null;
-        }
     }
 }

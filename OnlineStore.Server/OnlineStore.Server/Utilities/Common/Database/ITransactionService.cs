@@ -1,14 +1,9 @@
-﻿namespace OnlineStore.Server.Utilities.Common.Database;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 
-public interface ITransactionService : IDisposable
+namespace OnlineStore.Server.Utilities.Common.Database;
+
+public interface ITransactionService
 {
-    void BeginTransaction();
-    Task BeginTransactionAsync();
-    int SaveChanges();
-    Task<int> SaveChangesAsync();
-    void Commit();
-    Task CommitAsync();
-    void Rollback();
-    Task RollbackAsync();
-    ValueTask DisposeAsync();
+    IDbContextTransaction BeginTransaction();
+    Task<IDbContextTransaction> BeginTransactionAsync();
 }

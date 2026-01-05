@@ -9,7 +9,6 @@ namespace OnlineStore.Server.Mapping.Items
         {
             return new()
             {
-                Id = Guid.NewGuid(),
                 Code = item.Code,
                 Name = item.Name,
                 Price = item.Price,
@@ -27,14 +26,6 @@ namespace OnlineStore.Server.Mapping.Items
                 Price = item.Price,
                 Category = item.Category
             };
-        }
-
-        public static void UpdateInDb(this Item itemEntity, ItemRequest item)
-        {
-            itemEntity.Code = item.Code;
-            itemEntity.Name = item.Name;
-            itemEntity.Price = item.Price;
-            itemEntity.Category = item.Category;
         }
     }
 }

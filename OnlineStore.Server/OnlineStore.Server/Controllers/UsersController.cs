@@ -12,8 +12,9 @@ namespace OnlineStore.Server.Controllers
     {
         private readonly IUserService _userService = userService;
 
+        // uses
         [AllowAnonymous]
-        [HttpPost(template: "login")]
+        [HttpPost("login")]
         public async Task<ActionResult<LoginResponse>> Authenticate([FromBody] UserCredentialsRequest loginRequest)
         {
             var result = await _userService.Authenticate(loginRequest);
@@ -23,8 +24,33 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
+        [AllowAnonymous]
+        [HttpPost("registercustomer")]
+        public async Task<ActionResult<bool>> RegisterCustomer([FromBody] CustomerRegisterRequest customerRegisterRequest)
+        {
+            var result = await _userService.Register(customerRegisterRequest);
+
+            return result
+                ? Ok(result)
+                : BadRequest();
+        }
+
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpPut(template: "update/{username}")]
+        [HttpPost("registermanager")]
+        public async Task<ActionResult<bool>> RegisterManager([FromBody] UserCredentialsRequest managerRegisterRequest)
+        {
+            var result = await _userService.Register(managerRegisterRequest);
+
+            return result
+                ? Ok(result)
+                : BadRequest();
+        }
+
+        // uses
+        [Authorize(Roles = "Manager")]
+        [HttpPut("update/{username}")]
         public async Task<ActionResult> Update(string username, [FromBody] UserRequest userRequest)
         {
             var result = await _userService.Update(username, userRequest);
@@ -34,8 +60,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpDelete(template: "delete/{username}")]
+        [HttpDelete("delete/{username}")]
         public async Task<ActionResult> Delete(string username)
         {
             var result = await _userService.Delete(username);
@@ -45,8 +72,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpGet(template: "getpage")]
+        [HttpGet("getpage")]
         public async Task<ActionResult<ResponseList<UserResponse>>> GetPage(
             [FromQuery] int pageNumber,
             [FromQuery] int pageSize)

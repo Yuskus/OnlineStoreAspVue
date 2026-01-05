@@ -12,6 +12,5 @@ namespace OnlineStore.Server.Services.Orders
         Task<OrderResponse?> GetBasketOrder(Guid customerId);
         Task<ResponseList<OrderResponse>> GetPage(PageInfo pageInfo);
         Task<ResponseList<OrderResponse>> GetPageByCriteria(OrderFilterCriteria criteria, PageInfo pageInfo);
-        Task<OrderResponse?> GetOneByCriteria(OrderFilterCriteria criteria);
     }
 }

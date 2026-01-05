@@ -43,6 +43,10 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("character varying(9)")
                         .HasColumnName("code");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp")
+                        .HasColumnName("created_at");
+
                     b.Property<int>("Discount")
                         .HasColumnType("integer")
                         .HasColumnName("discount");
@@ -53,10 +57,12 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_customers");
 
                     b.HasIndex("Code")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_customers_code");
 
                     b.ToTable("customers", (string)null);
                 });
@@ -79,6 +85,10 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("character varying(12)")
                         .HasColumnName("code");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -89,10 +99,12 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("decimal(10, 2)")
                         .HasColumnName("price");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_items");
 
                     b.HasIndex("Code")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_items_code");
 
                     b.ToTable("items", (string)null);
                 });
@@ -103,6 +115,10 @@ namespace OnlineStore.Server.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp")
+                        .HasColumnName("created_at");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid")
@@ -125,9 +141,11 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("date")
                         .HasColumnName("shipment_date");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_orders");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("ix_orders_customer_id");
 
                     b.ToTable("orders", (string)null);
                 });
@@ -138,6 +156,10 @@ namespace OnlineStore.Server.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp")
+                        .HasColumnName("created_at");
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid")
@@ -155,11 +177,14 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("order_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_order_elements");
 
-                    b.HasIndex("ItemId");
+                    b.HasIndex("ItemId")
+                        .HasDatabaseName("ix_order_elements_item_id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_order_elements_order_id");
 
                     b.ToTable("order_elements", (string)null);
                 });
@@ -170,6 +195,10 @@ namespace OnlineStore.Server.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp")
+                        .HasColumnName("created_at");
 
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid")
@@ -195,15 +224,18 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("username");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
 
                     b.HasIndex("CustomerId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_customer_id");
 
                     b.HasIndex("Username")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_username");
 
-                    b.ToTable("users_table", (string)null);
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("OnlineStore.Server.Database.Entities.Order", b =>
@@ -213,7 +245,7 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("1tomany_customer_to_orders_fk");
+                        .HasConstraintName("fk_orders_customers_customer_id");
 
                     b.Navigation("Customer");
                 });
@@ -225,14 +257,14 @@ namespace OnlineStore.Server.Database.Migrations
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("1tomany_item_to_order_elements_fk");
+                        .HasConstraintName("fk_order_elements_items_item_id");
 
                     b.HasOne("OnlineStore.Server.Database.Entities.Order", "Order")
                         .WithMany("OrderElements")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("manyto1_order_elements_to_order_fk");
+                        .HasConstraintName("fk_order_elements_orders_order_id");
 
                     b.Navigation("Item");
 
@@ -244,7 +276,8 @@ namespace OnlineStore.Server.Database.Migrations
                     b.HasOne("OnlineStore.Server.Database.Entities.Customer", "Customer")
                         .WithOne("User")
                         .HasForeignKey("OnlineStore.Server.Database.Entities.User", "CustomerId")
-                        .HasConstraintName("1to1_customer_to_user_fk");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("fk_users_customers_customer_id");
 
                     b.Navigation("Customer");
                 });

@@ -7,9 +7,7 @@ namespace OnlineStore.Server.Validation.Items
     {
         public static bool CheckCriteria(ItemFilterCriteria criteria)
         {
-            return criteria.Id != Guid.Empty
-                && CheckCategory(criteria.Category)
-                && (criteria.Code is null || CheckCode(criteria.Code))
+            return CheckCategory(criteria.Category)
                 && (criteria.Name is null || CheckName(criteria.Name));
         }
 

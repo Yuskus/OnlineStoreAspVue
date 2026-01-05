@@ -11,7 +11,6 @@ namespace OnlineStore.Server.Repositories.Items
         Task<bool> Delete(Guid id);
         Task<ResponseList<ItemResponse>> GetPage(PageInfo pageInfo);
         Task<ResponseList<ItemResponse>> GetPageByCriteria(ItemFilterCriteria criteria, PageInfo pageInfo);
-        Task<ItemResponse?> GetOneByCriteria(ItemFilterCriteria criteria);
         ImmutableSortedSet<string> GetAllCategories();
     }
 }

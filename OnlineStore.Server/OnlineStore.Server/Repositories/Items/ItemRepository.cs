@@ -31,7 +31,11 @@ namespace OnlineStore.Server.Repositories.Items
         {
             if (await _context.Items.FirstOrDefaultAsync(x => x.Id == id) is Item itemEntity)
             {
-                itemEntity.UpdateInDb(item);
+                itemEntity.Code = item.Code;
+                itemEntity.Name = item.Name;
+                itemEntity.Price = item.Price;
+                itemEntity.Category = item.Category;
+
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -55,7 +59,10 @@ namespace OnlineStore.Server.Repositories.Items
 
         public ImmutableSortedSet<string> GetAllCategories()
         {
-            return [.. _context.Items.Select(x => x.Category ?? "") ];
+            return [.. _context.Items
+                .Select(x => x.Category)
+                .Where(x => x != null)
+                .Cast<string>() ];
         }
 
         public async Task<ResponseList<ItemResponse>> GetPage(PageInfo pageInfo)
@@ -91,27 +98,11 @@ namespace OnlineStore.Server.Repositories.Items
             };
         }
 
-        public async Task<ItemResponse?> GetOneByCriteria(ItemFilterCriteria criteria)
-        {
-            IQueryable<Item> filtredQuery = FilteringItems(criteria);
-
-            return (await filtredQuery
-                .FirstOrDefaultAsync())?.MapFromDb();
-        }
-
         private IQueryable<Item> FilteringItems(ItemFilterCriteria criteria)
         {
             IQueryable<Item> items = _context.Items
                 .AsSingleQuery();
 
-            if (criteria.Id is not null)
-            {
-                items = items.Where(x => x.Id == criteria.Id);
-            }
-            if (criteria.Code is not null)
-            {
-                items = items.Where(x => x.Code == criteria.Code);
-            }
             if (criteria.Category is not null)
             {
                 items = items.Where(x => x.Category == criteria.Category);

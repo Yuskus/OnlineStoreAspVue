@@ -9,7 +9,6 @@ namespace OnlineStore.Server.Mapping.Customers
         {
             return new()
             {
-                Id = Guid.NewGuid(),
                 Name = customer.Name,
                 Code = customer.Code,
                 Address = customer.Address,
@@ -21,7 +20,6 @@ namespace OnlineStore.Server.Mapping.Customers
         {
             return new()
             {
-                Id = Guid.NewGuid(),
                 Name = customer.Name,
                 Code = customer.Code,
                 Address = customer.Address,
@@ -39,14 +37,6 @@ namespace OnlineStore.Server.Mapping.Customers
                 Address = customer.Address,
                 Discount = customer.Discount
             };
-        }
-
-        public static void UpdateInDb(this Customer customerEntity, CustomerRequest customer)
-        {
-            customerEntity.Name = customer.Name;
-            customerEntity.Code = customer.Code;
-            customerEntity.Address = customer.Address;
-            customerEntity.Discount = customer.Discount;
         }
     }
 }

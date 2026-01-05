@@ -13,8 +13,9 @@ namespace OnlineStore.Server.Controllers
     {
         private readonly IItemService _itemService = itemService;
 
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpPost(template: "add")]
+        [HttpPost("add")]
         public async Task<ActionResult<Guid>> Create([FromBody] ItemRequest item)
         {
             var result = await _itemService.Create(item);
@@ -24,8 +25,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpPut(template: "update/{id:guid}")]
+        [HttpPut("update/{id:guid}")]
         public async Task<ActionResult> Update(Guid id, [FromBody] ItemRequest item)
         {
             var result = await _itemService.Update(id, item);
@@ -35,8 +37,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpDelete(template: "delete/{id:guid}")]
+        [HttpDelete("delete/{id:guid}")]
         public async Task<ActionResult> Delete(Guid id)
         {
             var result = await _itemService.Delete(id);
@@ -46,8 +49,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpGet(template: "getpage")]
+        [HttpGet("getpage")]
         public async Task<ActionResult<ResponseList<ItemResponse>>> GetPage(
             [FromQuery] int pageNumber,
             [FromQuery] int pageSize)
@@ -63,8 +67,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpGet(template: "getpagebycriteria")]
+        [HttpPost("getpagebycriteria")]
         public async Task<ActionResult<ResponseList<ItemResponse>>> GetPageByCriteria(
             [FromBody] ItemFilterCriteria criteria,
             [FromQuery] int pageNumber,
@@ -81,22 +86,12 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpGet(template: "getcategories")]
+        [HttpGet("getcategories")]
         public ActionResult<ImmutableSortedSet<string>> GetAllCategories()
         {
             var result = _itemService.GetAllCategories();
-            
-            return result is not null
-                ? Ok(result)
-                : BadRequest();
-        }
-
-        [Authorize]
-        [HttpGet(template: "getone")]
-        public async Task<ActionResult<ItemResponse>> GetOneByCriteria([FromBody] ItemFilterCriteria criteria)
-        {
-            var result = await _itemService.GetOneByCriteria(criteria);
             
             return result is not null
                 ? Ok(result)

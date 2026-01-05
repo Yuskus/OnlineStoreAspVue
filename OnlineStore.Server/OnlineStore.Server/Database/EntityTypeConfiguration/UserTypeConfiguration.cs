@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OnlineStore.Server.Database.Entities;
+using OnlineStore.Server.Extensions.BCL.Structures;
+using System.Globalization;
 
 namespace OnlineStore.Server.Database.EntityTypeConfiguration
 {
@@ -8,36 +10,31 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            // table name
-            builder.ToTable("users_table");
-
             // properties
             builder.Property(p => p.Id)
                    .IsRequired()
                    .ValueGeneratedOnAdd()
-                   .HasColumnType("uuid")
-                   .HasColumnName("id");
+                   .HasColumnType("uuid");
+
+            builder.Property(p => p.CreatedAt)
+                   .IsRequired()
+                   .HasColumnType("timestamp");
 
             builder.Property(p => p.CustomerId)
-                   .HasColumnType("uuid")
-                   .HasColumnName("customer_id");
+                   .HasColumnType("uuid");
 
             builder.Property(p => p.Username)
                    .IsRequired()
-                   .HasMaxLength(100)
-                   .HasColumnName("username");
+                   .HasMaxLength(100);
 
             builder.Property(p => p.Password)
-                   .IsRequired()
-                   .HasColumnName("password");
+                   .IsRequired();
 
             builder.Property(p => p.Salt)
-                   .IsRequired()
-                   .HasColumnName("salt");
+                   .IsRequired();
 
             builder.Property(p => p.Role)
-                   .IsRequired()
-                   .HasColumnName("role");
+                   .IsRequired();
 
             // indexes
             builder.HasIndex(p => p.Username)
@@ -47,7 +44,7 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
             builder.HasOne(p => p.Customer)
                    .WithOne(p => p.User)
                    .HasForeignKey<User>(p => p.CustomerId)
-                   .HasConstraintName("1to1_customer_to_user_fk");
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

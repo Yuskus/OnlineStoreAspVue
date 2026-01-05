@@ -15,7 +15,7 @@ namespace OnlineStore.Server.Repositories.Orders
 
         public async Task<Guid?> Create(OrderRequest order)
         {
-            if (await _context.Orders.AnyAsync(x => x.CustomerId == order.CustomerId) == false) return null;
+            if (!await _context.Customers.AnyAsync(x => x.Id == order.CustomerId)) return null;
 
             Order orderEntity = order.MapToDb();
 
@@ -28,15 +28,17 @@ namespace OnlineStore.Server.Repositories.Orders
 
         public async Task<bool> Update(Guid orderId, OrderRequest order)
         {
-            if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId) is Order orderEntity)
+            if (await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId) is Order orderEntity &&
+                await _context.Customers.AnyAsync(x => x.Id == order.CustomerId))
             {
-                if (await _context.Customers.AnyAsync(x => x.Id == order.CustomerId))
-                {
-                    orderEntity.UpdateInDb(order);
-                    await _context.SaveChangesAsync();
+                orderEntity.CustomerId = order.CustomerId;
+                orderEntity.OrderDate = DateOnly.Parse(order.OrderDate);
+                orderEntity.ShipmentDate = DateOnly.TryParse(order.ShipmentDate, out DateOnly date) ? date : null;
+                orderEntity.OrderStatus = order.OrderStatus;
 
-                    return true;
-                }
+                await _context.SaveChangesAsync();
+
+                return true;
             }
 
             return false;

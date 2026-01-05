@@ -2,21 +2,26 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OnlineStore.Server.Authorization.Abstractions;
+using OnlineStore.Server.Authorization.Implementations;
 using OnlineStore.Server.Authorization.Utilities;
 using OnlineStore.Server.Database.Context;
+using OnlineStore.Server.Database.Seed;
+using OnlineStore.Server.Extensions.BCL.Exceptions;
 using OnlineStore.Server.Middleware;
 using OnlineStore.Server.Repositories.Customers;
 using OnlineStore.Server.Repositories.Items;
-using OnlineStore.Server.Repositories.Orders;
 using OnlineStore.Server.Repositories.OrderElements;
+using OnlineStore.Server.Repositories.Orders;
 using OnlineStore.Server.Repositories.Users;
 using OnlineStore.Server.Services.Customers;
 using OnlineStore.Server.Services.Items;
-using OnlineStore.Server.Services.Orders;
 using OnlineStore.Server.Services.OrderElements;
+using OnlineStore.Server.Services.Orders;
 using OnlineStore.Server.Services.Users;
 using OnlineStore.Server.Utilities.Common.Database;
 using OnlineStore.Server.Utilities.Order.Generators;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace OnlineStore.Server
 {
@@ -30,8 +35,6 @@ namespace OnlineStore.Server
                                  .AddEnvironmentVariables();
 
             builder.Services.AddControllers();
-            builder.Services.AddExceptionCatcher();
-
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
@@ -94,59 +97,69 @@ namespace OnlineStore.Server
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new RsaSecurityKey(KeyTool.GetPublicKey())
+                    IssuerSigningKey = new RsaSecurityKey(KeyTool.GetPublicKey(builder.Configuration))
                 };
             });
 
             builder.Services.AddDbContext<OnlineStoreDbContext>(options =>
             {
-                options.UseLazyLoadingProxies().UseNpgsql(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-                    ?? builder.Configuration["DB_CONNECTION_STRING"]
-                    ?? throw new Exception("connection string not found!"));
+                options
+                    .UseLazyLoadingProxies()
+                    .UseNpgsql(
+                        builder.Configuration["DB_CONNECTION_STRING"]
+                            ?? throw new EnvironmentVariableNotFoundException("Connection string not found!"),
+                        o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
+                    .UseSnakeCaseNamingConvention();
             },
             ServiceLifetime.Scoped);
 
+            // repo
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<IItemRepository, ItemRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IOrderElementRepository, OrderElementRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+            // services
             builder.Services.AddScoped<ICustomerService, CustomerService>();
             builder.Services.AddScoped<IItemService, ItemService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IOrderElementService, OrderElementService>();
             builder.Services.AddScoped<IUserService, UserService>();
 
+            // additionally
+            builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
+            builder.Services.AddScoped<ExceptionCatcherMiddleware>();
             builder.Services.AddScoped<INumberGenerator, OrderNumberGenerator>();
             builder.Services.AddScoped<ITransactionService, TransactionService>();
 
+            // logging
             builder.Logging.AddDebug()
                            .AddConsole();
 
             var app = builder.Build();
 
+            app.UseMiddleware<ExceptionCatcherMiddleware>();
+
+            // auto migrate
             using (var scope = app.Services.CreateScope())
             {
                 using var context = scope.ServiceProvider.GetRequiredService<OnlineStoreDbContext>();
                 await context.Database.MigrateAsync();
+                await Seeder.StartSeed(context);
             }
 
-            app.UseExceptionCatcher();
-
+            // swagger
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
                 options.RoutePrefix = string.Empty;
+                options.DocExpansion(DocExpansion.None);
             });
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             app.UseHttpsRedirection();
+            app.UseRouting();
 
             app.UseCors("AllowedOrigins");
 
@@ -155,7 +168,7 @@ namespace OnlineStore.Server
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }

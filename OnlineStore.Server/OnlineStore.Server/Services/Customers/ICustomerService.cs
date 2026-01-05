@@ -7,6 +7,5 @@ namespace OnlineStore.Server.Services.Customers
     {
         Task<bool> Update(Guid id, CustomerRequest request);
         Task<ResponseList<CustomerResponse>> GetPage(PageInfo pageInfo);
-        Task<CustomerResponse?> GetOneByCriteria(CustomerFilterCriteria criteria);
     }
 }

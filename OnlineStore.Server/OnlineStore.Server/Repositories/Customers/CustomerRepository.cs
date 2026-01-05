@@ -1,15 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Castle.Core.Resource;
+using Microsoft.EntityFrameworkCore;
 using OnlineStore.Server.Database.Context;
+using OnlineStore.Server.Database.Entities;
 using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.Customers;
 using OnlineStore.Server.Mapping.Customers;
-using OnlineStore.Server.Database.Entities;
 
 namespace OnlineStore.Server.Repositories.Customers
 {
     public class CustomerRepository(OnlineStoreDbContext context) : ICustomerRepository
     {
         private readonly OnlineStoreDbContext _context = context;
+
+        public async Task<CustomerResponse?> Get(Guid id)
+        {
+            var customer = await _context.Customers.FirstOrDefaultAsync(x => x.Id == id);
+
+            return customer?.MapFromDb();
+        }
 
         public async Task<Guid?> CreateIfNotExists(CustomerBaseRequest customer)
         {
@@ -47,13 +55,17 @@ namespace OnlineStore.Server.Repositories.Customers
 
             if (customerEntity is null) return false;
 
-            if (customerEntity.Code != customer.Code)
+            if (customerEntity.Code != customer.Code &&
+                await _context.Customers.AnyAsync(x => x.Code == customer.Code))
             {
-                // на случай изменения кода новый код должен быть уникален
-                if (await _context.Customers.AnyAsync(x => x.Code == customer.Code)) return false;
+                return false;
             }
 
-            customerEntity.UpdateInDb(customer);
+            customerEntity.Name = customer.Name;
+            customerEntity.Code = customer.Code;
+            customerEntity.Address = customer.Address;
+            customerEntity.Discount = customer.Discount;
+
             await _context.SaveChangesAsync();
 
             return true;
@@ -74,22 +86,6 @@ namespace OnlineStore.Server.Repositories.Customers
                 TotalCount = await query
                     .CountAsync()
             };
-        }
-
-        public async Task<CustomerResponse?> GetOneByCriteria(CustomerFilterCriteria criteria)
-        {
-            Customer? result = null;
-
-            if (criteria.Id is not null)
-            {
-                result = await _context.Customers.FirstOrDefaultAsync(x => x.Id == criteria.Id);
-            }
-            else if (criteria.Code is not null)
-            {
-                result = await _context.Customers.FirstOrDefaultAsync(x => x.Code == criteria.Code);
-            }
-
-            return result?.MapFromDb();
         }
     }
 }

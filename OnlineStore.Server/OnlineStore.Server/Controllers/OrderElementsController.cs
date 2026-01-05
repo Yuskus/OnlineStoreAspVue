@@ -11,8 +11,9 @@ namespace OnlineStore.Server.Controllers
     {
         private readonly IOrderElementService _orderElementService = orderElementService;
 
+        // uses
         [Authorize]
-        [HttpPost(template: "add")]
+        [HttpPost("add")]
         public async Task<ActionResult<Guid>> Create([FromBody] OrderElementRequest orderElement)
         {
             var result = await _orderElementService.Create(orderElement);
@@ -22,8 +23,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpPut(template: "update/{id}")]
+        [HttpPut("update/{id:guid}")]
         public async Task<ActionResult> Update(Guid id, [FromBody] UpdateOrderElementRequest orderElement)
         {
             var result = await _orderElementService.Update(id, orderElement);
@@ -33,8 +35,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpDelete(template: "delete/{id}")]
+        [HttpDelete("delete/{id:guid}")]
         public async Task<ActionResult> Delete(Guid id)
         {
             var result = await _orderElementService.Delete(id);
@@ -44,8 +47,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpGet(template: "getbyorderid/{id}")]
+        [HttpGet("getbyorderid/{id:guid}")]
         public async Task<ActionResult<IEnumerable<OrderElementResponse>>> GetAllByOrderId(Guid id)
         {
             var result = await _orderElementService.GetAllByOrderId(id);

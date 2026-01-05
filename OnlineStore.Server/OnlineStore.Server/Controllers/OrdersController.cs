@@ -13,7 +13,7 @@ namespace OnlineStore.Server.Controllers
         private readonly IOrderService _orderService = orderService;
 
         [Authorize]
-        [HttpPost(template: "add")]
+        [HttpPost("add")]
         public async Task<ActionResult<Guid>> Create([FromBody] OrderRequest order)
         {
             var result = await _orderService.Create(order);
@@ -23,8 +23,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpPut(template: "update/{id}")]
+        [HttpPut("update/{id:guid}")]
         public async Task<ActionResult<bool>> Update(Guid id, [FromBody] OrderRequest order)
         {
             var result = await _orderService.Update(id, order);
@@ -34,8 +35,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpDelete(template: "delete/{id}")]
+        [HttpDelete("delete/{id:guid}")]
         public async Task<ActionResult<bool>> Delete(Guid id)
         {
             var result = await _orderService.Delete(id);
@@ -45,8 +47,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize(Roles = "User, Manager")]
-        [HttpGet(template: "getbasket/{customerId}")]
+        [HttpGet("getbasket/{customerId:guid}")]
         public async Task<ActionResult<OrderResponse?>> GetBasketOrder(Guid customerId)
         {
             var result = await _orderService.GetBasketOrder(customerId);
@@ -56,8 +59,9 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize(Roles = "User")]
-        [HttpPatch(template: "placeanorder/{orderId}")]
+        [HttpPatch("placeanorder/{orderId:guid}")]
         public async Task<ActionResult<bool>> PlaceAnOrder(Guid orderId)
         {
             var result = await _orderService.PlaceAnOrder(orderId);
@@ -67,9 +71,12 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpGet(template: "getpage")]
-        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPage([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        [HttpGet("getpage")]
+        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPage(
+            [FromQuery] int pageNumber,
+            [FromQuery] int pageSize)
         {
             var result = await _orderService.GetPage(new PageInfo
             {
@@ -82,26 +89,19 @@ namespace OnlineStore.Server.Controllers
                 : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpGet(template: "getpagebycriteria")]
-        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPageByCriteria(OrderFilterCriteria criteria, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        [HttpPost("getpagebycriteria")]
+        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPageByCriteria(
+            [FromBody] OrderFilterCriteria criteria,
+            [FromQuery] int pageNumber,
+            [FromQuery] int pageSize)
         {
             var result = await _orderService.GetPageByCriteria(criteria, new PageInfo
             {
                 Number = pageNumber,
                 Size = pageSize
             });
-            
-            return result is not null
-                ? Ok(result)
-                : BadRequest();
-        }
-
-        [Authorize]
-        [HttpGet(template: "getone")]
-        public async Task<ActionResult<OrderResponse>> GetOneByCriteria(OrderFilterCriteria criteria)
-        {
-            var result = await _orderService.GetOneByCriteria(criteria);
             
             return result is not null
                 ? Ok(result)

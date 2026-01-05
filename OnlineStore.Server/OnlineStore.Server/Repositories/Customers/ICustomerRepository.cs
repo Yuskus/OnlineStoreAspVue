@@ -5,10 +5,10 @@ namespace OnlineStore.Server.Repositories.Customers
 {
     public interface ICustomerRepository
     {
+        Task<CustomerResponse?> Get(Guid id);
         Task<Guid?> CreateIfNotExists(CustomerBaseRequest customer);
         Task<Guid?> CreateIfNotExists(CustomerRequest customer);
         Task<bool> Update(Guid id, CustomerRequest customer);
         Task<ResponseList<CustomerResponse>> GetPage(PageInfo pageInfo);
-        Task<CustomerResponse?> GetOneByCriteria(CustomerFilterCriteria criteria);
     }
 }

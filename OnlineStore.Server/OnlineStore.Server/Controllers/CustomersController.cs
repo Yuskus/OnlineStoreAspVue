@@ -12,8 +12,9 @@ namespace OnlineStore.Server.Controllers
     {
         private readonly ICustomerService _customerService = customerService;
 
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpPut(template: "update/{id:guid}")]
+        [HttpPut("update/{id:guid}")]
         public async Task<ActionResult<bool>> Update(Guid id, [FromBody] CustomerRequest customer)
         {
             var result = await _customerService.Update(id, customer);
@@ -24,7 +25,7 @@ namespace OnlineStore.Server.Controllers
         }
 
         [Authorize(Roles = "Manager")]
-        [HttpGet(template: "getpage")]
+        [HttpGet("getpage")]
         public async Task<ActionResult<ResponseList<CustomerResponse>>> GetPage(
             [FromQuery] int pageNumber,
             [FromQuery] int pageSize)
@@ -35,17 +36,6 @@ namespace OnlineStore.Server.Controllers
                 Size = pageSize
             });
 
-            return result is not null
-                ? Ok(result)
-                : BadRequest();
-        }
-
-        [Authorize(Roles = "Manager")]
-        [HttpGet(template: "getone")]
-        public async Task<ActionResult<CustomerResponse>> GetOneByCriteria([FromBody] CustomerFilterCriteria criteria)
-        {
-            var result = await _customerService.GetOneByCriteria(criteria);
-            
             return result is not null
                 ? Ok(result)
                 : BadRequest();

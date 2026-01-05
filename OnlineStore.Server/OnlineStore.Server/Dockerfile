@@ -7,6 +7,14 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+ARG DB_CONNECTION_STRING
+ENV DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+ARG PUBLIC_KEY
+ENV PUBLIC_KEY=${PUBLIC_KEY}
+ARG PRIVATE_KEY
+ENV PRIVATE_KEY=${PRIVATE_KEY}
+
+ENV TZ Europe/Moscow
 
 # Этот этап используется для сборки проекта службы
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build

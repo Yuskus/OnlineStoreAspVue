@@ -10,7 +10,6 @@ namespace OnlineStore.Server.Mapping.OrderElements
         {
             return new()
             {
-                Id = Guid.NewGuid(),
                 OrderId = orderElement.OrderId,
                 ItemId = orderElement.ItemId,
                 ItemsCount = orderElement.ItemsCount,
@@ -29,12 +28,6 @@ namespace OnlineStore.Server.Mapping.OrderElements
                 ItemsCount = orderElement.ItemsCount,
                 ItemPrice = orderElement.ItemPrice
             };
-        }
-
-        public static void UpdateInDb(this OrderElement orderElementEntity, UpdateOrderElementRequest orderElement)
-        {
-            orderElementEntity.ItemsCount = orderElement.ItemsCount;
-            orderElementEntity.ItemPrice = orderElement.ItemPrice;
         }
     }
 }

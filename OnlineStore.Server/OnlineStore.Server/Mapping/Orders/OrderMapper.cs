@@ -9,22 +9,10 @@ namespace OnlineStore.Server.Mapping.Orders
         {
             return new()
             {
-                Id = Guid.NewGuid(),
                 CustomerId = order.CustomerId,
                 OrderDate = DateOnly.Parse(order.OrderDate),
                 ShipmentDate = DateOnly.TryParse(order.ShipmentDate, out DateOnly date) ? date : null,
                 OrderStatus = order.OrderStatus
-            };
-        }
-
-        public static OrderRequest MapToRequest(this OrderResponse response)
-        {
-            return new()
-            {
-                CustomerId = response.CustomerId,
-                OrderDate = response.OrderDate.ToString(),
-                ShipmentDate = response.ShipmentDate?.ToString(),
-                OrderStatus = response.OrderStatus
             };
         }
 
@@ -40,14 +28,6 @@ namespace OnlineStore.Server.Mapping.Orders
                 OrderNumber = order.OrderNumber,
                 OrderStatus = order.OrderStatus
             };
-        }
-
-        public static void UpdateInDb(this Order orderEntity, OrderRequest order)
-        {
-            orderEntity.CustomerId = order.CustomerId;
-            orderEntity.OrderDate = DateOnly.Parse(order.OrderDate);
-            orderEntity.ShipmentDate = DateOnly.TryParse(order.ShipmentDate, out DateOnly date) ? date : null;
-            orderEntity.OrderStatus = order.OrderStatus;
         }
     }
 }

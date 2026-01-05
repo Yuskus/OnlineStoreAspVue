@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OnlineStore.Server.Database.Entities;
+using OnlineStore.Server.Extensions.BCL.Structures;
+using System.Globalization;
 
 namespace OnlineStore.Server.Database.EntityTypeConfiguration
 {
@@ -8,33 +10,29 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Item> builder)
         {
-            // table name
-            builder.ToTable("items");
-
             // properties
             builder.Property(p => p.Id)
                    .IsRequired()
                    .ValueGeneratedOnAdd()
-                   .HasColumnType("uuid")
-                   .HasColumnName("id");
+                   .HasColumnType("uuid");
+
+            builder.Property(p => p.CreatedAt)
+                   .IsRequired()
+                   .HasColumnType("timestamp");
 
             builder.Property(p => p.Code)
                    .IsRequired()
-                   .HasMaxLength(12)
-                   .HasColumnName("code");
+                   .HasMaxLength(12);
 
             builder.Property(p => p.Name)
                    .IsRequired()
-                   .HasMaxLength(255)
-                   .HasColumnName("name");
+                   .HasMaxLength(255);
 
             builder.Property(p => p.Price)
-                   .HasColumnType("decimal(10, 2)")
-                   .HasColumnName("price");
+                   .HasColumnType("decimal(10, 2)");
 
             builder.Property(p => p.Category)
-                   .HasMaxLength(255)
-                   .HasColumnName("category");
+                   .HasMaxLength(255);
 
             // indexes
             builder.HasIndex(p => p.Code)
@@ -44,7 +42,7 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
             builder.HasMany(p => p.OrderElements)
                    .WithOne(p => p.Item)
                    .HasForeignKey(p => p.ItemId)
-                   .HasConstraintName("manyto1_order_elements_to_item_fk");
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

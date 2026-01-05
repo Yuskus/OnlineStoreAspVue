@@ -1,17 +1,21 @@
 ﻿using OnlineStore.Server.Constants.Orders;
 using OnlineStore.Server.Database.Entities;
 using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.Customers;
 using OnlineStore.Server.DTO.Orders;
-using OnlineStore.Server.Mapping.Orders;
+using OnlineStore.Server.Repositories.Customers;
 using OnlineStore.Server.Repositories.Orders;
 using OnlineStore.Server.Validation.Customers;
 using OnlineStore.Server.Validation.Orders;
 
 namespace OnlineStore.Server.Services.Orders
 {
-    public class OrderService(IOrderRepository orderRepository) : IOrderService
+    public class OrderService(
+        IOrderRepository orderRepository,
+        ICustomerRepository customerRepository) : IOrderService
     {
         private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly ICustomerRepository _customerRepository = customerRepository;
 
         public async Task<Guid?> Create(OrderRequest request)
         {
@@ -52,28 +56,35 @@ namespace OnlineStore.Server.Services.Orders
 
         public async Task<OrderResponse?> GetBasketOrder(Guid customerId)
         {
+            Console.WriteLine("customerId - " + customerId);
             if (!CustomerValidator.CheckGuid(customerId)) return null;
 
-            if (await _orderRepository.GetOneByCriteria(new() { CustomerId = customerId }) is null) return null;
+            if (await _customerRepository.Get(customerId) is null) return null;
 
             OrderResponse? basket = await _orderRepository.GetOneByCriteria(new()
             {
                 CustomerId = customerId,
                 OrderStatus = OrderStatuses.Basket
             });
+            Console.WriteLine("basket - " + (basket != null));
 
             if (basket is null)
             {
+                Console.WriteLine("basket is null");
                 var request = new OrderRequest()
                 {
                     CustomerId = customerId,
-                    OrderDate = DateOnly.FromDateTime(DateTime.Now).ToString(),
+                    OrderDate = DateOnly.FromDateTime(DateTime.Now).ToString("yyyy-MM-dd"),
                     OrderStatus = OrderStatuses.Basket
                 };
 
                 Guid? guid = await _orderRepository.Create(request);
 
-                basket = await _orderRepository.GetOneByCriteria(new() { Id = guid });
+                if (guid != null)
+                {
+                    Console.WriteLine("basket - " + guid);
+                    basket = await _orderRepository.GetOneByCriteria(new() { Id = guid });
+                }
             }
 
             return basket;
@@ -91,10 +102,13 @@ namespace OnlineStore.Server.Services.Orders
 
             if (basket is null) return false;
 
-            OrderRequest updateRequest = basket.MapToRequest();
-            updateRequest.OrderStatus = OrderStatuses.New;
-
-            return await _orderRepository.Update(basket.Id, updateRequest);
+            return await _orderRepository.Update(basket.Id, new()
+            {
+                CustomerId = basket.CustomerId,
+                OrderDate = basket.OrderDate.ToString(),
+                ShipmentDate = basket.ShipmentDate?.ToString(),
+                OrderStatus = OrderStatuses.New
+            });
         }
 
         public async Task<ResponseList<OrderResponse>> GetPage(PageInfo pageInfo)
@@ -120,18 +134,6 @@ namespace OnlineStore.Server.Services.Orders
             }
 
             return new ResponseList<OrderResponse>();
-        }
-
-        public async Task<OrderResponse?> GetOneByCriteria(OrderFilterCriteria criteria)
-        {
-            bool isValid = OrderValidator.CheckCriteria(criteria);
-
-            if (isValid)
-            {
-                return await _orderRepository.GetOneByCriteria(criteria);
-            }
-
-            return null;
         }
     }
 }

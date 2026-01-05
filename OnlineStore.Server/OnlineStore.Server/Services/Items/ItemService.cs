@@ -47,18 +47,6 @@ namespace OnlineStore.Server.Services.Items
             return false;
         }
 
-        public async Task<ItemResponse?> GetOneByCriteria(ItemFilterCriteria criteria)
-        {
-            bool isValid = ItemValidator.CheckCriteria(criteria);
-
-            if (isValid)
-            {
-                return await _itemRepository.GetOneByCriteria(criteria);
-            }
-
-            return null;
-        }
-
         public async Task<ResponseList<ItemResponse>> GetPageByCriteria(ItemFilterCriteria criteria, PageInfo pageInfo)
         {
             bool isValid = ItemValidator.CheckCriteria(criteria)

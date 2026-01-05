@@ -46,7 +46,7 @@ namespace OnlineStore.Server.Services.Users
 
         public async Task<bool> Register(CustomerRegisterRequest request)
         {
-            await _transactionService.BeginTransactionAsync();
+            using var transaction = await _transactionService.BeginTransactionAsync();
 
             try
             {
@@ -64,25 +64,20 @@ namespace OnlineStore.Server.Services.Users
                 {
                     bool result = await _userRepository.CreateCustomerIfNotExists(request);
 
-                    await _transactionService.SaveChangesAsync();
-                    await _transactionService.CommitAsync();
+                    await transaction.CommitAsync();
 
                     return result;
                 }
             }
             catch (DbUpdateException ex)
             {
-                await _transactionService.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "Ошибка во время выполнения транзакции при попытке зарегистрировать пользователя (заказчика), метод Save().");
             }
             catch (Exception ex)
             {
-                await _transactionService.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "Ошибка при запросе RegisterCustomer.");
-            }
-            finally
-            {
-                await _transactionService.DisposeAsync();
             }
 
             return false;

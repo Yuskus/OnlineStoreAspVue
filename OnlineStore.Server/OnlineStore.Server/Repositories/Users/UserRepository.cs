@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.EntityFrameworkCore;
+using OnlineStore.Server.Authorization.Abstractions;
 using OnlineStore.Server.Authorization.Utilities;
 using OnlineStore.Server.Database.Context;
 using OnlineStore.Server.Database.Entities;
@@ -10,10 +12,10 @@ namespace OnlineStore.Server.Repositories.Users
 {
     public class UserRepository(
         OnlineStoreDbContext context,
-        IConfiguration configuration) : IUserRepository
+        ITokenGenerator tokenGenerator) : IUserRepository
     {
         private readonly OnlineStoreDbContext _context = context;
-        private readonly IConfiguration _configuration = configuration;
+        private readonly ITokenGenerator _tokenGenerator = tokenGenerator;
 
         public async Task<LoginResponse?> Authenticate(UserCredentialsRequest loginRequest)
         {
@@ -23,11 +25,15 @@ namespace OnlineStore.Server.Repositories.Users
 
                 if (isValid)
                 {
-                    LoginResponse response = user.MapAuthFromDb();
+                    var token = _tokenGenerator.GenerateToken(user.Username, user.Role.ToString());
 
-                    TokenGenerator.GenerateJwtToken(_configuration, response);
-
-                    return response;
+                    return new LoginResponse
+                    {
+                        CustomerId = user.CustomerId,
+                        Username = user.Username,
+                        Role = user.Role,
+                        Token = token
+                    };
                 }
             }
 
@@ -40,7 +46,7 @@ namespace OnlineStore.Server.Repositories.Users
 
             (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(registerRequest.Password);
 
-            User userEntity = registerRequest.MapUserToDb(hash, salt);
+            User userEntity = registerRequest.MapToDb(hash, salt);
 
             await _context.Users.AddAsync(userEntity);
             await _context.SaveChangesAsync();
@@ -54,7 +60,7 @@ namespace OnlineStore.Server.Repositories.Users
 
             (byte[] hash, byte[] salt) = Hasher.CreatePasswordHash(registerRequest.Password);
 
-            User userEntity = registerRequest.MapUserToDb(hash, salt);
+            User userEntity = registerRequest.MapToDb(hash, salt);
 
             await _context.Users.AddAsync(userEntity);
             await _context.SaveChangesAsync();
@@ -66,7 +72,9 @@ namespace OnlineStore.Server.Repositories.Users
         {
             if (await _context.Users.FirstOrDefaultAsync(x => x.Username == username) is User user)
             {
-                user.UpdateInDb(userRequest); // меняем только роль и логин (логика смены пароля не добавлена)
+                user.Username = userRequest.Username;
+                user.Role = userRequest.Role;
+
                 await _context.SaveChangesAsync();
 
                 return true;

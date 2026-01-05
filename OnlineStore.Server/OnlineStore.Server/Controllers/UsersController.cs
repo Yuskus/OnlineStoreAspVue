@@ -1,132 +1,93 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Server.DTO.Common;
-using OnlineStore.Server.DTO.Order;
-using OnlineStore.Server.DTO.User;
-using OnlineStore.Server.Services.User;
-using OnlineStore.Server.Services.User.RegistrationService;
+using OnlineStore.Server.DTO.Users;
+using OnlineStore.Server.Services.Users;
 
 namespace OnlineStore.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController(IUserService userService, ICustomerRegistrationService registrationService, ILogger<UsersController> logger) : ControllerBase
+    public class UsersController(IUserService userService) : ControllerBase
     {
         private readonly IUserService _userService = userService;
-        private readonly ICustomerRegistrationService _registrationService = registrationService;
-        private readonly ILogger<UsersController> _logger = logger;
 
-        [Authorize(Roles = "Manager")]
-        [HttpGet(template: "getpage")]
-        public async Task<ActionResult<ResponseList<UserResponse>>> GetPageOfUsersInfo([FromQuery] int pageNumber, [FromQuery] int pageSize)
-        {
-            try
-            {
-                ResponseList<UserResponse> result = await _userService.GetPageOfUsersInfo(pageNumber, pageSize);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetUsersInfo.");
-                return StatusCode(500);
-            }
-        }
-
+        // uses
         [AllowAnonymous]
-        [HttpPost(template: "login")]
-        public async Task<ActionResult<LoginResponse>> Authenticate([FromBody] LoginRequest loginRequest)
+        [HttpPost("login")]
+        public async Task<ActionResult<LoginResponse>> Authenticate([FromBody] UserCredentialsRequest loginRequest)
         {
-            try
-            {
-                LoginResponse? result = await _userService.Authenticate(loginRequest);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе Authenticate.");
-                return StatusCode(500);
-            }
+            var result = await _userService.Authenticate(loginRequest);
+
+            return result is not null
+                ? Ok(result)
+                : BadRequest();
         }
 
+        // uses
         [AllowAnonymous]
-        [HttpPost(template: "registercustomer")]
-        public async Task<ActionResult<bool>> RegisterUser([FromBody] CustomerRegisterRequest customerRegisterRequest)
+        [HttpPost("registercustomer")]
+        public async Task<ActionResult<bool>> RegisterCustomer([FromBody] CustomerRegisterRequest customerRegisterRequest)
         {
-            try
-            {
-                _registrationService.CreateTransaction();
+            var result = await _userService.Register(customerRegisterRequest);
 
-                bool result = await _registrationService.RegisterUser(customerRegisterRequest);
-
-                if (result)
-                {
-                    await _registrationService.Save();
-                    _registrationService.Commit();
-                    return Ok(result);
-                }
-
-                _registrationService.Rollback();
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _registrationService.Rollback();
-                _logger.LogError(ex, "Ошибка при запросе RegisterUser.");
-                return StatusCode(500);
-            }
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
 
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpPost(template: "registermanager")]
-        public async Task<ActionResult<bool>> RegisterManager([FromBody] ManagerRegisterRequest managerRegisterRequest)
+        [HttpPost("registermanager")]
+        public async Task<ActionResult<bool>> RegisterManager([FromBody] UserCredentialsRequest managerRegisterRequest)
         {
-            try
-            {
-                bool result = await _userService.RegisterManager(managerRegisterRequest);
-                if (result) return Ok(result);
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе RegisterManager.");
-                return StatusCode(500);
-            }
+            var result = await _userService.Register(managerRegisterRequest);
+
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
 
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpPut(template: "update/{username}")]
-        public async Task<ActionResult> UpdateUser(string username, [FromBody] UserRequest userRequest)
+        [HttpPut("update/{username}")]
+        public async Task<ActionResult> Update(string username, [FromBody] UserRequest userRequest)
         {
-            try
-            {
-                bool result = await _userService.UpdateUser(username, userRequest);
-                if (result) return Ok(result);
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе UpdateUser.");
-                return StatusCode(500);
-            }
+            var result = await _userService.Update(username, userRequest);
+
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
 
+        // uses
         [Authorize(Roles = "Manager")]
-        [HttpDelete(template: "delete/{username}")]
-        public async Task<ActionResult> DeleteUser(string username)
+        [HttpDelete("delete/{username}")]
+        public async Task<ActionResult> Delete(string username)
         {
-            try
+            var result = await _userService.Delete(username);
+
+            return result
+                ? Ok(result)
+                : BadRequest();
+        }
+
+        // uses
+        [Authorize(Roles = "Manager")]
+        [HttpGet("getpage")]
+        public async Task<ActionResult<ResponseList<UserResponse>>> GetPage(
+            [FromQuery] int pageNumber,
+            [FromQuery] int pageSize)
+        {
+            var result = await _userService.GetPage(new PageInfo
             {
-                bool result = await _userService.DeleteUser(username);
-                if (result) return Ok(result);
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе DeleteUser.");
-                return StatusCode(500);
-            }
+                Number = pageNumber,
+                Size = pageSize
+            });
+
+            return result is not null
+                ? Ok(result)
+                : BadRequest();
         }
     }
 }

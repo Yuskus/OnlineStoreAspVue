@@ -1,4 +1,4 @@
-# См. статью по ссылке https://aka.ms/customizecontainer, чтобы узнать как настроить контейнер отладки и как Visual Studio использует этот Dockerfile для создания образов для ускорения отладки.
+﻿# См. статью по ссылке https://aka.ms/customizecontainer, чтобы узнать как настроить контейнер отладки и как Visual Studio использует этот Dockerfile для создания образов для ускорения отладки.
 
 # Этот этап используется при запуске из VS в быстром режиме (по умолчанию для конфигурации отладки)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
@@ -7,6 +7,14 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+ARG DB_CONNECTION_STRING
+ENV DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+ARG PUBLIC_KEY
+ENV PUBLIC_KEY=${PUBLIC_KEY}
+ARG PRIVATE_KEY
+ENV PRIVATE_KEY=${PRIVATE_KEY}
+
+ENV TZ Europe/Moscow
 
 # Этот этап используется для сборки проекта службы
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build

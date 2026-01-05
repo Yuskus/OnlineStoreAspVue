@@ -1,170 +1,111 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Server.DTO.Common;
-using OnlineStore.Server.DTO.Item;
-using OnlineStore.Server.DTO.Order;
-using OnlineStore.Server.Services.Order;
+using OnlineStore.Server.DTO.Orders;
+using OnlineStore.Server.Services.Orders;
 
 namespace OnlineStore.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrdersController(IOrderService orderService, ILogger<OrdersController> logger) : ControllerBase
+    public class OrdersController(IOrderService orderService) : ControllerBase
     {
         private readonly IOrderService _orderService = orderService;
-        private readonly ILogger<OrdersController> _logger = logger;
 
         [Authorize]
-        [HttpGet(template: "getpage")]
-        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPageOfOrders([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        [HttpPost("add")]
+        public async Task<ActionResult<Guid>> Create([FromBody] OrderRequest order)
         {
-            try
-            {
-                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrders(pageNumber, pageSize);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetPageOfOrders.");
-                return StatusCode(500);
-            }
+            var result = await _orderService.Create(order);
+
+            return result is not null
+                ? Ok(result.Value)
+                : BadRequest();
         }
 
+        // uses
+        [Authorize(Roles = "Manager")]
+        [HttpPut("update/{id:guid}")]
+        public async Task<ActionResult<bool>> Update(Guid id, [FromBody] OrderRequest order)
+        {
+            var result = await _orderService.Update(id, order);
+
+            return result
+                ? Ok(result)
+                : BadRequest();
+        }
+
+        // uses
         [Authorize]
-        [HttpGet(template: "getpagebycustomer/{id}")]
-        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPageOfOrdersByCustomerId(Guid id, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        [HttpDelete("delete/{id:guid}")]
+        public async Task<ActionResult<bool>> Delete(Guid id)
         {
-            try
-            {
-                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrdersByCustomerId(id, pageNumber, pageSize);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            } 
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetPageOfOrdersByCustomerId.");
-                return StatusCode(500);
-            }
+            var result = await _orderService.Delete(id);
+
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
 
-        [Authorize]
-        [HttpGet(template: "getpagebystatus/{status}")]
-        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPageOfOrdersByStatus(string status, [FromQuery] int pageNumber, [FromQuery] int pageSize)
-        {
-            try
-            {
-                ResponseList<OrderResponse> result = await _orderService.GetPageOfOrdersByStatus(status, pageNumber, pageSize);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetOrderByStatus.");
-                return StatusCode(500);
-            }
-        }
-
-        [Authorize]
-        [HttpGet(template: "getbynumber/{number}")]
-        public async Task<ActionResult<OrderResponse>> GetOrderByNumber(int number)
-        {
-            try
-            {
-                OrderResponse? result = await _orderService.GetOrderByNumber(number);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetOrderByNumber.");
-                return StatusCode(500);
-            }
-        }
-
+        // uses
         [Authorize(Roles = "User, Manager")]
-        [HttpGet(template: "getbasket/{customerId}")]
+        [HttpGet("getbasket/{customerId:guid}")]
         public async Task<ActionResult<OrderResponse?>> GetBasketOrder(Guid customerId)
         {
-            try
-            {
-                OrderResponse? result = await _orderService.GetBasketOrder(customerId);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetBasketOrder.");
-                return StatusCode(500);
-            }
+            var result = await _orderService.GetBasketOrder(customerId);
+            
+            return result is not null
+                ? Ok(result)
+                : BadRequest();
         }
 
-        [Authorize]
-        [HttpPost(template: "add")]
-        public async Task<ActionResult<Guid>> CreateOrder([FromBody] OrderRequest order)
-        {
-            try
-            {
-                Guid? result = await _orderService.CreateOrder(order);
-                if (result is null) return BadRequest();
-                return Ok((Guid)result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе CreateOrder.");
-                return StatusCode(500);
-            }
-        }
-
+        // uses
         [Authorize(Roles = "User")]
-        [HttpPatch(template: "placeanorder/{orderId}")]
+        [HttpPatch("placeanorder/{orderId:guid}")]
         public async Task<ActionResult<bool>> PlaceAnOrder(Guid orderId)
         {
-            try
-            {
-                bool result = await _orderService.PlaceAnOrder(orderId);
-                if (result) return Ok(result);
-                return BadRequest();
-            } 
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе PlaceAnOrder.");
-                return StatusCode(500);
-            }
+            var result = await _orderService.PlaceAnOrder(orderId);
+
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
 
-        [Authorize(Roles = "Manager")]
-        [HttpPut(template: "update/{id}")]
-        public async Task<ActionResult<bool>> UpdateOrder(Guid id, [FromBody] OrderRequest order)
-        {
-            try
-            {
-                bool result = await _orderService.UpdateOrder(id, order);
-                if (result) return Ok(result);
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе UpdateOrder.");
-                return StatusCode(500);
-            }
-        }
-
+        // uses
         [Authorize]
-        [HttpDelete(template: "delete/{id}")]
-        public async Task<ActionResult<bool>> DeleteOrder(Guid id)
+        [HttpGet("getpage")]
+        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPage(
+            [FromQuery] int pageNumber,
+            [FromQuery] int pageSize)
         {
-            try
+            var result = await _orderService.GetPage(new PageInfo
             {
-                bool result = await _orderService.DeleteOrder(id);
-                if (result) return Ok(result);
-                return BadRequest();
-            }
-            catch (Exception ex)
+                Number = pageNumber,
+                Size = pageSize
+            });
+            
+            return result is not null
+                ? Ok(result)
+                : BadRequest();
+        }
+
+        // uses
+        [Authorize]
+        [HttpPost("getpagebycriteria")]
+        public async Task<ActionResult<ResponseList<OrderResponse>>> GetPageByCriteria(
+            [FromBody] OrderFilterCriteria criteria,
+            [FromQuery] int pageNumber,
+            [FromQuery] int pageSize)
+        {
+            var result = await _orderService.GetPageByCriteria(criteria, new PageInfo
             {
-                _logger.LogError(ex, "Ошибка при запросе DeleteOrder.");
-                return StatusCode(500);
-            }
+                Number = pageNumber,
+                Size = pageSize
+            });
+            
+            return result is not null
+                ? Ok(result)
+                : BadRequest();
         }
     }
 }

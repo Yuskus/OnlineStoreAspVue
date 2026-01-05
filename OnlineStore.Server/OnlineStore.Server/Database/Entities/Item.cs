@@ -1,8 +1,7 @@
 ﻿namespace OnlineStore.Server.Database.Entities
 {
-    public class Item
+    public class Item : BaseEntity
     {
-        public Guid Id { get; set; }
         public required string Code { get; set; }
         public required string Name { get; set; }
         public double? Price { get; set; }

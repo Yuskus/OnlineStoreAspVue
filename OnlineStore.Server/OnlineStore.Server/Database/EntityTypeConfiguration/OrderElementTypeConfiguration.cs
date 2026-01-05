@@ -8,48 +8,41 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<OrderElement> builder)
         {
-            // primary key
-            builder.HasKey(p => p.Id)
-                   .HasName("id_order_element_pk");
-
-            // table name
-            builder.ToTable("order_elements");
-
             // properties
             builder.Property(p => p.Id)
                    .IsRequired()
-                   .HasColumnType("uuid")
-                   .HasColumnName("id");
+                   .ValueGeneratedOnAdd()
+                   .HasColumnType("uuid");
+
+            builder.Property(p => p.CreatedAt)
+                   .IsRequired()
+                   .HasColumnType("timestamp");
 
             builder.Property(p => p.OrderId)
                    .IsRequired()
-                   .HasColumnType("uuid")
-                   .HasColumnName("order_id");
+                   .HasColumnType("uuid");
 
             builder.Property(p => p.ItemId)
                    .IsRequired()
-                   .HasColumnType("uuid")
-                   .HasColumnName("item_id");
+                   .HasColumnType("uuid");
 
             builder.Property(p => p.ItemsCount)
-                   .IsRequired()
-                   .HasColumnName("items_count");
+                   .IsRequired();
 
             builder.Property(p => p.ItemPrice)
                    .IsRequired()
-                   .HasColumnType("decimal(10, 2)")
-                   .HasColumnName("item_price");
+                   .HasColumnType("decimal(10, 2)");
 
             // foreign keys
             builder.HasOne(p => p.Order)
                    .WithMany(p => p.OrderElements)
                    .HasForeignKey(p => p.OrderId)
-                   .HasConstraintName("1tomany_order_to_order_elements_fk");
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(p => p.Item)
                    .WithMany(p => p.OrderElements)
                    .HasForeignKey(p => p.ItemId)
-                   .HasConstraintName("1tomany_item_to_order_elements_fk");
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

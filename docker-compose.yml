@@ -6,8 +6,10 @@ services:
     build:
       context: .\OnlineStore.Server
       dockerfile: OnlineStore.Server\Dockerfile
-    env_file:
-    - .env
+      args:
+        DB_CONNECTION_STRING: ${DB_CONNECTION_STRING}
+        PUBLIC_KEY: ${PUBLIC_KEY}
+        PRIVATE_KEY: ${PRIVATE_KEY}
     depends_on:
       - db_postgres
     ports:
@@ -17,11 +19,9 @@ services:
       - store_network
 
   db_postgres:
-    image: elestio/postgres:${SOFTWARE_VERSION_TAG}
+    image: elestio/postgres:16
     container_name: db_postgres
     restart: always
-    env_file:
-    - .env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_ADMIN_NAME}
@@ -38,8 +38,6 @@ services:
     image: elestio/pgadmin:REL-8_12
     container_name: pgadmin
     restart: always
-    env_file:
-    - .env
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PG_ADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_PASSWORD}
@@ -50,6 +48,19 @@ services:
       - "${PG_PORT}:8080"
     volumes:
       - pgadmin:/var/lib/pgadmin/data
+    networks:
+      - store_network
+
+  onlinestore-client:
+    build:
+      context: ./onlinestore.client/
+      dockerfile: Dockerfile
+      args:
+        VITE_APP_HOST: ${VITE_APP_HOST}
+    container_name: onlinestore-client
+    restart: unless-stopped
+    ports:
+      - "5777:80"
     networks:
       - store_network
 

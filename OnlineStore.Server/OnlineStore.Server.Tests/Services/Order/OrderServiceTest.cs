@@ -1,8 +1,8 @@
 ﻿using Moq;
 using OnlineStore.Server.Constants.Orders;
-using OnlineStore.Server.Database.Entities;
 using OnlineStore.Server.DTO.Common;
 using OnlineStore.Server.DTO.Orders;
+using OnlineStore.Server.Repositories.Customers;
 using OnlineStore.Server.Repositories.Orders;
 using OnlineStore.Server.Services.Orders;
 
@@ -12,19 +12,23 @@ namespace OnlineStore.Server.Tests.Services.Order
     public class OrderServiceTest : IClassFixture<OrderServiceFixture>
     {
         private readonly OrderServiceFixture _fixture;
-        private readonly Mock<IOrderRepository> _mockRepository;
+        private readonly Mock<IOrderRepository> _mockOrderRepository;
+        private readonly Mock<ICustomerRepository> _mockCustomerRepository;
 
         public OrderServiceTest(OrderServiceFixture fixture)
         {
             _fixture = fixture;
-            _mockRepository = _fixture.CreateMockRepository();
+            _mockOrderRepository = _fixture.CreateMockOrderRepository();
+            _mockCustomerRepository = _fixture.CreateMockCustomerRepository();
         }
 
         [Fact]
         public async Task Create_Success()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
 
             var request_success_1 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(10).ToString() }; //yes, yes, (yes, yes)
             var request_success_2 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(-10).ToString() }; //yes, yes, (yes, yes)
@@ -52,7 +56,9 @@ namespace OnlineStore.Server.Tests.Services.Order
         public async Task Create_Fail()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
 
             var request_fail_1 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = "99-99-9999" }; //yes, no, (yes, yes)
             var request_fail_2 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.ToString(), ShipmentDate = _fixture.Today.AddDays(-10).ToString() }; //yes, yes, no, (yes)
@@ -76,7 +82,9 @@ namespace OnlineStore.Server.Tests.Services.Order
         public async Task Update_Success()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
 
             var request_success_1 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(10).ToString() }; //yes, yes, (yes, yes)
             var request_success_2 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(-10).ToString() }; //yes, yes, (yes, yes)
@@ -97,7 +105,9 @@ namespace OnlineStore.Server.Tests.Services.Order
         public async Task Update_Fail()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
 
             var request_fake_success_1 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(10).ToString() }; //yes, yes, (yes, yes)
             var request_fake_success_2 = new OrderRequest { CustomerId = _fixture.CustomerId_Exists, OrderDate = _fixture.Today.AddDays(-10).ToString() }; //yes, yes, (yes, yes)
@@ -131,7 +141,9 @@ namespace OnlineStore.Server.Tests.Services.Order
         public async Task Delete()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
 
             //Act
             var delete_success = await service.Delete(_fixture.CustomerId_Exists);
@@ -141,7 +153,7 @@ namespace OnlineStore.Server.Tests.Services.Order
             var delete_fail_3 = await service.Delete(Guid.Empty);
 
             //Assert
-            _mockRepository.Verify(x => x.Delete(_fixture.CustomerId_Exists), Times.Exactly(2));
+            _mockOrderRepository.Verify(x => x.Delete(_fixture.CustomerId_Exists), Times.Exactly(2));
 
             Assert.True(delete_success);
 
@@ -154,7 +166,9 @@ namespace OnlineStore.Server.Tests.Services.Order
         public async Task PlaceAnOrder()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
 
             //Act
             var placeAnOrder_success = await service.PlaceAnOrder(_fixture.OrderId_Exists);
@@ -173,7 +187,9 @@ namespace OnlineStore.Server.Tests.Services.Order
         public async Task GetBasketOrder()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
 
             //Act
             var placeAnOrder_fail_1 = await service.GetBasketOrder(Guid.Empty);
@@ -190,68 +206,13 @@ namespace OnlineStore.Server.Tests.Services.Order
         }
 
         [Fact]
-        public async Task GetOneByCriteria_Success()
-        {
-            //Arrange
-            var service = new OrderService(_mockRepository.Object);
-
-            var criteria_success_1 = new OrderFilterCriteria();
-            var criteria_success_2 = new OrderFilterCriteria
-            {
-                Id = _fixture.OrderId_Exists,
-                CustomerId = _fixture.CustomerId_Exists,
-                OrderNumber = 1,
-                OrderStatus = OrderStatuses.Basket
-            };
-
-            //Act
-            var getOneByCriteria_success_1 = await service.GetOneByCriteria(criteria_success_1);
-            var getOneByCriteria_success_2 = await service.GetOneByCriteria(criteria_success_2);
-
-            //Assert
-            Assert.NotNull(getOneByCriteria_success_1);
-            Assert.NotNull(getOneByCriteria_success_2);
-
-            Assert.Equal(_fixture.OrderId_Exists, getOneByCriteria_success_1.Id);
-            Assert.Equal(_fixture.CustomerId_Exists, getOneByCriteria_success_1.CustomerId);
-
-            Assert.Equal(_fixture.OrderId_Exists, getOneByCriteria_success_2.Id);
-            Assert.Equal(_fixture.CustomerId_Exists, getOneByCriteria_success_2.CustomerId);
-        }
-
-        [Fact]
-        public async Task GetOneByCriteria_Fail()
-        {
-            //Arrange
-            var service = new OrderService(_mockRepository.Object);
-
-            var criteria_fail_1 = new OrderFilterCriteria { Id = Guid.Empty, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = null }; //no, yes, yes, yes
-            var criteria_fail_2 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = Guid.Empty, OrderNumber = null, OrderStatus = OrderStatuses.New }; //yes, no, yes, yes
-            var criteria_fail_3 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = -10, OrderStatus = OrderStatuses.Basket }; //yes, yes, no, yes
-            var criteria_fail_4 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = OrderStatuses.NotExists }; //yes, yes, yes, no
-            var criteria_fail_5 = new OrderFilterCriteria { Id = _fixture.Guid_Unexists, CustomerId = Guid.Empty, OrderNumber = -100, OrderStatus = OrderStatuses.NotExists }; //no, no, no, no
-
-            //Act
-            var getOneByCriteria_fail_1 = await service.GetOneByCriteria(criteria_fail_1);
-            var getOneByCriteria_fail_2 = await service.GetOneByCriteria(criteria_fail_2);
-            var getOneByCriteria_fail_3 = await service.GetOneByCriteria(criteria_fail_3);
-            var getOneByCriteria_fail_4 = await service.GetOneByCriteria(criteria_fail_4);
-            var getOneByCriteria_fail_5 = await service.GetOneByCriteria(criteria_fail_5);
-
-            //Assert
-            Assert.Null(getOneByCriteria_fail_1);
-            Assert.Null(getOneByCriteria_fail_2);
-            Assert.Null(getOneByCriteria_fail_3);
-            Assert.Null(getOneByCriteria_fail_4);
-            Assert.Null(getOneByCriteria_fail_5);
-        }
-
-        [Fact]
         public async Task GetPage_Success()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
-            
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
+
             var pages1 = new PageInfo(1, 12);
             var pages2 = new PageInfo(1, 20);
             var pages3 = new PageInfo(2, 3);
@@ -279,8 +240,10 @@ namespace OnlineStore.Server.Tests.Services.Order
         public async Task GetPage_Fail()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
-            
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
+
             var pages1 = new PageInfo(0, 0);
             var pages2 = new PageInfo(-1, 1);
             var pages3 = new PageInfo(1, -1);
@@ -323,7 +286,9 @@ namespace OnlineStore.Server.Tests.Services.Order
         public async Task GetPageByCriteria_Success()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
 
             var criteria_success_1 = new OrderFilterCriteria();
             var criteria_success_2 = new OrderFilterCriteria
@@ -376,7 +341,9 @@ namespace OnlineStore.Server.Tests.Services.Order
         public async Task GetPageByCriteria_Fail()
         {
             //Arrange
-            var service = new OrderService(_mockRepository.Object);
+            var service = new OrderService(
+                _mockOrderRepository.Object,
+                _mockCustomerRepository.Object);
 
             var criteria_fake_success_1 = new OrderFilterCriteria();
             var criteria_fake_success_2 = new OrderFilterCriteria
@@ -390,8 +357,8 @@ namespace OnlineStore.Server.Tests.Services.Order
             var criteria_fail_1 = new OrderFilterCriteria { Id = Guid.Empty, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = null }; //no, yes, yes, yes
             var criteria_fail_2 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = Guid.Empty, OrderNumber = null, OrderStatus = OrderStatuses.New }; //yes, no, yes, yes
             var criteria_fail_3 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = -10, OrderStatus = OrderStatuses.Basket }; //yes, yes, no, yes
-            var criteria_fail_4 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = OrderStatuses.NotExists }; //yes, yes, yes, no
-            var criteria_fail_5 = new OrderFilterCriteria { Id = _fixture.Guid_Unexists, CustomerId = Guid.Empty, OrderNumber = -100, OrderStatus = OrderStatuses.NotExists }; //no, no, no, no
+            var criteria_fail_4 = new OrderFilterCriteria { Id = _fixture.OrderId_Exists, CustomerId = _fixture.CustomerId_Exists, OrderNumber = 1, OrderStatus = "not exists" }; //yes, yes, yes, no
+            var criteria_fail_5 = new OrderFilterCriteria { Id = _fixture.Guid_Unexists, CustomerId = Guid.Empty, OrderNumber = -100, OrderStatus = "not exists" }; //no, no, no, no
 
             var pages1 = new PageInfo(1, 12);
             var pages2 = new PageInfo(2, 3);
@@ -408,6 +375,8 @@ namespace OnlineStore.Server.Tests.Services.Order
             var fake_success_1 = await service.GetPageByCriteria(criteria_fail_1, pages1); //no, yes, yes
             var fake_success_2 = await service.GetPageByCriteria(criteria_fail_2, pages2); //no, yes, yes
             var fake_success_3 = await service.GetPageByCriteria(criteria_fail_3, pages3); //no, yes, yes
+            var fake_success_4 = await service.GetPageByCriteria(criteria_fail_4, pages2); //no, yes, yes
+            var fake_success_5 = await service.GetPageByCriteria(criteria_fail_5, pages1); //no, yes, yes
 
             var fail_1 = await service.GetPageByCriteria(criteria_fake_success_1, pages4); //yes, no, no
             var fail_2 = await service.GetPageByCriteria(criteria_fake_success_1, pages5); //yes, no, yes
@@ -427,14 +396,20 @@ namespace OnlineStore.Server.Tests.Services.Order
             Assert.NotNull(fake_success_1);
             Assert.NotNull(fake_success_2);
             Assert.NotNull(fake_success_3);
+            Assert.NotNull(fake_success_4);
+            Assert.NotNull(fake_success_5);
 
             Assert.Empty(fake_success_1.Responses);
             Assert.Empty(fake_success_2.Responses);
             Assert.Empty(fake_success_3.Responses);
+            Assert.Empty(fake_success_4.Responses);
+            Assert.Empty(fake_success_5.Responses);
 
             Assert.Equal(0, fake_success_1.TotalCount);
             Assert.Equal(0, fake_success_2.TotalCount);
             Assert.Equal(0, fake_success_3.TotalCount);
+            Assert.Equal(0, fake_success_4.TotalCount);
+            Assert.Equal(0, fake_success_5.TotalCount);
 
             Assert.NotNull(fail_1);
             Assert.NotNull(fail_2);

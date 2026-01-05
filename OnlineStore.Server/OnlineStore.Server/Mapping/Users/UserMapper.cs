@@ -35,7 +35,7 @@ namespace OnlineStore.Server.Mapping.Users
                 Username = registerRequest.Username,
                 Password = hash,
                 Salt = salt,
-                Role = (int)UserRole.User,
+                Role = UserRole.User,
                 CustomerId = registerRequest.Id
             };
         }

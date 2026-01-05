@@ -48,25 +48,6 @@ namespace OnlineStore.Server.Tests.Services.Customer
             //get
 
             mockRepository
-                .Setup(x => x.GetOneByCriteria(
-                    It.Is<CustomerFilterCriteria>(c => c.Id == CustomerId_Exists)))
-                .ReturnsAsync(new CustomerResponse
-                {
-                    Id = CustomerId_Exists,
-                    Code = "0000-2000",
-                    Name = CustomerName_Exists
-                });
-
-            mockRepository
-                .Setup(x => x.GetOneByCriteria(
-                    It.Is<CustomerFilterCriteria>(c => c.Code == CustomerCode_Exists)))
-                .ReturnsAsync(new CustomerResponse
-                {
-                    Code = CustomerCode_Exists,
-                    Name = CustomerName_Exists
-                });
-
-            mockRepository
                 .Setup(x => x.GetPage(
                     It.Is<PageInfo>(p => p.Number == 1 && p.Size == 12)))
                 .ReturnsAsync(() => new(ResponseList.Take(12), ResponseTotal));

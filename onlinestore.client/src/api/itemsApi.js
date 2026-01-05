@@ -23,8 +23,10 @@ export const getPageOfItemsByCategory = async (category, pageNumber, pageSize) =
     try {
         validateCategory(category);
         validatePages(pageNumber, pageSize);
-
-        const response = await axios.get(`${API_URL}/api/items/getpagebycategory/${category}?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+        
+        const response = await axios.post(`${API_URL}/api/items/getpagebycriteria?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+            category: category
+        }, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }
@@ -69,12 +71,12 @@ export const addItem = async (item) => {
     }
 }
 
-export const updateItem = async (itemId, newItem) => {
+export const updateItem = async (itemId, item) => {
     try {
         validateGuid(itemId);
-        validateItemRequest(newItem);
+        validateItemRequest(item);
 
-        const response = await axios.put(`${API_URL}/api/items/update/${itemId}`, newItem, {
+        const response = await axios.put(`${API_URL}/api/items/update/${itemId}`, item, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }

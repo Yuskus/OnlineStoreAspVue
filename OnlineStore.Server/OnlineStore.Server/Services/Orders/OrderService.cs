@@ -56,7 +56,6 @@ namespace OnlineStore.Server.Services.Orders
 
         public async Task<OrderResponse?> GetBasketOrder(Guid customerId)
         {
-            Console.WriteLine("customerId - " + customerId);
             if (!CustomerValidator.CheckGuid(customerId)) return null;
 
             if (await _customerRepository.Get(customerId) is null) return null;
@@ -66,11 +65,9 @@ namespace OnlineStore.Server.Services.Orders
                 CustomerId = customerId,
                 OrderStatus = OrderStatuses.Basket
             });
-            Console.WriteLine("basket - " + (basket != null));
 
             if (basket is null)
             {
-                Console.WriteLine("basket is null");
                 var request = new OrderRequest()
                 {
                     CustomerId = customerId,
@@ -82,7 +79,6 @@ namespace OnlineStore.Server.Services.Orders
 
                 if (guid != null)
                 {
-                    Console.WriteLine("basket - " + guid);
                     basket = await _orderRepository.GetOneByCriteria(new() { Id = guid });
                 }
             }

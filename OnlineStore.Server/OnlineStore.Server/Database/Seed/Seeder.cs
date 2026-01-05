@@ -1,7 +1,6 @@
 ﻿using OnlineStore.Server.Authorization.Utilities;
 using OnlineStore.Server.Database.Context;
 using OnlineStore.Server.Database.Entities;
-using OnlineStore.Server.Extensions.BCL.Structures;
 
 namespace OnlineStore.Server.Database.Seed
 {
@@ -26,7 +25,7 @@ namespace OnlineStore.Server.Database.Seed
                 {
                     Id = customerId,
                     Name = "Заказчиков Заказчик Заказчикович",
-                    Code = "",
+                    Code = "0000-2000",
                     Address = "г. Заказчиков, ул. Заказная, д.1, кв.1",
                     Discount = 5
                 });
@@ -201,8 +200,6 @@ namespace OnlineStore.Server.Database.Seed
                 });
 
                 await dbContext.SaveChangesAsync();
-
-                Console.WriteLine("first user: " + dbContext.Users.First().CreatedAt.ToString(DateTimeExtensions.DateTimeStandardFormat));
             }
             catch
             {

@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OnlineStore.Server.Database.Entities;
-using OnlineStore.Server.Extensions.BCL.Structures;
-using System.Globalization;
 
 namespace OnlineStore.Server.Database.EntityTypeConfiguration
 {

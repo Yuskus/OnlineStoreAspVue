@@ -144,69 +144,6 @@ namespace OnlineStore.Server.Tests.Services.Item
         }
 
         [Fact]
-        public async Task GetOneByCriteria_Success()
-        {
-            //Arrange
-            var service = new ItemService(_mockRepository.Object);
-
-            var criteria_success_1 = new ItemFilterCriteria();
-            var criteria_success_2 = new ItemFilterCriteria { Id = _fixture.ItemGuid_Exists, Name = _fixture.ItemName_Exists };
-            var criteria_success_3 = new ItemFilterCriteria { Code = _fixture.ItemCode_Exists, Category = _fixture.ItemCategory_Exists };
-
-            //Act
-            var success_1 = await service.GetOneByCriteria(criteria_success_1);
-            var success_2 = await service.GetOneByCriteria(criteria_success_2);
-            var success_3 = await service.GetOneByCriteria(criteria_success_3);
-
-            //Assert
-            Assert.NotNull(success_1);
-            Assert.NotNull(success_2);
-            Assert.NotNull(success_3);
-
-            Assert.Equal(success_1.Id, _fixture.ItemGuid_Exists);
-            Assert.Equal(success_1.Name, _fixture.ItemName_Exists);
-            Assert.Equal(success_1.Code, _fixture.ItemCode_Exists);
-            Assert.Equal(success_1.Category, _fixture.ItemCategory_Exists);
-
-            Assert.Equal(success_2.Id, _fixture.ItemGuid_Exists);
-            Assert.Equal(success_2.Name, _fixture.ItemName_Exists);
-            Assert.Equal(success_2.Code, _fixture.ItemCode_Exists);
-            Assert.Equal(success_2.Category, _fixture.ItemCategory_Exists);
-
-            Assert.Equal(success_3.Id, _fixture.ItemGuid_Exists);
-            Assert.Equal(success_3.Name, _fixture.ItemName_Exists);
-            Assert.Equal(success_3.Code, _fixture.ItemCode_Exists);
-            Assert.Equal(success_3.Category, _fixture.ItemCategory_Exists);
-        }
-
-        [Fact]
-        public async Task GetOneByCriteria_Fail()
-        {
-            //Arrange
-            var service = new ItemService(_mockRepository.Object);
-
-            var criteria_fail_1 = new ItemFilterCriteria { Id = _fixture.Guid_Unexists, Name = "Unexists", Code = "Unexists", Category = "Unexists" }; //no, no, no, no
-            var criteria_fail_2 = new ItemFilterCriteria { Category = "Unexists" }; //no
-            var criteria_fail_3 = new ItemFilterCriteria { Code = "Unexists" }; //no
-            var criteria_fail_4 = new ItemFilterCriteria { Id = _fixture.Guid_Unexists }; //no
-            var criteria_fail_5 = new ItemFilterCriteria { Name = "Unexists" }; //no
-
-            //Act
-            var fail_1 = await service.GetOneByCriteria(criteria_fail_1);
-            var fail_2 = await service.GetOneByCriteria(criteria_fail_2);
-            var fail_3 = await service.GetOneByCriteria(criteria_fail_3);
-            var fail_4 = await service.GetOneByCriteria(criteria_fail_4);
-            var fail_5 = await service.GetOneByCriteria(criteria_fail_5);
-
-            //Assert
-            Assert.Null(fail_1);
-            Assert.Null(fail_2);
-            Assert.Null(fail_3);
-            Assert.Null(fail_4);
-            Assert.Null(fail_5);
-        }
-
-        [Fact]
         public async Task GetPage_Success()
         {
             //Arrange
@@ -285,8 +222,8 @@ namespace OnlineStore.Server.Tests.Services.Item
             //Arrange
             var service = new ItemService(_mockRepository.Object);
 
-            var criteria_success_1 = new ItemFilterCriteria { Id = _fixture.ItemGuid_Exists, Name = _fixture.ItemName_Exists };
-            var criteria_success_2 = new ItemFilterCriteria { Code = _fixture.ItemCode_Exists, Category = _fixture.ItemCategory_Exists };
+            var criteria_success_1 = new ItemFilterCriteria { Name = _fixture.ItemName_Exists };
+            var criteria_success_2 = new ItemFilterCriteria { Category = _fixture.ItemCategory_Exists };
             var criteria_success_3 = new ItemFilterCriteria();
             
             var pages1 = new PageInfo(1, 12);
@@ -332,28 +269,24 @@ namespace OnlineStore.Server.Tests.Services.Item
             var pages8 = new PageInfo(2, 3);
             var pages9 = new PageInfo(1, 20);
 
-            var criteria_fail_1 = new ItemFilterCriteria { Id = _fixture.Guid_Unexists };
-            var criteria_fail_2 = new ItemFilterCriteria { Category = "Unexists" };
-            var criteria_fail_3 = new ItemFilterCriteria { Code = "Unexists" };
+            var criteria_fail_1 = new ItemFilterCriteria { Category = "Unexists" };
 
             var criteria_fake_success_1 = new ItemFilterCriteria();
-            var criteria_fake_success_2 = new ItemFilterCriteria { Id = _fixture.ItemGuid_Exists };
-            var criteria_fake_success_3 = new ItemFilterCriteria { Name = _fixture.ItemName_Exists };
-            var criteria_fake_success_4 = new ItemFilterCriteria { Code = _fixture.ItemCode_Exists };
-            var criteria_fake_success_5 = new ItemFilterCriteria { Category = _fixture.ItemCategory_Exists };
-            var criteria_fake_success_6 = new ItemFilterCriteria { Id = _fixture.ItemGuid_Exists, Name = _fixture.ItemName_Exists, Code = _fixture.ItemCode_Exists, Category = _fixture.ItemCategory_Exists };
+            var criteria_fake_success_2 = new ItemFilterCriteria { Name = _fixture.ItemName_Exists };
+            var criteria_fake_success_3 = new ItemFilterCriteria { Category = _fixture.ItemCategory_Exists };
+            var criteria_fake_success_4 = new ItemFilterCriteria { Name = _fixture.ItemName_Exists, Category = _fixture.ItemCategory_Exists };
             
             //Act
             var fake_success_1 = await service.GetPageByCriteria(criteria_fail_1, pages7); //no, yes, yes
-            var fake_success_2 = await service.GetPageByCriteria(criteria_fail_2, pages8); //no, yes, yes
-            var fake_success_3 = await service.GetPageByCriteria(criteria_fail_3, pages9); //no, yes, yes
+            var fake_success_2 = await service.GetPageByCriteria(criteria_fail_1, pages8); //no, yes, yes
+            var fake_success_3 = await service.GetPageByCriteria(criteria_fail_1, pages9); //no, yes, yes
 
             var fail_1 = await service.GetPageByCriteria(criteria_fake_success_1, pages1); //yes, no, no
-            var fail_2 = await service.GetPageByCriteria(criteria_fake_success_2, pages2); //yes, no, yes
+            var fail_2 = await service.GetPageByCriteria(criteria_fake_success_2, pages2); //yes, no, no
             var fail_3 = await service.GetPageByCriteria(criteria_fake_success_3, pages3);  //yes, yes, no
-            var fail_4 = await service.GetPageByCriteria(criteria_fake_success_4, pages4); //yes, yes, no
-            var fail_5 = await service.GetPageByCriteria(criteria_fake_success_5, pages5); //yes, no, no
-            var fail_6 = await service.GetPageByCriteria(criteria_fake_success_6, pages6); //yes, yes, no
+            var fail_4 = await service.GetPageByCriteria(criteria_fake_success_4, pages4);  //yes, yes, no
+            var fail_5 = await service.GetPageByCriteria(criteria_fake_success_2, pages5); //yes, no, no
+            var fail_6 = await service.GetPageByCriteria(criteria_fake_success_4, pages6); //yes, yes, no
 
             //Assert
             Assert.NotNull(fake_success_1);

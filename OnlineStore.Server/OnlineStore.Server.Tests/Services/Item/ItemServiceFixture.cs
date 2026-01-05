@@ -73,24 +73,6 @@ namespace OnlineStore.Server.Tests.Services.Item
             //get
 
             mockRepository
-                .Setup(x => x.GetOneByCriteria(
-                    It.Is<ItemFilterCriteria>(x => x.Id == ItemGuid_Exists
-                        || x.Name == ItemName_Exists
-                        || x.Code == ItemCode_Exists
-                        || x.Category == ItemCategory_Exists
-                        || (x.Id == null && x.Name == null && x.Code == null && x.Category == null))))
-                .ReturnsAsync(() => ResponseList.FirstOrDefault());
-
-            mockRepository
-                .Setup(x => x.GetOneByCriteria(
-                    It.Is<ItemFilterCriteria>(x => x.Id != ItemGuid_Exists
-                        && x.Name != ItemName_Exists
-                        && x.Code != ItemCode_Exists
-                        && x.Category != ItemCategory_Exists
-                        && !(x.Id == null && x.Name == null && x.Code == null && x.Category == null))))
-                .ReturnsAsync(() => null);
-
-            mockRepository
                 .Setup(x => x.GetPage(
                     It.Is<PageInfo>(p => p.Number == 1 && p.Size == 12)))
                 .ReturnsAsync(() => new(ResponseList, ResponseTotal));
@@ -107,41 +89,33 @@ namespace OnlineStore.Server.Tests.Services.Item
 
             mockRepository
                 .Setup(x => x.GetPageByCriteria(
-                    It.Is<ItemFilterCriteria>(x => x.Id == ItemGuid_Exists
-                        || x.Name == ItemName_Exists
-                        || x.Code == ItemCode_Exists
+                    It.Is<ItemFilterCriteria>(x => x.Name == ItemName_Exists
                         || x.Category == ItemCategory_Exists
-                        || (x.Id == null && x.Name == null && x.Code == null && x.Category == null)),
+                        || (x.Name == null && x.Category == null)),
                     It.Is<PageInfo>(p => p.Number == 1 && p.Size == 12)))
                 .ReturnsAsync(() => new(ResponseList, ResponseTotal));
 
             mockRepository
                 .Setup(x => x.GetPageByCriteria(
-                    It.Is<ItemFilterCriteria>(x => x.Id == ItemGuid_Exists
-                        || x.Name == ItemName_Exists
-                        || x.Code == ItemCode_Exists
+                    It.Is<ItemFilterCriteria>(x => x.Name == ItemName_Exists
                         || x.Category == ItemCategory_Exists
-                        || (x.Id == null && x.Name == null && x.Code == null && x.Category == null)),
+                        || (x.Name == null && x.Category == null)),
                     It.Is<PageInfo>(p => p.Number == 1 && p.Size == 20)))
                 .ReturnsAsync(() => new(ResponseList, ResponseTotal));
 
             mockRepository
                 .Setup(x => x.GetPageByCriteria(
-                    It.Is<ItemFilterCriteria>(x => x.Id == ItemGuid_Exists
-                        || x.Name == ItemName_Exists
-                        || x.Code == ItemCode_Exists
+                    It.Is<ItemFilterCriteria>(x => x.Name == ItemName_Exists
                         || x.Category == ItemCategory_Exists
-                        || (x.Id == null && x.Name == null && x.Code == null && x.Category == null)),
+                        || (x.Name == null && x.Category == null)),
                     It.Is<PageInfo>(p => p.Number == 2 && p.Size == 3)))
                 .ReturnsAsync(() => new([], ResponseTotal));
 
             mockRepository
                 .Setup(x => x.GetPageByCriteria(
-                    It.Is<ItemFilterCriteria>(x => x.Id != ItemGuid_Exists
-                        && x.Name != ItemName_Exists
-                        && x.Code != ItemCode_Exists
+                    It.Is<ItemFilterCriteria>(x => x.Name != ItemName_Exists
                         && x.Category != ItemCategory_Exists
-                        && !(x.Id == null && x.Name == null && x.Code == null && x.Category == null)),
+                        && !(x.Name == null && x.Category == null)),
                     It.IsAny<PageInfo>()))
                 .ReturnsAsync(() => new([], 0));
 

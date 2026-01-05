@@ -24,7 +24,9 @@ export const getPageOfOrdersByCustomer = async (customerId, pageNumber, pageSize
         validateGuid(customerId);
         validatePages(pageNumber, pageSize);
 
-        const response = await axios.get(`${API_URL}/api/orders/getpagebycustomer/${customerId}?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+        const response = await axios.post(`${API_URL}/api/orders/getpagebycriteria?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+            customerId: customerId
+        }, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }
@@ -71,12 +73,12 @@ export const placeAnOrder = async (orderId) => {
     }
 }
 
-export const updateOrder = async (orderId, newOrder) => {
+export const updateOrder = async (orderId, order) => {
     try {
         validateGuid(orderId);
-        validateOrderRequest(newOrder);
+        validateOrderRequest(order);
 
-        const response = await axios.put(`${API_URL}/api/orders/update/${orderId}`, newOrder, {
+        const response = await axios.put(`${API_URL}/api/orders/update/${orderId}`, order, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }

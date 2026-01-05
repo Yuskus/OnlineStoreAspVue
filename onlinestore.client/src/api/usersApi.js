@@ -62,12 +62,12 @@ export const registerManager = async (manager) => {
     }
 }
 
-export const updateUser = async (username, newUser) => {
+export const updateUser = async (username, user) => {
     try {
         validateUsername(username);
-        validateUserInfo(newUser);
+        validateUserInfo(user);
 
-        const response = await axios.put(`${API_URL}/api/users/update/${username}`, newUser, {
+        const response = await axios.put(`${API_URL}/api/users/update/${username}`, user, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }

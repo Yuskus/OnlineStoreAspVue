@@ -19,60 +19,6 @@ namespace OnlineStore.Server.Tests.Services.Customer
         }
 
         [Fact]
-        public async Task GetOneByCriteria_Success()
-        {
-            //Arrange
-            var service = new CustomerService(_mockRepository.Object);
-
-            //Act
-            var test_success_1 = await service.GetOneByCriteria(new() { Id = _fixture.CustomerId_Exists });
-            var test_success_2 = await service.GetOneByCriteria(new() { Code = _fixture.CustomerCode_Exists });
-
-            //Assert
-            Assert.NotNull(test_success_1);
-            Assert.Equal(_fixture.CustomerId_Exists, test_success_1.Id);
-
-            Assert.NotNull(test_success_2);
-            Assert.Equal(_fixture.CustomerCode_Exists, test_success_2.Code);
-        }
-
-        [Fact]
-        public async Task GetOneByCriteria_Fail()
-        {
-            //Arrange
-            var service = new CustomerService(_mockRepository.Object);
-
-            var criteria_fail_1 = new CustomerFilterCriteria { Id = _fixture.Guid_Unexists };
-            var criteria_fail_2 = new CustomerFilterCriteria { Id = Guid.Empty };
-            var criteria_fail_3 = new CustomerFilterCriteria { Id = null };
-            var criteria_fail_4 = new CustomerFilterCriteria { Code = "" };
-            var criteria_fail_5 = new CustomerFilterCriteria { Code = "         " };
-            var criteria_fail_6 = new CustomerFilterCriteria { Code = "1111-9999" };
-            var criteria_fail_7 = new CustomerFilterCriteria { Code = "sdfhsdfhasdfh" };
-            var criteria_fail_8 = new CustomerFilterCriteria { Code = "123452000" };
-
-            //Act
-            var test_fail_1 = await service.GetOneByCriteria(criteria_fail_1);
-            var test_fail_2 = await service.GetOneByCriteria(criteria_fail_2);
-            var test_fail_3 = await service.GetOneByCriteria(criteria_fail_3);
-            var test_fail_4 = await service.GetOneByCriteria(criteria_fail_4);
-            var test_fail_5 = await service.GetOneByCriteria(criteria_fail_5);
-            var test_fail_6 = await service.GetOneByCriteria(criteria_fail_6);
-            var test_fail_7 = await service.GetOneByCriteria(criteria_fail_7);
-            var test_fail_8 = await service.GetOneByCriteria(criteria_fail_8);
-
-            //Assert
-            Assert.Null(test_fail_1);
-            Assert.Null(test_fail_2);
-            Assert.Null(test_fail_3);
-            Assert.Null(test_fail_4);
-            Assert.Null(test_fail_5);
-            Assert.Null(test_fail_6);
-            Assert.Null(test_fail_7);
-            Assert.Null(test_fail_8);
-        }
-
-        [Fact]
         public async Task Update_Success()
         {
             //Arrange

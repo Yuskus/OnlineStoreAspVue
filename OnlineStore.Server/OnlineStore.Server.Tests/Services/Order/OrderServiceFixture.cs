@@ -2,7 +2,9 @@
 using OnlineStore.Server.Constants.Orders;
 using OnlineStore.Server.Database.Entities;
 using OnlineStore.Server.DTO.Common;
+using OnlineStore.Server.DTO.Customers;
 using OnlineStore.Server.DTO.Orders;
+using OnlineStore.Server.Repositories.Customers;
 using OnlineStore.Server.Repositories.Orders;
 
 namespace OnlineStore.Server.Tests.Services.Order
@@ -41,7 +43,29 @@ namespace OnlineStore.Server.Tests.Services.Order
             };
         }
 
-        public Mock<IOrderRepository> CreateMockRepository()
+        public Mock<ICustomerRepository> CreateMockCustomerRepository()
+        {
+            var mockRepository = new Mock<ICustomerRepository>();
+
+            //get
+
+            mockRepository
+                .Setup(x => x.Get(CustomerId_Exists))
+                .ReturnsAsync(() => new CustomerResponse
+                {
+                    Id = CustomerId_Exists,
+                    Name = "Customer",
+                    Code = $"2435-2000"
+                });
+
+            mockRepository
+                .Setup(x => x.Get(It.Is<Guid>(x => x != CustomerId_Exists)))
+                .ReturnsAsync(() => null);
+
+            return mockRepository;
+        }
+
+        public Mock<IOrderRepository> CreateMockOrderRepository()
         {
             var mockRepository = new Mock<IOrderRepository>();
 

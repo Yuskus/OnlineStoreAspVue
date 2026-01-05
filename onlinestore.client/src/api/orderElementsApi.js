@@ -36,12 +36,12 @@ export const addOrderElement = async (orderElement) => {
     }
 }
 
-export const updateOrderElement = async (orderElementId, newOrderElement) => {
+export const updateOrderElement = async (orderElementId, orderElement) => {
     try {
         validateGuid(orderElementId);
-        validateOrderElementRequest(newOrderElement);
+        validateOrderElementRequest(orderElement);
 
-        const response = await axios.put(`${API_URL}/api/orderelements/update/${orderElementId}`, newOrderElement, {
+        const response = await axios.put(`${API_URL}/api/orderelements/update/${orderElementId}`, orderElement, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }

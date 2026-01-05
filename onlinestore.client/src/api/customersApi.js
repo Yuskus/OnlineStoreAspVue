@@ -2,12 +2,12 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_APP_HOST;
 
-export const updateCustomer = async (customerId, newCustomer) => {
+export const updateCustomer = async (customerId, customer) => {
     try {
         validateGuid(customerId);
-        validateCustomerRequest(newCustomer);
+        validateCustomerRequest(customer);
 
-        const response = await axios.put(`${API_URL}/api/customers/update/${customerId}`, newCustomer, {
+        const response = await axios.put(`${API_URL}/api/customers/update/${customerId}`, customer, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }

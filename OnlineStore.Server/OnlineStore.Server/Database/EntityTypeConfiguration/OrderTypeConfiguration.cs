@@ -8,48 +8,40 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            // primary key
-            builder.HasKey(p => p.Id)
-                   .HasName("id_order_pk");
-
-            // table name
-            builder.ToTable("orders");
-
             // properties
             builder.Property(p => p.Id)
                    .IsRequired()
-                   .HasColumnType("uuid")
-                   .HasColumnName("id");
+                   .ValueGeneratedOnAdd()
+                   .HasColumnType("uuid");
+
+            builder.Property(p => p.CreatedAt)
+                   .IsRequired()
+                   .HasColumnType("timestamp");
 
             builder.Property(p => p.CustomerId)
                    .IsRequired()
-                   .HasColumnType("uuid")
-                   .HasColumnName("customer_id");
+                   .HasColumnType("uuid");
 
             builder.Property(p => p.OrderDate)
-                   .IsRequired()
-                   .HasColumnName("order_date");
+                   .IsRequired();
 
-            builder.Property(p => p.ShipmentDate)
-                   .HasColumnName("shipment_date");
+            builder.Property(p => p.ShipmentDate);
 
-            builder.Property(p => p.OrderNumber)
-                   .HasColumnName("order_number");
+            builder.Property(p => p.OrderNumber);
 
             builder.Property(p => p.OrderStatus)
-                   .HasMaxLength(100)
-                   .HasColumnName("order_status");
+                   .HasMaxLength(100);
 
             // foreign keys
             builder.HasOne(p => p.Customer)
                    .WithMany(p => p.Orders)
                    .HasForeignKey(p => p.CustomerId)
-                   .HasConstraintName("1tomany_customer_to_orders_fk");
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(p => p.OrderElements)
                    .WithOne(p => p.Order)
                    .HasForeignKey(p => p.OrderId)
-                   .HasConstraintName("manyto1_order_elements_to_order_fk");
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

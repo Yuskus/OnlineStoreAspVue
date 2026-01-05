@@ -8,35 +8,28 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Customer> builder)
         {
-            // primary key
-            builder.HasKey(p => p.Id)
-                   .HasName("id_customer_pk");
-
-            // table name
-            builder.ToTable("customers");
-
             // properties
             builder.Property(p => p.Id)
                    .IsRequired()
-                   .HasColumnType("uuid")
-                   .HasColumnName("id");
+                   .ValueGeneratedOnAdd()
+                   .HasColumnType("uuid");
+
+            builder.Property(p => p.CreatedAt)
+                   .IsRequired()
+                   .HasColumnType("timestamp");
 
             builder.Property(p => p.Name)
                    .IsRequired()
-                   .HasMaxLength(255)
-                   .HasColumnName("name");
+                   .HasMaxLength(255);
 
             builder.Property(p => p.Code)
                    .IsRequired()
-                   .HasMaxLength(9)
-                   .HasColumnName("code");
+                   .HasMaxLength(9);
 
             builder.Property(p => p.Address)
-                   .HasMaxLength(255)
-                   .HasColumnName("address");
+                   .HasMaxLength(255);
 
-            builder.Property(p => p.Discount)
-                   .HasColumnName("discount");
+            builder.Property(p => p.Discount);
 
             // indexes
             builder.HasIndex(p => p.Code)
@@ -46,12 +39,12 @@ namespace OnlineStore.Server.Database.EntityTypeConfiguration
             builder.HasOne(p => p.User)
                    .WithOne(p => p.Customer)
                    .HasForeignKey<Customer>(p => p.Id)
-                   .HasConstraintName("1to1_user_to_customer_fk");
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(p => p.Orders)
                    .WithOne(p => p.Customer)
                    .HasForeignKey(p => p.CustomerId)
-                   .HasConstraintName("manyto1_orders_to_customer_fk");
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -1,83 +1,62 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OnlineStore.Server.DTO.OrderElement;
-using OnlineStore.Server.Services.OrderElement;
+using OnlineStore.Server.DTO.OrderElements;
+using OnlineStore.Server.Services.OrderElements;
 
 namespace OnlineStore.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrderElementsController(IOrderElementService orderElementService, ILogger<OrderElementsController> logger) : ControllerBase
+    public class OrderElementsController(IOrderElementService orderElementService) : ControllerBase
     {
         private readonly IOrderElementService _orderElementService = orderElementService;
-        private readonly ILogger<OrderElementsController> _logger = logger;
 
+        // uses
         [Authorize]
-        [HttpGet(template: "getbyorderid/{id}")]
-        public async Task<ActionResult<IEnumerable<OrderElementResponse>>> GetOrderElementsByOrderId(Guid id)
+        [HttpPost("add")]
+        public async Task<ActionResult<Guid>> Create([FromBody] OrderElementRequest orderElement)
         {
-            try
-            {
-                IEnumerable<OrderElementResponse> result = await _orderElementService.GetOrderElementsByOrderId(id);
-                if (result is null) return BadRequest();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе GetOrderElementById.");
-                return StatusCode(500);
-            }
+            var result = await _orderElementService.Create(orderElement);
+
+            return result is not null
+                ? Ok(result.Value)
+                : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpPost(template: "add")]
-        public async Task<ActionResult<Guid>> CreateOrderElement([FromBody] OrderElementRequest orderElement)
+        [HttpPut("update/{id:guid}")]
+        public async Task<ActionResult> Update(Guid id, [FromBody] UpdateOrderElementRequest orderElement)
         {
-            try
-            {
-                Guid? result = await _orderElementService.CreateOrderElement(orderElement);
-                if (result is null) return BadRequest();
-                return Ok((Guid)result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе CreateOrderElement.");
-                return StatusCode(500);
-            }
+            var result = await _orderElementService.Update(id, orderElement);
+
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpPut(template: "update/{id}")]
-        public async Task<ActionResult> UpdateOrderElement(Guid id, [FromBody] OrderElementRequest orderElement)
+        [HttpDelete("delete/{id:guid}")]
+        public async Task<ActionResult> Delete(Guid id)
         {
-            try
-            {
-                bool result = await _orderElementService.UpdateOrderElement(id, orderElement);
-                if (result) return Ok(result);
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе UpdateOrderElement.");
-                return StatusCode(500);
-            }
+            var result = await _orderElementService.Delete(id);
+
+            return result
+                ? Ok(result)
+                : BadRequest();
         }
 
+        // uses
         [Authorize]
-        [HttpDelete(template: "delete/{id}")]
-        public async Task<ActionResult> DeleteOrderElement(Guid id)
+        [HttpGet("getbyorderid/{id:guid}")]
+        public async Task<ActionResult<IEnumerable<OrderElementResponse>>> GetAllByOrderId(Guid id)
         {
-            try
-            {
-                bool result = await _orderElementService.DeleteOrderElement(id);
-                if (result) return Ok(result);
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при запросе DeleteOrderElement.");
-                return StatusCode(500);
-            }
+            var result = await _orderElementService.GetAllByOrderId(id);
+
+            return result is not null
+                ? Ok(result)
+                : BadRequest();
         }
     }
 }

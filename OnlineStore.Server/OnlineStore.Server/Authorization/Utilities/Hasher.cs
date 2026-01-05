@@ -3,7 +3,7 @@ using System.Text;
 
 namespace OnlineStore.Server.Authorization.Utilities
 {
-    public class Hasher
+    public static class Hasher
     {
         public static (byte[], byte[]) CreatePasswordHash(string password)
         {

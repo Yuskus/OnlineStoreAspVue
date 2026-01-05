@@ -2,7 +2,7 @@
 
 namespace OnlineStore.Server.Utilities.Order.Generators
 {
-    public class OrderNumberGenerator
+    public class OrderNumberGenerator : INumberGenerator
     {
         private int _maxNumber = -1;
         private readonly object _lock = new();
@@ -20,18 +20,18 @@ namespace OnlineStore.Server.Utilities.Order.Generators
         {
             try
             {
-                _maxNumber = _context.Orders.Max(x => x.OrderNumber) ?? 0;
+                _maxNumber = _context.Orders.Any() 
+                    ? _context.Orders.Max(x => x.OrderNumber) ?? 0 
+                    : 0;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при инициализации _maxNumber в классе OrderNumberGenerator " +
-                                     "(вероятно, проблема с доступом к базе данных).");
+                _logger.LogError(ex, "Ошибка при инициализации _maxNumber: {MaxNumber}", _maxNumber);
                 _maxNumber = -1;
-                throw;
             }
         }
 
-        public int GeneratedNewOrderNumber
+        public int GenerateNewNumber
         {
             get
             {

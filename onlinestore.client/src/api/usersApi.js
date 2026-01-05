@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_APP_HOST;
 
 export const getPageOfUsers = async (pageNumber, pageSize) => {
     try {
@@ -62,12 +62,12 @@ export const registerManager = async (manager) => {
     }
 }
 
-export const updateUser = async (username, newUser) => {
+export const updateUser = async (username, user) => {
     try {
         validateUsername(username);
-        validateUserInfo(newUser);
+        validateUserInfo(user);
 
-        const response = await axios.put(`${API_URL}/api/users/update/${username}`, newUser, {
+        const response = await axios.put(`${API_URL}/api/users/update/${username}`, user, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }

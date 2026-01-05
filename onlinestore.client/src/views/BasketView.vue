@@ -34,6 +34,7 @@
     methods: {
       getMyData() {
         this.myId = localStorage.getItem('guid');
+        console.log("LOG: "+this.myId);
       },
       async getBasketNumber() {
         try {

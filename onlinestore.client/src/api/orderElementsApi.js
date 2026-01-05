@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_APP_HOST;
 
 export const getOrderElementByOrderId = async (orderId) => {
     try {
@@ -36,12 +36,12 @@ export const addOrderElement = async (orderElement) => {
     }
 }
 
-export const updateOrderElement = async (orderElementId, newOrderElement) => {
+export const updateOrderElement = async (orderElementId, orderElement) => {
     try {
         validateGuid(orderElementId);
-        validateOrderElementRequest(newOrderElement);
+        validateOrderElementRequest(orderElement);
 
-        const response = await axios.put(`${API_URL}/api/orderelements/update/${orderElementId}`, newOrderElement, {
+        const response = await axios.put(`${API_URL}/api/orderelements/update/${orderElementId}`, orderElement, {
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('jwt')}`
             }

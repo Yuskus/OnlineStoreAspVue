@@ -4,8 +4,8 @@ services:
     container_name: onlinestore
     restart: always
     build:
-      context: .\OnlineStore.Server
-      dockerfile: OnlineStore.Server\Dockerfile
+      context: ./OnlineStore.Server
+      dockerfile: OnlineStore.Server/Dockerfile
       args:
         DB_CONNECTION_STRING: ${DB_CONNECTION_STRING}
         PUBLIC_KEY: ${PUBLIC_KEY}
